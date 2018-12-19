@@ -240,7 +240,8 @@ namespace Antlr4.Build.Tasks
                 {
                     arguments.Add("-cp");
                     arguments.Add(ToolPath);
-                    arguments.Add("org.antlr.v4.CSharpTool");
+                    //arguments.Add("org.antlr.v4.CSharpTool");
+                    arguments.Add("org.antlr.v4.Tool");
                 }
 
                 arguments.Add("-o");
@@ -284,22 +285,24 @@ namespace Antlr4.Build.Tasks
 
                 arguments.AddRange(SourceCodeFiles);
 
-#if NETSTANDARD
+#if NETSTANDARDXXXXXXX
                 if (UseCSharpGenerator)
                 {
                     var outWriter = new StringWriter();
                     var errorWriter = new StringWriter();
                     try
                     {
-                        var antlr = new AntlrTool(arguments.ToArray())
-                        {
-                            ConsoleOut = outWriter,
-                            ConsoleError = errorWriter
-                        };
+                        var args = arguments.ToArray();
+                        //var antlr = new AntlrTool(arguments.ToArray())
+                        //{
+                        //    ConsoleOut = outWriter,
+                        //    ConsoleError = errorWriter
+                        //};
 
-                        antlr.ProcessGrammarsOnCommandLine();
+                        //antlr.ProcessGrammarsOnCommandLine();
 
-                        return antlr.errMgr.GetNumErrors() == 0;
+                        //return antlr.errMgr.GetNumErrors() == 0;
+                        return true;
                     }
                     finally
                     {

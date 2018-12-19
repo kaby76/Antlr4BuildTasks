@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Folder containing Antlr4BuildTasks.dll -->
+    <Antlr4BuildTaskPath>$(MSBuildThisFileDirectory)..\lib\netstandard1.5</Antlr4BuildTaskPath>
+    <!-- Path to the ANTLR tool itself -->
+    <Antlr4ToolPath>C:\javalib\antlr-4.7.1-complete.jar</Antlr4ToolPath>
+  </PropertyGroup>
+
+  <Import Project="Antlr4BuildTasks.DefaultItems.props" />
+</Project>

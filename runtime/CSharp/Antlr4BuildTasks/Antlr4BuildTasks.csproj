@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.5;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard1.5</TargetFrameworks>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 
     <RootNamespace>Antlr4.Build.Tasks</RootNamespace>
@@ -15,6 +15,7 @@
     <Copyright>Copyright © Sam Harwell 2015</Copyright>
     <Company>Tunnel Vision Laboratories, LLC</Company>
     <AssemblyTitle>Antlr4BuildTasks</AssemblyTitle>
+    <ContentTargetFolders>build/</ContentTargetFolders>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -34,9 +35,6 @@
         <PackageReference Include="Microsoft.Build.Framework" Version="14.3" />
         <PackageReference Include="Microsoft.Build.Tasks.Core" Version="14.3" />
       </ItemGroup>
-      <ItemGroup>
-        <ProjectReference Include="..\Antlr4.Tool\Antlr4.Tool.csproj" />
-      </ItemGroup>
       <PropertyGroup>
         <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
       </PropertyGroup>
@@ -54,36 +52,33 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' == 'Final'">..\..\..\build\keys\Antlr4.snk</AssemblyOriginatorKeyFile>
     <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' != 'Final'">..\..\..\build\keys\Antlr4.dev.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\build\keys\Antlr4.dev.snk">
+    <Content Include="..\..\..\build\keys\Antlr4.dev.snk">
       <Link>Antlr4.dev.snk</Link>
-    </None>
-    <None Include="..\..\..\build\keys\Antlr4.snk">
+    </Content>
+    <Content Include="..\..\..\build\keys\Antlr4.snk">
       <Link>Antlr4.snk</Link>
-    </None>
-    <None Include="Antlr4.ProjectItemsSchema.xml">
+    </Content>
+    <Content Include="Antlr4BuildTasksSchema.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Antlr4.xml">
+    </Content>
+    <Content Include="Antlr4BuildTasks.DefaultItems.props" />
+    <Content Include="Antlr4BuildTasks.DefaultItems.targets" />
+    <Content Include="Antlr4.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Antlr4.CodeGenerator.DefaultItems.props">
+    <Content Include="Antlr4BuildTasks.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Antlr4.CodeGenerator.DefaultItems.targets">
+    </Content>
+    <Content Include="Antlr4BuildTasks.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Antlr4.CodeGenerator.props">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Antlr4.CodeGenerator.targets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -91,5 +86,5 @@
       <Link>CustomDictionary.xml</Link>
     </CodeAnalysisDictionary>
   </ItemGroup>
-
+  
 </Project>
