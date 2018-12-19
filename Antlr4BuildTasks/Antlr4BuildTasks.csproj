@@ -49,19 +49,10 @@
   </Choose>
 
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' == 'Final'">..\..\..\build\keys\Antlr4.snk</AssemblyOriginatorKeyFile>
-    <AssemblyOriginatorKeyFile Condition="'$(KeyConfiguration)' != 'Final'">..\..\..\build\keys\Antlr4.dev.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\..\..\build\keys\Antlr4.dev.snk">
-      <Link>Antlr4.dev.snk</Link>
-    </Content>
-    <Content Include="..\..\..\build\keys\Antlr4.snk">
-      <Link>Antlr4.snk</Link>
-    </Content>
     <Content Include="Antlr4BuildTasksSchema.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
