@@ -145,12 +145,6 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
-        public bool UseCSharpGenerator
-        {
-            get;
-            set;
-        }
-
         [Output]
         public ITaskItem[] GeneratedCodeFiles
         {
@@ -305,7 +299,6 @@ namespace Antlr4.Build.Tasks
             wrapper.JavaVendor = JavaVendor;
             wrapper.JavaInstallation = JavaInstallation;
             wrapper.JavaExecutable = JavaExecutable;
-            wrapper.UseCSharpGenerator = UseCSharpGenerator;
             return wrapper;
         }
 

@@ -34,13 +34,11 @@
     <Antlr4BuildTaskLocation Condition="'$(Antlr4BuildTaskPath)'==''">$(MSBuildBinPath)</Antlr4BuildTaskLocation>
     <Antlr4BuildTaskLocation Condition="'$(Antlr4BuildTaskPath)'!=''">$(Antlr4BuildTaskPath)</Antlr4BuildTaskLocation>
     <Antlr4ToolLocation
-     Condition="'$(Antlr4ToolPath)'==''">C:\javalib\antlr-4.7.1-complete.jar</Antlr4ToolLocation>
+     Condition="'$(Antlr4ToolPath)'==''">C:\javalib\antlr-4.7.2-complete.jar</Antlr4ToolLocation>
     <Antlr4ToolLocation Condition="'$(Antlr4ToolPath)'!=''">$(Antlr4ToolPath)</Antlr4ToolLocation>
 
     <Antlr4JavaVendor Condition="'$(Antlr4JavaVendor)'==''">JavaSoft</Antlr4JavaVendor>
     <Antlr4JavaInstallation Condition="'$(Antlr4JavaInstallation)'==''">Java Runtime Environment</Antlr4JavaInstallation>
-
-    <Antlr4UseCSharpGenerator Condition="'$(Antlr4UseCSharpGenerator)' == ''">False</Antlr4UseCSharpGenerator>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -158,7 +156,7 @@
       GenerateVisitor="%(Antlr4.Visitor)"
       ForceAtn="%(Antlr4.ForceAtn)"
       AbstractGrammar="%(Antlr4.Abstract)"
-      UseCSharpGenerator="$(Antlr4UseCSharpGenerator)">
+      >
 
       <Output ItemName="Antlr4GeneratedCodeFiles" TaskParameter="GeneratedCodeFiles" />
     </Antlr4ClassGenerationTask>

@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Terence Parr, Sam Harwell. All Rights Reserved.
 // Licensed under the BSD License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+
 namespace Antlr4.Build.Tasks
 {
     using System;
@@ -10,11 +13,6 @@ namespace Antlr4.Build.Tasks
     using System.Linq;
     using System.Reflection;
     using System.Text.RegularExpressions;
-#if !NETSTANDARD
-    using RegistryKey = Microsoft.Win32.RegistryKey;
-    using RegistryHive = Microsoft.Win32.RegistryHive;
-    using RegistryView = Microsoft.Win32.RegistryView;
-#endif
     using StringBuilder = System.Text.StringBuilder;
 
     internal class AntlrClassGenerationTaskInternal
@@ -115,12 +113,6 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
-        public bool UseCSharpGenerator
-        {
-            get;
-            set;
-        }
-
         public IList<string> SourceCodeFiles
         {
             get
@@ -145,98 +137,48 @@ namespace Antlr4.Build.Tasks
         {
             get
             {
-#if !NETSTANDARD
-                string javaHome;
-                if (TryGetJavaHome(RegistryView.Default, JavaVendor, JavaInstallation, out javaHome))
-                    return javaHome;
-
-                if (TryGetJavaHome(RegistryView.Registry64, JavaVendor, JavaInstallation, out javaHome))
-                    return javaHome;
-
-                if (TryGetJavaHome(RegistryView.Registry32, JavaVendor, JavaInstallation, out javaHome))
-                    return javaHome;
-#endif
-
                 if (Directory.Exists(Environment.GetEnvironmentVariable("JAVA_HOME")))
                     return Environment.GetEnvironmentVariable("JAVA_HOME");
-
                 throw new NotSupportedException("Could not locate a Java installation.");
             }
         }
-
-#if !NETSTANDARD
-        private static bool TryGetJavaHome(RegistryView registryView, string vendor, string installation, out string javaHome)
-        {
-            javaHome = null;
-
-            string javaKeyName = "SOFTWARE\\" + vendor + "\\" + installation;
-            using (var baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, registryView))
-            {
-                using (RegistryKey javaKey = baseKey.OpenSubKey(javaKeyName))
-                {
-                    if (javaKey == null)
-                        return false;
-
-                    object currentVersion = javaKey.GetValue("CurrentVersion");
-                    if (currentVersion == null)
-                        return false;
-
-                    using (var homeKey = javaKey.OpenSubKey(currentVersion.ToString()))
-                    {
-                        if (homeKey == null || homeKey.GetValue("JavaHome") == null)
-                            return false;
-
-                        javaHome = homeKey.GetValue("JavaHome").ToString();
-                        return !string.IsNullOrEmpty(javaHome);
-                    }
-                }
-            }
-        }
-#endif
 
         public bool Execute()
         {
             try
             {
                 string executable = null;
-                if (!UseCSharpGenerator)
+                try
                 {
-                    try
+                    if (!string.IsNullOrEmpty(JavaExecutable))
                     {
-                        if (!string.IsNullOrEmpty(JavaExecutable))
-                        {
-                            executable = JavaExecutable;
-                        }
-                        else
-                        {
-                            string javaHome = JavaHome;
-                            executable = Path.Combine(Path.Combine(javaHome, "bin"), "java.exe");
-                            if (!File.Exists(executable))
-                                executable = Path.Combine(Path.Combine(javaHome, "bin"), "java");
-                        }
+                        executable = JavaExecutable;
                     }
-                    catch (NotSupportedException)
+                    else
                     {
-                        // Fall back to using the new code generation tools
-                        UseCSharpGenerator = true;
+                        string javaHome = JavaHome;
+                        executable = Path.Combine(Path.Combine(javaHome, "bin"), "java.exe");
+                        if (!File.Exists(executable))
+                            executable = Path.Combine(Path.Combine(javaHome, "bin"), "java");
                     }
+                }
+                catch (Exception)
+                {
+                    var error = "Cannot find Java.exe, "
+                        + "currently for it at"
+                        + executable
+                        + " Make sure Java is installed, and JAVA_HOME set.";
+                    throw new Exception(error);
                 }
 
-                if (UseCSharpGenerator)
-                {
-#if NETSTANDARD
-                    string framework = "netstandard";
-                    string extension = ".dll";
-#else
-                    string framework = "net45";
-                    string extension = ".exe";
-#endif
-                    executable = Path.Combine(Path.Combine(Path.GetDirectoryName(ToolPath), framework), "Antlr4" + extension);
-                }
+                if (!File.Exists(ToolPath))
+                    throw new Exception("Cannot find Antlr4 jar file, currently set to "
+                                        + ToolPath
+                                        + " Please set either the Antlr4ToolPath environment variable, "
+                                        + "or set a property for Antlr4ToolPath in your CSPROJ file.");
 
                 List<string> arguments = new List<string>();
 
-                if (!UseCSharpGenerator)
                 {
                     arguments.Add("-cp");
                     arguments.Add(ToolPath);
@@ -284,40 +226,6 @@ namespace Antlr4.Build.Tasks
                 }
 
                 arguments.AddRange(SourceCodeFiles);
-
-#if NETSTANDARDXXXXXXX
-                if (UseCSharpGenerator)
-                {
-                    var outWriter = new StringWriter();
-                    var errorWriter = new StringWriter();
-                    try
-                    {
-                        var args = arguments.ToArray();
-                        //var antlr = new AntlrTool(arguments.ToArray())
-                        //{
-                        //    ConsoleOut = outWriter,
-                        //    ConsoleError = errorWriter
-                        //};
-
-                        //antlr.ProcessGrammarsOnCommandLine();
-
-                        //return antlr.errMgr.GetNumErrors() == 0;
-                        return true;
-                    }
-                    finally
-                    {
-                        foreach (var line in outWriter.ToString().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
-                        {
-                            HandleOutputDataReceived(line);
-                        }
-
-                        foreach (var line in errorWriter.ToString().Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
-                        {
-                            HandleErrorDataReceived(line);
-                        }
-                    }
-                }
-#endif
 
                 ProcessStartInfo startInfo = new ProcessStartInfo(executable, JoinArguments(arguments))
                 {
