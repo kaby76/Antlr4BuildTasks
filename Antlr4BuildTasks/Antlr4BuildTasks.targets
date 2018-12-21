@@ -61,12 +61,8 @@
     </SourceFilesProjectOutputGroupDependsOn>
   </PropertyGroup>
 
-  <!-- NOTE: ValidateJavaHome is executed to force a test of the
-  JAVA_HOME variable. If it's not set, crash. You cannot run the
-  Antlr4BuildTask without Java installed, and set up correctly. -->
   <PropertyGroup>
     <Antlr4CompileDependsOn>
-      ValidateJavaHome;
       Antlr4CompileReadGeneratedFileList
     </Antlr4CompileDependsOn>
   </PropertyGroup>
@@ -91,10 +87,6 @@
     </Antlr4>
   </ItemDefinitionGroup>
 
-  <Target Name="ValidateJavaHome">
-     <Error Condition="'$(JAVA_HOME)' == ''" Text="You must set JAVA_HOME." />
-  </Target>
-  
   <Target Name="Antlr4CompileReadGeneratedFileList">
     <ReadLinesFromFile File="$(IntermediateOutputPath)$(Antlr4GenCodeFileNames)">
       <Output TaskParameter="Lines" ItemName="Antlr4OutputCodeFilesList"/>

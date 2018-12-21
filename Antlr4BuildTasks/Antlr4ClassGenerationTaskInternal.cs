@@ -177,89 +177,186 @@ namespace Antlr4.Build.Tasks
                                         + " Please set either the Antlr4ToolPath environment variable, "
                                         + "or set a property for Antlr4ToolPath in your CSPROJ file.");
 
-                List<string> arguments = new List<string>();
-
+                // Because we're using the Java version of the Antlr tool,
+                // we're going to execute this command twice: first with the
+                // -depend option so as to get the list of generated files,
+                // then a second time to actually generate the files.
+                // The code that was here probably worked, but only for the C#
+                // version of the Antlr tool chain.
+                //
+                // After collecting the output of the first command, convert the
+                // output so as to get a clean list of files generated.
                 {
-                    arguments.Add("-cp");
-                    arguments.Add(ToolPath);
-                    //arguments.Add("org.antlr.v4.CSharpTool");
-                    arguments.Add("org.antlr.v4.Tool");
+                    List<string> arguments = new List<string>();
+
+                    {
+                        arguments.Add("-cp");
+                        arguments.Add(ToolPath);
+                        arguments.Add("org.antlr.v4.Tool");
+                    }
+
+                    arguments.Add("-depend");
+
+                    arguments.Add("-o");
+                    arguments.Add(OutputPath);
+
+                    if (!string.IsNullOrEmpty(Encoding))
+                    {
+                        arguments.Add("-encoding");
+                        arguments.Add(Encoding);
+                    }
+
+                    if (GenerateListener)
+                        arguments.Add("-listener");
+                    else
+                        arguments.Add("-no-listener");
+
+                    if (GenerateVisitor)
+                        arguments.Add("-visitor");
+                    else
+                        arguments.Add("-no-visitor");
+
+                    if (ForceAtn)
+                        arguments.Add("-Xforce-atn");
+
+                    if (AbstractGrammar)
+                        arguments.Add("-Dabstract=true");
+
+                    if (!string.IsNullOrEmpty(TargetLanguage))
+                    {
+                        // Since the C# target currently produces the same code for all target framework versions, we can
+                        // avoid bugs with support for newer frameworks by just passing CSharp as the language and allowing
+                        // the tool to use a default.
+                        arguments.Add("-Dlanguage=" + TargetLanguage);
+                    }
+
+                    if (!string.IsNullOrEmpty(TargetNamespace))
+                    {
+                        arguments.Add("-package");
+                        arguments.Add(TargetNamespace);
+                    }
+
+                    arguments.AddRange(SourceCodeFiles);
+
+                    ProcessStartInfo startInfo = new ProcessStartInfo(executable, JoinArguments(arguments))
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                    };
+
+                    this.BuildMessages.Add(new BuildMessage(TraceLevel.Info,
+                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments, "", 0, 0));
+
+                    Process process = new Process();
+                    process.StartInfo = startInfo;
+                    process.ErrorDataReceived += HandleErrorDataReceived;
+                    process.OutputDataReceived += HandleOutputDataReceivedFirstTime;
+                    process.Start();
+                    process.BeginErrorReadLine();
+                    process.BeginOutputReadLine();
+                    process.StandardInput.Dispose();
+                    process.WaitForExit();
+
+                    if (process.ExitCode != 0) return false;
                 }
-
-                arguments.Add("-o");
-                arguments.Add(OutputPath);
-
-                if (!string.IsNullOrEmpty(Encoding))
+                // Second call.
                 {
-                    arguments.Add("-encoding");
-                    arguments.Add(Encoding);
+                    List<string> arguments = new List<string>();
+
+                    {
+                        arguments.Add("-cp");
+                        arguments.Add(ToolPath);
+                        //arguments.Add("org.antlr.v4.CSharpTool");
+                        arguments.Add("org.antlr.v4.Tool");
+                    }
+
+                    arguments.Add("-o");
+                    arguments.Add(OutputPath);
+
+                    if (!string.IsNullOrEmpty(Encoding))
+                    {
+                        arguments.Add("-encoding");
+                        arguments.Add(Encoding);
+                    }
+
+                    if (GenerateListener)
+                        arguments.Add("-listener");
+                    else
+                        arguments.Add("-no-listener");
+
+                    if (GenerateVisitor)
+                        arguments.Add("-visitor");
+                    else
+                        arguments.Add("-no-visitor");
+
+                    if (ForceAtn)
+                        arguments.Add("-Xforce-atn");
+
+                    if (AbstractGrammar)
+                        arguments.Add("-Dabstract=true");
+
+                    if (!string.IsNullOrEmpty(TargetLanguage))
+                    {
+                        // Since the C# target currently produces the same code for all target framework versions, we can
+                        // avoid bugs with support for newer frameworks by just passing CSharp as the language and allowing
+                        // the tool to use a default.
+                        arguments.Add("-Dlanguage=" + TargetLanguage);
+                    }
+
+                    if (!string.IsNullOrEmpty(TargetNamespace))
+                    {
+                        arguments.Add("-package");
+                        arguments.Add(TargetNamespace);
+                    }
+
+                    arguments.AddRange(SourceCodeFiles);
+
+                    ProcessStartInfo startInfo = new ProcessStartInfo(executable, JoinArguments(arguments))
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                    };
+
+                    this.BuildMessages.Add(new BuildMessage(TraceLevel.Info,
+                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments, "", 0, 0));
+
+                    Process process = new Process();
+                    process.StartInfo = startInfo;
+                    process.ErrorDataReceived += HandleErrorDataReceived;
+                    process.OutputDataReceived += HandleOutputDataReceived;
+                    process.Start();
+                    process.BeginErrorReadLine();
+                    process.BeginOutputReadLine();
+                    process.StandardInput.Dispose();
+                    process.WaitForExit();
+
+                    // At this point, regenerate the entire GeneratedCodeFiles list.
+                    // This is because (1) it contains duplicates; (2) it contains
+                    // files that really actually weren't generated. This can happen
+                    // if the grammar was a Lexer grammar. (Note, I don't think it
+                    // wise to look at the grammar file to figure out what it is, nor
+                    // do I think it wise to expose a switch to the user for him to
+                    // indicate what type of grammar it is.)
+                    var gen_files = GeneratedCodeFiles.Distinct().ToList();
+                    var clean_list = GeneratedCodeFiles.Distinct().ToList();
+                    foreach (var fn in gen_files)
+                    {
+                        if (!File.Exists(fn))
+                        {
+                            clean_list.Remove(fn);
+                        }
+                    }
+                    GeneratedCodeFiles.Clear();
+                    foreach (var fn in clean_list) GeneratedCodeFiles.Add(fn);
+
+                    return process.ExitCode == 0;
                 }
-
-                if (GenerateListener)
-                    arguments.Add("-listener");
-                else
-                    arguments.Add("-no-listener");
-
-                if (GenerateVisitor)
-                    arguments.Add("-visitor");
-                else
-                    arguments.Add("-no-visitor");
-
-                if (ForceAtn)
-                    arguments.Add("-Xforce-atn");
-
-                if (AbstractGrammar)
-                    arguments.Add("-Dabstract=true");
-
-                if (!string.IsNullOrEmpty(TargetLanguage))
-                {
-                    // Since the C# target currently produces the same code for all target framework versions, we can
-                    // avoid bugs with support for newer frameworks by just passing CSharp as the language and allowing
-                    // the tool to use a default.
-                    arguments.Add("-Dlanguage=" + TargetLanguage);
-                }
-
-                if (!string.IsNullOrEmpty(TargetNamespace))
-                {
-                    arguments.Add("-package");
-                    arguments.Add(TargetNamespace);
-                }
-
-                arguments.AddRange(SourceCodeFiles);
-
-                ProcessStartInfo startInfo = new ProcessStartInfo(executable, JoinArguments(arguments))
-                {
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                };
-
-                this.BuildMessages.Add(new BuildMessage(TraceLevel.Info, "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments, "", 0, 0));
-
-                Process process = new Process();
-                process.StartInfo = startInfo;
-                process.ErrorDataReceived += HandleErrorDataReceived;
-                process.OutputDataReceived += HandleOutputDataReceived;
-                process.Start();
-                process.BeginErrorReadLine();
-                process.BeginOutputReadLine();
-                process.StandardInput.Dispose();
-                process.WaitForExit();
-
-                return process.ExitCode == 0;
-                //using (LoggingTraceListener traceListener = new LoggingTraceListener(_buildMessages))
-                //{
-                //    SetTraceListener(traceListener);
-                //    ProcessArgs(args.ToArray());
-                //    process();
-                //}
-
-                //_generatedCodeFiles.AddRange(GetGeneratedFiles().Where(file => LanguageSourceExtensions.Contains(Path.GetExtension(file), StringComparer.OrdinalIgnoreCase)));
-
-                //int errorCount = GetNumErrors();
-                //return errorCount == 0;
             }
             catch (Exception e)
             {
@@ -301,6 +398,7 @@ namespace Antlr4.Build.Tasks
         }
 
         private static readonly Regex GeneratedFileMessageFormat = new Regex(@"^Generating file '(?<OUTPUT>.*?)' for grammar '(?<GRAMMAR>.*?)'$", RegexOptions.Compiled);
+        private static readonly Regex GeneratedFileMessageFormatJavaTool = new Regex(@"^(?<OUTPUT>[^:]*?)\s*:", RegexOptions.Compiled);
 
         private void HandleErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
@@ -315,6 +413,33 @@ namespace Antlr4.Build.Tasks
             try
             {
                 _buildMessages.Add(new BuildMessage(data));
+            }
+            catch (Exception ex)
+            {
+                if (Antlr4ClassGenerationTask.IsFatalException(ex))
+                    throw;
+
+                _buildMessages.Add(new BuildMessage(ex.Message));
+            }
+        }
+
+        private void HandleOutputDataReceivedFirstTime(object sender, DataReceivedEventArgs e)
+        {
+            string dep = e.Data as string;
+            if (string.IsNullOrEmpty(dep))
+                return;
+            // Parse the dep string as "file-name1 : file-name2". Strip off the name
+            // file-name1 and cache it.
+            try
+            {
+                Match match = GeneratedFileMessageFormatJavaTool.Match(dep);
+                if (!match.Success)
+                {
+                    return;
+                }
+                string fileName = match.Groups["OUTPUT"].Value;
+                if (LanguageSourceExtensions.Contains(Path.GetExtension(fileName), StringComparer.OrdinalIgnoreCase))
+                    GeneratedCodeFiles.Add(match.Groups["OUTPUT"].Value);
             }
             catch (Exception ex)
             {

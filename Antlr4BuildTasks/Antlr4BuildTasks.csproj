@@ -8,8 +8,8 @@
     <RootNamespace>Antlr4.Build.Tasks</RootNamespace>
     <AssemblyName>Antlr4BuildTasks</AssemblyName>
 
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
     <InformationalVersion>4.6.6-dev</InformationalVersion>
     <Description>Derivative of Hartwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
     <Copyright></Copyright>
@@ -57,7 +57,7 @@
     <PackageIconUrl>https://raw.github.com/antlr/website-antlr4/master/images/icons/antlr.png</PackageIconUrl>
     <PackageTags>antlr antlr4 parsing</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Ken Domino</Authors>
   </PropertyGroup>
 
