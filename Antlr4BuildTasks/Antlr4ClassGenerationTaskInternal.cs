@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Terence Parr, Sam Harwell. All Rights Reserved.
 // Licensed under the BSD License. See LICENSE.txt in the project root for license information.
 
+using System.Runtime.InteropServices;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -139,7 +140,9 @@ namespace Antlr4.Build.Tasks
             {
                 if (Directory.Exists(Environment.GetEnvironmentVariable("JAVA_HOME")))
                     return Environment.GetEnvironmentVariable("JAVA_HOME");
-                throw new NotSupportedException("Could not locate a Java installation.");
+                throw new Exception("JAVA_HOME is not set. "
+                    + "For Windows, it should be something like C:\\Program Files\\Java\\jdk1.8.0_181. "
+                    + "For Linux, it should be something like /usr/lib/jvm/default-java");
             }
         }
 
@@ -147,30 +150,30 @@ namespace Antlr4.Build.Tasks
         {
             try
             {
-                string executable = null;
-                try
-                {
-                    if (!string.IsNullOrEmpty(JavaExecutable))
-                    {
-                        executable = JavaExecutable;
-                    }
-                    else
-                    {
-                        string javaHome = JavaHome;
-                        executable = Path.Combine(Path.Combine(javaHome, "bin"), "java.exe");
-                        if (!File.Exists(executable))
-                            executable = Path.Combine(Path.Combine(javaHome, "bin"), "java");
-                    }
-                }
-                catch (Exception)
-                {
-                    var error = "Cannot find Java.exe, "
-                        + "currently for it at"
-                        + executable
-                        + " Make sure Java is installed, and JAVA_HOME set.";
-                    throw new Exception(error);
-                }
+                // First, find JAVA_HOME. This could throw an exception with error message.
+                string javaHome = JavaHome;
 
+                // Next find Java.
+                string java_executable = null;
+                if (!string.IsNullOrEmpty(JavaExecutable))
+                {
+                    java_executable = JavaExecutable;
+                }
+                else
+                {
+                    string java_name = "";
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                        java_name = "java";
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        java_name = "java.exe";
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                        java_name = "java";
+                    else
+                        throw new Exception("Yo, I haven't a clue what OS this is. Crashing...");
+                    java_executable = Path.Combine(Path.Combine(javaHome, "bin"), java_name);
+                    if (!File.Exists(java_executable))
+                        throw new Exception("Yo, I haven't a clue where Java is on this system. Crashing...");
+                }
                 if (!File.Exists(ToolPath))
                     throw new Exception("Cannot find Antlr4 jar file, currently set to "
                                         + ToolPath
@@ -238,7 +241,7 @@ namespace Antlr4.Build.Tasks
 
                     arguments.AddRange(SourceCodeFiles);
 
-                    ProcessStartInfo startInfo = new ProcessStartInfo(executable, JoinArguments(arguments))
+                    ProcessStartInfo startInfo = new ProcessStartInfo(java_executable, JoinArguments(arguments))
                     {
                         UseShellExecute = false,
                         CreateNoWindow = true,
@@ -314,7 +317,7 @@ namespace Antlr4.Build.Tasks
 
                     arguments.AddRange(SourceCodeFiles);
 
-                    ProcessStartInfo startInfo = new ProcessStartInfo(executable, JoinArguments(arguments))
+                    ProcessStartInfo startInfo = new ProcessStartInfo(java_executable, JoinArguments(arguments))
                     {
                         UseShellExecute = false,
                         CreateNoWindow = true,
