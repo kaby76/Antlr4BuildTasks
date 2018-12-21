@@ -59,6 +59,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Version>1.0.2</Version>
     <Authors>Ken Domino</Authors>
+    <PackageReleaseNotes>Fixes problem with empty generated file list from Java Antlr tool.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
