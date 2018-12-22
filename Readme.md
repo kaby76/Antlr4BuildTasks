@@ -11,7 +11,8 @@ it calls the Antlr tool to generate the source code for the parser from grammar,
 then compiles and links. Using this package, you don't have to manually
 run the Antlr tool outside the IDE, then go back to the IDE to complete the build. It is
 all done seamlessly in the IDE. This project also assumes you are compiling for C# NET,
-using the Antlr runtime library for NET, [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard).
+using the Antlr runtime library for NET, [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard),
+(and which doesn't include any wrapper for the Java-based Antlr tool, nor build rules).
 The advantage of this package is that it decouples the Java-based Antlr tool from the package
 itself, allowing one to work
 with any version of Antlr, instead of using Hartwell's 
