@@ -1,4 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- This file specifies how Visual Studio IDE defines Antlr grammar file properties. It is used
+in conjunction with the Antlr4.xml file. -->
 <ProjectSchemaDefinitions xmlns="http://schemas.microsoft.com/build/2009/properties">
   <ContentType Name="Antlr4" DisplayName="ANTLR 4 Grammar" ItemType="Antlr4" />
   <ItemType Name="Antlr4" DisplayName="ANTLR 4 grammar" />

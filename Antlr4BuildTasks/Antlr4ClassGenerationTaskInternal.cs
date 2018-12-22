@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Terence Parr, Sam Harwell. All Rights Reserved.
 // Licensed under the BSD License. See LICENSE.txt in the project root for license information.
 
-using System.Runtime.InteropServices;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-
 namespace Antlr4.Build.Tasks
 {
     using System;
@@ -13,6 +9,7 @@ namespace Antlr4.Build.Tasks
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using System.Text.RegularExpressions;
     using StringBuilder = System.Text.StringBuilder;
 
@@ -134,17 +131,13 @@ namespace Antlr4.Build.Tasks
             }
         }
 
-        private string JavaHome
+        public string JavaHome
         {
-            get
-            {
-                if (Directory.Exists(Environment.GetEnvironmentVariable("JAVA_HOME")))
-                    return Environment.GetEnvironmentVariable("JAVA_HOME");
-                throw new Exception("JAVA_HOME is not set. "
-                    + "For Windows, it should be something like C:\\Program Files\\Java\\jdk1.8.0_181. "
-                    + "For Linux, it should be something like /usr/lib/jvm/default-java");
-            }
+            get;
+            set;
         }
+
+
 
         public bool Execute()
         {
@@ -152,6 +145,11 @@ namespace Antlr4.Build.Tasks
             {
                 // First, find JAVA_HOME. This could throw an exception with error message.
                 string javaHome = JavaHome;
+                if (!Directory.Exists(javaHome))
+                    throw new Exception("Cannot find Java home, currently set to "
+                                        + "'" + javaHome + "'"
+                                        + " Please set either the JAVA_HOME environment variable, "
+                                        + "or set a property for JavaHome in your CSPROJ file.");
 
                 // Next find Java.
                 string java_executable = null;
@@ -174,9 +172,10 @@ namespace Antlr4.Build.Tasks
                     if (!File.Exists(java_executable))
                         throw new Exception("Yo, I haven't a clue where Java is on this system. Crashing...");
                 }
+
                 if (!File.Exists(ToolPath))
                     throw new Exception("Cannot find Antlr4 jar file, currently set to "
-                                        + ToolPath
+                                        + "'" + ToolPath + "'"
                                         + " Please set either the Antlr4ToolPath environment variable, "
                                         + "or set a property for Antlr4ToolPath in your CSPROJ file.");
 

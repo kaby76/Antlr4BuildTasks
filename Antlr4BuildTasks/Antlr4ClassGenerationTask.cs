@@ -35,6 +35,13 @@ namespace Antlr4.Build.Tasks
         }
 
         [Required]
+        public string JavaHome
+        {
+            get;
+            set;
+        }
+
+        [Required]
         public string OutputPath
         {
             get;
@@ -299,6 +306,7 @@ namespace Antlr4.Build.Tasks
             wrapper.JavaVendor = JavaVendor;
             wrapper.JavaInstallation = JavaInstallation;
             wrapper.JavaExecutable = JavaExecutable;
+            wrapper.JavaHome = JavaHome;
             return wrapper;
         }
 

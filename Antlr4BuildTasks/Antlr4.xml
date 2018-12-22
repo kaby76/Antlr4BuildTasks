@@ -1,4 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- This file specifies how Visual Studio IDE defines Antlr grammar file properties. It is used
+in conjunction with the Antlr4BuildTasksSchema.xml schema. -->
 <Rule Name="Antlr4" DisplayName="File Properties" PageTemplate="generic" Description="File Properties" xmlns="http://schemas.microsoft.com/build/2009/properties">
   <Rule.DataSource>
     <DataSource Persistence="ProjectFile" ItemType="Antlr4" HasConfigurationCondition="False" SourceOfDefaultValue="AfterContext" />
