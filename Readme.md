@@ -8,7 +8,8 @@ The purpose of the package is to integrate the Antlr tool
 into the build, generating the source code for the parser from grammar,
 compile and link using MSBuild or Dotnet. Using this package, you don't have to manually
 run the Antlr tool outside the IDE, then go back to the IDE to complete the build. It is
-all done seamlessly in the IDE.
+all done seamlessly in the IDE. This project also assumes you are compiling for C# NET,
+using the Antlr runtime library for NET, [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard).
 
 This package uses a separately installed
 Java tool chain and Antlr tool chain (a jar file), which you
@@ -17,14 +18,12 @@ decoupling the Antlr tool from the package allows one to work
 with the latest version of Antlr, instead of using
 a version that is older.
 The environment variable JAVA_HOME must be set for the Java installation.
-The
-environment variable Antlr4BuildTasks set to the path of the jar file. 
+The environment variable Antlr4BuildTasks set to the path of the jar file.
+Both of these variables are checked by the targets file for MSBuild/Dotnet build.
 
-This package is a Net Standard assembly and works on Linux or Windows.
+This package is a Net Standard assembly and works on Linux or Windows. This package supports only Antlr4 grammars.
 
 To set grammar specific options for the Antlr tool, use VS2017 file properties or set the options in the CSPROJ file.
-
-This package supports only Antlr4 grammars.
 
 Language support in Visual Studio 2017 itself--
 e.g. colorized tagging of the Antlr grammar, go to definition, reformat, etc.--
