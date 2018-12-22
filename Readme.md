@@ -7,7 +7,8 @@ and a file properties schema for Antlr files with Visual Studio IDE.
 The purpose of the package is to integrate the Antlr tool
 into the build, generating the source code for the parser from grammar,
 compile and link using MSBuild or Dotnet. Using this package, you don't have to manually
-run the Antlr tool outside the IDE, then go back to the IDE to complete the build.
+run the Antlr tool outside the IDE, then go back to the IDE to complete the build. It is
+all done seamlessly in the IDE.
 
 This package uses a separately installed
 Java tool chain and Antlr tool chain (a jar file), which you
