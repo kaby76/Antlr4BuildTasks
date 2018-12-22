@@ -12,8 +12,12 @@ all done seamlessly in the IDE.
 
 This package uses a separately installed
 Java tool chain and Antlr tool chain (a jar file), which you
-will have to do. Java 8 must be installed, and environment variable JAVA_HOME set. Antlr4 Java tool
-must be downloaded, and the
+will have to install yourself. The advantage of
+decoupling the Antlr tool from the package allows one to work
+with the latest version of Antlr, instead of using
+a version that is older.
+The environment variable JAVA_HOME must be set for the Java installation.
+The
 environment variable Antlr4BuildTasks set to the path of the jar file. 
 
 This package is a Net Standard assembly and works on Linux or Windows.
