@@ -19,10 +19,11 @@ with any version of Antlr, instead of using Hartwell's
 which lags several revisions behind the latest Java-based Antlr tool.
 
 This package predicates that you
-* installed Java tool chain;
-* downloaded the Java-based Antlr tool chain (a jar file);
-* set the environment variable JAVA_HOME to the directory of the java installation;
-* set the environment variable Antlr4BuildTasks to the path of the downloaded Antlr jar file.
+* Installed Java tool chain.
+* Downloaded the Java-based Antlr tool chain (a jar file).
+* Set the environment variable JAVA_HOME to the directory of the java installation.
+* Set the environment variable Antlr4BuildTasks to the path of the downloaded Antlr jar file.
+* Do not include the generated .cs Antlr parser files in the CSPROJ file for your program. The generated parser code is placed in the build temp output directory and automatically included.
 
 This package is a Net Standard assembly and works on Linux or Windows, and works only for Antlr4 grammars.
 
