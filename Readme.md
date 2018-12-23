@@ -25,6 +25,7 @@ This package predicates that you
 * Set the environment variable JAVA_HOME to the directory of the java installation.
 * Set the environment variable Antlr4BuildTasks to the path of the downloaded Antlr jar file.
 * Do not include the generated .cs Antlr parser files in the CSPROJ file for your program. The generated parser code is placed in the build temp output directory and automatically included.
+* Make sure you do not have a version skew between the Java Antlr tool and the runtime versions!!!!!
 
 This package is a Net Standard assembly and works on Linux or Windows, and works only for Antlr4 grammars.
 
