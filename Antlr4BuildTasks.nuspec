@@ -7,7 +7,7 @@ directory of the nupkg file. That's what this nuspec file does. -->
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata minClientVersion="2.7">
     <id>Antlr4BuildTasks</id>
-    <version>1.0.2</version>
+    <version>1.0.5</version>
     <authors>Sam Harwell, Terence Parr. Modified by Ken Domino.</authors>
     <owners>Ken Domino</owners>
     <description>Derivative of Harwell's Antlr4cs that contains only: Msbuild rules for Antlr4 grammars; file properties for Antlr4 in VS2017. Antlr4 Java tool must be installed.</description>

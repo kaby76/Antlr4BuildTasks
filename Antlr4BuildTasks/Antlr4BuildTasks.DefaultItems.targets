@@ -10,7 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(EnableDefaultItems)' == 'True' AND '$(EnableDefaultNoneItems)' == 'True' AND '$(EnableDefaultAntlrItems)' == 'True'">
-    <None Remove="**/*.g4" />
+    <None Include="**/*.g4">
+      <CustomToolNamespace>AntlrVSIX.Grammar</CustomToolNamespace>
+    </None>
   </ItemGroup>
 
   <!-- Modify the CustomToolNamespace based on the directory location of the grammar -->
