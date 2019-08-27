@@ -2,14 +2,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.5</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 
     <RootNamespace>Antlr4.Build.Tasks</RootNamespace>
     <AssemblyName>Antlr4BuildTasks</AssemblyName>
 
-    <AssemblyVersion>1.0.5.0</AssemblyVersion>
-    <FileVersion>1.0.5.0</FileVersion>
+    <AssemblyVersion>1.0.6.0</AssemblyVersion>
+    <FileVersion>1.0.6.0</FileVersion>
     <InformationalVersion>4.6.6-dev</InformationalVersion>
     <Description>Derivative of Hartwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
     <Copyright></Copyright>
@@ -29,25 +29,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <Choose>
-    <When Condition="'$(TargetFramework)' == 'netstandard1.5'">
-      <ItemGroup>
-        <PackageReference Include="Microsoft.Build.Framework" Version="14.3" />
-        <PackageReference Include="Microsoft.Build.Tasks.Core" Version="14.3" />
-      </ItemGroup>
-      <PropertyGroup>
-        <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(TargetFramework)' == 'net40'">
-      <ItemGroup>
-        <Reference Include="Microsoft.Build.Framework" />
-        <Reference Include="Microsoft.Build.Tasks.v4.0" />
-        <Reference Include="Microsoft.Build.Utilities.v4.0" />
-      </ItemGroup>
-    </When>
-  </Choose>
-
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseUrl>https://raw.githubusercontent.com/kaby76/antlr4cs/master/LICENSE.txt</PackageLicenseUrl>
@@ -57,7 +38,7 @@
     <PackageIconUrl>https://raw.github.com/antlr/website-antlr4/master/images/icons/antlr.png</PackageIconUrl>
     <PackageTags>antlr antlr4 parsing</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <Authors>Ken Domino</Authors>
     <PackageReleaseNotes>Clean up of the targets file and Task assembly with Java home.</PackageReleaseNotes>
   </PropertyGroup>
@@ -86,6 +67,12 @@
     <CodeAnalysisDictionary Include="..\build\CustomDictionary.xml">
       <Link>CustomDictionary.xml</Link>
     </CodeAnalysisDictionary>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Framework" Version="16.0.461" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.0.461" />
+    <PackageReference Include="System.Threading" Version="4.3.0" />
   </ItemGroup>
   
 </Project>

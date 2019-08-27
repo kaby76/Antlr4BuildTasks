@@ -48,9 +48,13 @@ in conjunction with the Antlr4BuildTasksSchema.xml schema. -->
     include them then they will just disappear.
   -->
 
-  <DynamicEnumProperty Name="{}{ItemType}" DisplayName="Build Action"  Category="Advanced"
-                   Description="How the file relates to the build and deployment processes."
-                   EnumProvider="ItemTypes" />
+  <DynamicEnumProperty
+    Name="{}{ItemType}"
+    DisplayName="Build Action"
+    Category="Advanced"
+    Description="How the file relates to the build and deployment processes."
+    EnumProvider="ItemTypes" />
+  
   <EnumProperty
     Name="CopyToOutputDirectory"
     DisplayName="Copy to Output Directory"
@@ -66,6 +70,7 @@ in conjunction with the Antlr4BuildTasksSchema.xml schema. -->
     Category="Advanced"
     DisplayName="Custom Tool"
     Description="Specifies the tool that transforms a file at design time and places the output of that transformation into another file. For example, a dataset (.xsd) file comes with a default custom tool." />
+  
   <StringProperty
     Name="CustomToolNamespace"
     Category="Advanced"
@@ -110,6 +115,7 @@ in conjunction with the Antlr4BuildTasksSchema.xml schema. -->
       <DataSource Persistence="Intrinsic" ItemType="Antlr4" PersistedName="FullPath" SourceOfDefaultValue="AfterContext" />
     </StringProperty.DataSource>
   </StringProperty>
+  
   <BoolProperty Name="Visible" Visible="false" />
   <StringProperty Name="DependentUpon" Visible="false" />
   <StringProperty Name="Link" Visible="false">

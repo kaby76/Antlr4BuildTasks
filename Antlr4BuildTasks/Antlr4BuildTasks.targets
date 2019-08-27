@@ -45,8 +45,9 @@
     <Antlr4GenCodeFileNames Condition="'$(Antlr4GenCodeFileNames)'==''">$(MSBuildProjectFile).Antlr4GeneratedCodeFileListAbsolute.txt</Antlr4GenCodeFileNames>
   </PropertyGroup>
 
-  <UsingTask Condition="'$(Antlr4BuildTaskPath)'==''" TaskName="Antlr4.Build.Tasks.Antlr4ClassGenerationTask" AssemblyName="$(Antlr4BuildTaskAssemblyName)" />
-  <UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''" TaskName="Antlr4.Build.Tasks.Antlr4ClassGenerationTask" AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+  <UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+      TaskName="Antlr4.Build.Tasks.Antlr4ClassGenerationTask"
+      AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
   <PropertyGroup>
     <PrepareResourcesDependsOn>
@@ -76,7 +77,7 @@
   <ItemDefinitionGroup>
     <Antlr4>
       <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace Condition="'$(Antlr4IsSdkProject)' != 'True'">$(RootNamespace)</CustomToolNamespace>
+      <CustomToolNamespace></CustomToolNamespace>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Encoding>UTF-8</Encoding>
       <TargetLanguage>CSharp</TargetLanguage>
@@ -104,7 +105,8 @@
 
   <Target Name="Antlr4DesignTimeGrammarCompilation">
     <PropertyGroup>
-      <Antlr4DesignTimeBuild Condition="'$(DesignTimeBuild)' == 'true' OR '$(BuildingProject)' != 'true'">true</Antlr4DesignTimeBuild>
+      <Antlr4DesignTimeBuild
+       Condition="'$(DesignTimeBuild)' == 'false' AND '$(BuildingProject)' != 'true'">true</Antlr4DesignTimeBuild>
     </PropertyGroup>
 
     <!-- Only if we are not actually performing a compile i.e. we are in design mode -->
@@ -153,6 +155,8 @@
 
       <Output ItemName="Antlr4GeneratedCodeFiles" TaskParameter="GeneratedCodeFiles" />
     </Antlr4ClassGenerationTask>
+
+    <Delete Files="$(IntermediateOutputPath)$(Antlr4GenCodeFileNames)" />
 
     <WriteLinesToFile
       Condition="'$(Antlr4DesignTimeBuild)' != 'true'"
