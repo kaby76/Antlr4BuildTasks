@@ -10,7 +10,7 @@
 
     <AssemblyVersion>1.0.6.0</AssemblyVersion>
     <FileVersion>1.0.6.0</FileVersion>
-    <InformationalVersion>4.6.6-dev</InformationalVersion>
+
     <Description>Derivative of Hartwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
     <Copyright></Copyright>
     <Company>Domemtech</Company>
