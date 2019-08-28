@@ -9,8 +9,4 @@
     <EnableDefaultAntlrItems>False</EnableDefaultAntlrItems>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="**/*.g4" />
-  </ItemGroup>
-
 </Project>
