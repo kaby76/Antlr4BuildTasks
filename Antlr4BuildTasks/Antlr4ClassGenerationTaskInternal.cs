@@ -149,7 +149,7 @@ namespace Antlr4.Build.Tasks
                     throw new Exception("Cannot find Java home, currently set to "
                                         + "'" + javaHome + "'"
                                         + " Please set either the JAVA_HOME environment variable, "
-                                        + "or set a property for JavaHome in your CSPROJ file.");
+                                        + "or set a property for JAVA_HOME in your CSPROJ file.");
 
                 // Next find Java.
                 string java_executable = null;
