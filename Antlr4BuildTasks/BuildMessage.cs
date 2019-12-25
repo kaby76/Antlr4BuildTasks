@@ -4,7 +4,6 @@
 namespace Antlr4.Build.Tasks
 {
     using System;
-    using System.Diagnostics;
     using System.Text.RegularExpressions;
 
 #if !NETSTANDARD

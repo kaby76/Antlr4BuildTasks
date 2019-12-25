@@ -85,6 +85,7 @@
       <Visitor>true</Visitor>
       <Abstract>false</Abstract>
       <ForceAtn>false</ForceAtn>
+      <GAtn>false</GAtn>
     </Antlr4>
   </ItemDefinitionGroup>
 
@@ -150,6 +151,7 @@
       GenerateVisitor="%(Antlr4.Visitor)"
       ForceAtn="%(Antlr4.ForceAtn)"
       AbstractGrammar="%(Antlr4.Abstract)"
+      GAtn="%(Antlr4.GAtn)"
       >
 
       <Output ItemName="Antlr4GeneratedCodeFiles" TaskParameter="GeneratedCodeFiles" />

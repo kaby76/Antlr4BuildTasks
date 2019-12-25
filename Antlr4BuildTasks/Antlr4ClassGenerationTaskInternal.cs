@@ -93,6 +93,12 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
+        public bool GAtn
+        {
+            get;
+            set;
+        }
+
         public string JavaVendor
         {
             get;
@@ -220,6 +226,9 @@ namespace Antlr4.Build.Tasks
 
                     if (ForceAtn)
                         arguments.Add("-Xforce-atn");
+
+                    if (GAtn)
+                        arguments.Add("-atn");
 
                     if (AbstractGrammar)
                         arguments.Add("-Dabstract=true");

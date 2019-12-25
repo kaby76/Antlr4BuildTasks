@@ -3,14 +3,12 @@
 
 namespace Antlr4.Build.Tasks
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Reflection;
-    using System.Threading;
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
     using Directory = System.IO.Directory;
     using File = System.IO.File;
     using FileAttributes = System.IO.FileAttributes;
@@ -127,6 +125,12 @@ namespace Antlr4.Build.Tasks
         }
 
         public bool AbstractGrammar
+        {
+            get;
+            set;
+        }
+
+        public bool GAtn
         {
             get;
             set;
@@ -305,6 +309,7 @@ namespace Antlr4.Build.Tasks
             wrapper.GenerateVisitor = GenerateVisitor;
             wrapper.ForceAtn = ForceAtn;
             wrapper.AbstractGrammar = AbstractGrammar;
+            wrapper.GAtn = GAtn;
             wrapper.JavaVendor = JavaVendor;
             wrapper.JavaInstallation = JavaInstallation;
             wrapper.JavaExecutable = JavaExecutable;

@@ -42,6 +42,12 @@ in conjunction with the Antlr4BuildTasksSchema.xml schema. -->
     DisplayName="Abstract Grammar"
     Default="false"
     Description="When true, the generated classes are marked as abstract." />
+  <BoolProperty
+    Category="ANTLR"
+    Name="GAtn"
+    DisplayName="Generate ATN diagrams"
+    Default="false"
+    Description="Generates ATN network diagrams for the grammar." />
 
   <!--
     The rest of these properties are not ANTLR-specific, but CPS provides no way to inherit properties, so if we fail to
