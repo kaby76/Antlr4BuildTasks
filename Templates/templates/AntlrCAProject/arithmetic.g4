@@ -1,6 +1,6 @@
 ﻿grammar arithmetic;
 
-file : expression* EOF;
+file : expression (SEMI expression)* EOF;
 
 expression
    :  left=expression op=POW right=expression

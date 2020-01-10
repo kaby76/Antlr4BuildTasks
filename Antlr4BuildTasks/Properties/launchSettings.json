@@ -4,7 +4,7 @@
       "commandName": "Executable",
       "executablePath": "C:\\Program Files\\dotnet\\dotnet.exe",
       "commandLineArgs": "msbuild",
-      "workingDirectory": "C:\\Users\\Kenne\\Documents\\AntlrVSIX\\AntlrVSIX.GrammarDescription.Antlr"
+      "workingDirectory": "C:\\Users\\kenne\\Documents\\expr\\antlr"
     }
   }
 }
