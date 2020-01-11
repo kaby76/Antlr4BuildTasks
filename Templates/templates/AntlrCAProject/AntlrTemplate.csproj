@@ -11,8 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
-    <PackageReference Include="Antlr4BuildTasks" Version="1.0.9" />
-    <PackageReference Include="System.CodeDom" Version="4.5.0" />
+    <PackageReference Include="Antlr4BuildTasks" Version="1.0.10" />
+    <PackageReference Include="System.CodeDom" Version="4.7.0" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(JAVA_HOME)'==''">
