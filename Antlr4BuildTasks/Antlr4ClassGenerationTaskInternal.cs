@@ -306,6 +306,9 @@ namespace Antlr4.Build.Tasks
                     if (ForceAtn)
                         arguments.Add("-Xforce-atn");
 
+		            if (GAtn)
+			            arguments.Add("-atn");
+
                     if (AbstractGrammar)
                         arguments.Add("-Dabstract=true");
 
