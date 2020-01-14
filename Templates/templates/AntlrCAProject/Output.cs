@@ -2,6 +2,7 @@
 using System.Text;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
@@ -42,7 +43,9 @@ namespace AntlrTemplate
             {
                 TerminalNodeImpl tok = tree as TerminalNodeImpl;
                 Interval interval = tok.SourceInterval;
-                var inter = stream.GetHiddenTokensToLeft(tok.Symbol.TokenIndex);
+                IList<IToken> inter = null;
+                if (tok.Symbol.TokenIndex >= 0)
+                    inter = stream.GetHiddenTokensToLeft(tok.Symbol.TokenIndex);
                 if (inter != null)
                     foreach (var t in inter)
                     {

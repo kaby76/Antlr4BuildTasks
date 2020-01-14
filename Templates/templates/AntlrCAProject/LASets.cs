@@ -414,6 +414,7 @@ namespace AntlrTemplate
             if (!copy.Any())
                 return result;
             var last_transaction = copy.First();
+            if (last_transaction == null) return result;
             var current_state = last_transaction._to;
             for (; ; )
             {

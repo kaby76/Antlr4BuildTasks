@@ -16,6 +16,8 @@ namespace AntlrTemplate
             if (listener.had_error)
             {
                 System.Console.WriteLine("error in parse.");
+                System.Console.WriteLine(tokens.OutputTokens());
+                System.Console.WriteLine(tree.OutputTree(tokens));
             }
             else
             {
