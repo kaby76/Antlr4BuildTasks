@@ -56,7 +56,7 @@ To set grammar specific options for the Antlr tool, use VS2017 file properties o
 Language support in Visual Studio 2017 itself--
 e.g. colorized tagging of the Antlr grammar, go to definition, reformat, etc.--
 is a separate product, not part of the build rules for Antlr grammar files,
-which is what this package supports. You can use Hartwell’s [Antlr Language Support](https://marketplace.visualstudio.com/items?itemName=SamHarwell.ANTLRLanguageSupport)
+which is what this package supports. You can use Harwell’s [Antlr Language Support](https://marketplace.visualstudio.com/items?itemName=SamHarwell.ANTLRLanguageSupport)
 extension, my own [AntlrVSIX](https://marketplace.visualstudio.com/items?itemName=KenDomino.AntlrVSIX) extension, or another.
 
 You can see the NuGet package in action [here on Youtube](https://www.youtube.com/watch?v=Flfequp_Dy4).
