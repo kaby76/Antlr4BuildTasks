@@ -1,14 +1,15 @@
-﻿using System;
-using Antlr4.Runtime;
-using Antlr4.Runtime.Atn;
-using Antlr4.Runtime.Misc;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-
+﻿// Template generated code from Antlr4BuildTasks.Template v 1.4
 namespace AntlrTemplate
 {
+    using System;
+    using Antlr4.Runtime;
+    using Antlr4.Runtime.Atn;
+    using Antlr4.Runtime.Misc;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Text;
+
     class LASets
     {
         private Parser _parser;
@@ -71,6 +72,7 @@ namespace AntlrTemplate
                     break;
                 }
             }
+            _token_stream.Seek(currentIndex);
 
             var all_parses = EnterState(null);
             var result = new IntervalSet();

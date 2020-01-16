@@ -1,7 +1,8 @@
-﻿using Antlr4.Runtime;
-
+﻿// Template generated code from Antlr4BuildTasks.Template v 1.4
 namespace AntlrTemplate
 {
+    using Antlr4.Runtime;
+
     public class Program
     {
         static void Try(string input)

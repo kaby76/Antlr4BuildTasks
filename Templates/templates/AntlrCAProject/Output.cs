@@ -1,16 +1,17 @@
-﻿using System;
-using System.Text;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
-using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-
+﻿// Template generated code from Antlr4BuildTasks.Template v 1.4
 namespace AntlrTemplate
 {
+    using System;
+    using System.Text;
+    using System.CodeDom;
+    using System.CodeDom.Compiler;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text.RegularExpressions;
+    using Antlr4.Runtime;
+    using Antlr4.Runtime.Misc;
+    using Antlr4.Runtime.Tree;
+
     static class Output
     {
         private static int changed = 0;

@@ -1,4 +1,5 @@
-﻿grammar arithmetic;
+﻿// Template generated code from Antlr4BuildTasks.Template v 1.4
+grammar arithmetic;
 
 file : expression (SEMI expression)* EOF;
 

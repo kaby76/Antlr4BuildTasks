@@ -1,4 +1,5 @@
-﻿namespace AntlrTemplate
+﻿// Template generated code from Antlr4BuildTasks.Template v 1.4
+namespace AntlrTemplate
 {
     using System;
     using Antlr4.Runtime.Misc;
