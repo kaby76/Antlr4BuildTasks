@@ -1,6 +1,6 @@
 # Antlr4BuildTasks
 
-This is a modification of Hartwell's [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
+This is a modification of Harwell's [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
 containing the Antlr4 Task wrapper assembly,
 the targets and props files for Antlr files with MSBuild,
 and a file properties schema for Antlr files with Visual Studio IDE.
@@ -15,7 +15,7 @@ using the Antlr runtime library for NET, [Antlr4.Runtime.Standard](https://www.n
 (and which doesn't include any wrapper for the Java-based Antlr tool, nor build rules).
 The advantage of this package is that it decouples the Java-based Antlr tool from the package
 itself, allowing one to work
-with any version of Antlr, instead of using Hartwell's 
+with any version of Antlr, instead of using Harwell's 
 [Antlr4.CodeGenerate](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
 which lags several revisions behind the latest Java-based Antlr tool.
 
@@ -56,7 +56,7 @@ To set grammar specific options for the Antlr tool, use VS2017 file properties o
 Language support in Visual Studio 2017 itself--
 e.g. colorized tagging of the Antlr grammar, go to definition, reformat, etc.--
 is a separate product, not part of the build rules for Antlr grammar files,
-which is what this package supports. You can use Hartwell’s [Antlr Language Support](https://marketplace.visualstudio.com/items?itemName=SamHarwell.ANTLRLanguageSupport)
+which is what this package supports. You can use Harwell’s [Antlr Language Support](https://marketplace.visualstudio.com/items?itemName=SamHarwell.ANTLRLanguageSupport)
 extension, my own [AntlrVSIX](https://marketplace.visualstudio.com/items?itemName=KenDomino.AntlrVSIX) extension, or another.
 
 You can see the NuGet package in action [here on Youtube](https://www.youtube.com/watch?v=Flfequp_Dy4).
