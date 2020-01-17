@@ -3,8 +3,6 @@ namespace AntlrTemplate
 {
     using System;
     using System.Text;
-    using System.CodeDom;
-    using System.CodeDom.Compiler;
     using System.Collections.Generic;
     using System.IO;
     using System.Text.RegularExpressions;
@@ -106,7 +104,7 @@ namespace AntlrTemplate
             {
                 var literal = input;
                 literal = literal.Replace("\\", "\\\\");
-                literal = input.Replace("\b", "\\b");
+                literal = literal.Replace("\b", "\\b");
                 literal = literal.Replace("\n", "\\n");
                 literal = literal.Replace("\t", "\\t");
                 literal = literal.Replace("\r", "\\r");

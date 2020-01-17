@@ -74,7 +74,27 @@ namespace AntlrTemplate
             }
             _token_stream.Seek(currentIndex);
 
-            var all_parses = EnterState(null);
+            List<List<Edge>> all_parses = EnterState(null);
+            // Remove last token on input.
+            _input.RemoveAt(_input.Count - 1);
+            // Eliminate all paths that don't consume all input.
+            List<List<Edge>> temp = new List<List<Edge>>();
+            if (all_parses != null)
+            {
+                foreach (var p in all_parses)
+                {
+                    System.Console.Error.WriteLine(PrintSingle(p));
+                    if (Validate(p, _input))
+                        temp.Add(p);
+                }
+            }
+            all_parses = temp;
+            this._log_closure = true;
+            if (all_parses != null && this._log_closure)
+            {
+                foreach (var p in all_parses)
+                    System.Console.Error.WriteLine("Path " + PrintSingle(p));
+            }
             var result = new IntervalSet();
             if (all_parses != null)
             {
@@ -153,6 +173,8 @@ namespace AntlrTemplate
                     System.Console.Error.Write("Entry " + here
                                          + " return ");
                 var res = new List<List<Edge>>() { new List<Edge>() { t } };
+                if (t._type == TransitionType.EPSILON)
+                    throw new Exception();
                 if (_log_parse)
                 {
                     var str = PrintResult(res);
@@ -446,12 +468,14 @@ namespace AntlrTemplate
 
                 for (; ; )
                 {
+                    if (!copy.Any()) break;
                     copy.RemoveAt(0);
                     if (!copy.Any()) break;
                     last_transaction = copy.First();
                     if (start_state == last_transaction._from)
                     {
                         copy.RemoveAt(0);
+                        if (!copy.Any()) break;
                         last_transaction = copy.First();
                         // Get follow state of rule-type transition.
                         var from_state = last_transaction._from;
@@ -463,6 +487,119 @@ namespace AntlrTemplate
             }
             return result;
         }
+
+        bool Validate(List<Edge> parse, List<IToken> i)
+        {
+            bool result = false;
+            var q = parse.ToList();
+            q.Reverse();
+            var ei = _input.GetEnumerator();
+            var eq = q.GetEnumerator();
+            bool fei = false;
+            bool feq = false;
+            for (;;)
+            {
+                fei = ei.MoveNext();
+                var v = ei.Current;
+                if (!fei) break;
+                bool empty = true;
+                for (; empty;)
+                {
+                    feq = eq.MoveNext();
+                    if (!feq) break;
+                    var x = eq.Current;
+                    switch (x._type)
+                    {
+                        case TransitionType.RULE:
+                            empty = true;
+                            break;
+                        case TransitionType.PREDICATE:
+                            empty = true;
+                            break;
+                        case TransitionType.ACTION:
+                            empty = true;
+                            break;
+                        case TransitionType.ATOM:
+                            empty = false;
+                            break;
+                        case TransitionType.EPSILON:
+                            empty = true;
+                            break;
+                        case TransitionType.INVALID:
+                            empty = true;
+                            break;
+                        case TransitionType.NOT_SET:
+                            empty = false;
+                            break;
+                        case TransitionType.PRECEDENCE:
+                            empty = true;
+                            break;
+                        case TransitionType.SET:
+                            empty = false;
+                            break;
+                        case TransitionType.WILDCARD:
+                            empty = false;
+                            break;
+                        default:
+                            throw new Exception();
+                    }
+                }
+                var w = eq.Current;
+                if (w == null && v == null) return true;
+                else if (w == null) return false;
+                else if (v == null) return false;
+                switch (w._type)
+                {
+                    case TransitionType.ATOM:
+                    {
+                        var set = w._label;
+                        if (set != null && set.Count > 0)
+                        {
+                            if (!set.Contains(v.Type))
+                            {
+                                return false;
+                            }
+                        }
+                        break;
+                    }
+
+                    case TransitionType.NOT_SET:
+                    {
+                        var set = w._label;
+                        set = set.Complement(IntervalSet.Of(TokenConstants.MinUserTokenType, _parser.Atn.maxTokenType));
+                        if (set != null && set.Count > 0)
+                        {
+                            if (!set.Contains(v.Type))
+                            {
+                                return false;
+                            }
+                        }
+                        break;
+                    }
+
+                    case TransitionType.SET:
+                    {
+                        var set = w._label;
+                        if (set != null && set.Count > 0)
+                        {
+                            if (!set.Contains(v.Type))
+                            {
+                                return false;
+                            }
+                        }
+                        break;
+                    }
+
+                    case TransitionType.WILDCARD:
+                        break;
+
+                    default:
+                        throw new Exception();
+                }
+            }
+            return true;
+        }
+
 
         string PrintSingle(List<Edge> parse)
         {
