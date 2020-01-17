@@ -1,4 +1,4 @@
-﻿// Template generated code from Antlr4BuildTasks.Template v 1.5
+﻿// Template generated code from Antlr4BuildTasks.Template v 1.6
 namespace AntlrTemplate
 {
     using System;
@@ -83,13 +83,12 @@ namespace AntlrTemplate
             {
                 foreach (var p in all_parses)
                 {
-                    System.Console.Error.WriteLine(PrintSingle(p));
+                    //System.Console.Error.WriteLine(PrintSingle(p));
                     if (Validate(p, _input))
                         temp.Add(p);
                 }
             }
             all_parses = temp;
-            this._log_closure = true;
             if (all_parses != null && this._log_closure)
             {
                 foreach (var p in all_parses)
