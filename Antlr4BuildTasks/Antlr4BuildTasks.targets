@@ -1,11 +1,19 @@
-﻿<!--
-   Copyright (c) Terence Parr, Sam Harwell. All Rights Reserved.
-   Licensed under the BSD License. See LICENSE.txt in the project root for license information.
--->
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-  </PropertyGroup>
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)..\build\Antlr4BuildTasks.xml">
+      <Context>File;BrowseObject;Project</Context>
+    </PropertyPageSchema>
+
+    <AvailableItemName Include="Antlr4">
+      <Targets>Antlr4Compile</Targets>
+    </AvailableItemName>
+
+   </ItemGroup>
+
+   <PropertyGroup>
+      <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Antlr4IsSdkProject)' == ''">
     <Antlr4IsSdkProject>False</Antlr4IsSdkProject>
@@ -50,11 +58,11 @@
       AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
   <PropertyGroup>
-    <PrepareResourcesDependsOn>
+    <BuildDependsOn>
       Antlr4Compile;
       Antlr4CompileAddFilesGenerated;
-      $(PrepareResourcesDependsOn)
-    </PrepareResourcesDependsOn>
+      $(BuildDependsOn)
+    </BuildDependsOn>
     <SourceFilesProjectOutputGroupDependsOn>
       Antlr4Compile;
       Antlr4CompileAddFilesGenerated;
@@ -68,11 +76,6 @@
     </Antlr4CompileDependsOn>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(BuildingInsideVisualStudio)'=='true'">
-    <AvailableItemName Include="Antlr4" />
-    <AvailableItemName Include="Antlr4Tokens" />
-    <AvailableItemName Include="Antlr4AbstractGrammar" />
-  </ItemGroup>
 
   <ItemDefinitionGroup>
     <Antlr4>
@@ -179,26 +182,11 @@
 
     <ItemGroup>
       <Compile Include="@(Antlr4GeneratedCodeFiles)" />
-      <!-- The WinFX "GenerateTemporaryTargetAssembly" target requires generated code files be added here. -->
+      <ClCompile Include="@(Antlr4GeneratedCodeFiles)" />
       <_GeneratedCodeFiles Include="@(Antlr4GeneratedCodeFiles)" />
     </ItemGroup>
 
   </Target>
-
-  <Choose>
-    <When Condition="'$(Antlr4IsSdkProject)' == 'True'">
-      <ItemGroup>
-        <PropertyPageSchema
-	 Include="$(MSBuildThisFileDirectory)..\build\Antlr4BuildTasksSchema.xml">
-          <Context>Project</Context>
-        </PropertyPageSchema>
-        <PropertyPageSchema
-	 Include="$(MSBuildThisFileDirectory)..\build\Antlr4.xml">
-          <Context>File;BrowseObject</Context>
-        </PropertyPageSchema>
-      </ItemGroup>
-    </When>
-  </Choose>
 
   <Import Condition="'$(Antlr4IsSdkProject)' == 'True'"
 	    Project="Antlr4BuildTasks.DefaultItems.targets" />

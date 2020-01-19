@@ -38,9 +38,12 @@ namespace AntlrTemplate
                     string rule_name = _parser.Vocabulary.GetSymbolicName(r);
                     result.Add(rule_name);
                 }
-                System.Console.Error.WriteLine("Parse error line/col " + line + "/" + col
-                                               + ", expecting "
-                                               + String.Join(", ", result));
+                if (result.Any())
+                    System.Console.Error.WriteLine("Parse error line/col " + line + "/" + col
+                                                       + ", expecting "
+                        + String.Join(", ", result));
+                else
+                    base.SyntaxError(output, recognizer, offendingSymbol, line, col, msg, e);
             }
             else
             {
