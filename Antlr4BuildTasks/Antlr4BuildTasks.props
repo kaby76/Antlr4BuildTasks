@@ -11,6 +11,4 @@
     <Antlr4ToolPath>$(Antlr4ToolPath)</Antlr4ToolPath>
     <JavaHome>$(JAVA_HOME)</JavaHome>
   </PropertyGroup>
-
-  <Import Project="Antlr4BuildTasks.DefaultItems.props" />
 </Project>

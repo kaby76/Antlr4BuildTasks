@@ -187,7 +187,4 @@
     </ItemGroup>
 
   </Target>
-
-  <Import Condition="'$(Antlr4IsSdkProject)' == 'True'"
-	    Project="Antlr4BuildTasks.DefaultItems.targets" />
 </Project>

@@ -6,6 +6,7 @@ namespace AntlrTemplate
     using System.IO;
     using Antlr4.Runtime;
     using Antlr4.Runtime.Misc;
+    using System.Linq;
 
     public class ErrorListener<S> : ConsoleErrorListener<S>
     {

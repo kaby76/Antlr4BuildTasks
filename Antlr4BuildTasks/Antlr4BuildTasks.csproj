@@ -44,8 +44,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Antlr4BuildTasks.DefaultItems.props" />
-    <Content Include="Antlr4BuildTasks.DefaultItems.targets" />
     <Content Include="Antlr4BuildTasks.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
