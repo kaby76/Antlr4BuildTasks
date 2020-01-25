@@ -146,7 +146,7 @@
       TargetFrameworkVersion="$(TargetFrameworkVersion)"
       TargetNamespace="%(Antlr4.CustomToolNamespace)"
       SourceCodeFiles="@(Antlr4 -> '%(FullPath)')"
-      ContinueOnError="$(Antlr4DesignTimeBuild)"
+      ContinueOnError="false"
       TokensFiles="@(Antlr4Tokens)"
       AbstractGrammarFiles="@(Antlr4AbstractGrammar)"
       LanguageSourceExtensions="$(DefaultLanguageSourceExtension)"
