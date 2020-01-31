@@ -90,13 +90,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ANTLR4CPP_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2015\antlr4-runtime;$(IntermediateOutputPath);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2019\antlr4-runtime;$(IntermediateOutputPath);</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2015\lib\vs-2015\x86\Debug Static\antlr4-runtime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2019\lib\vs-2019\x86\Debug Static\antlr4-runtime.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>32000000</StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
@@ -108,13 +108,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;ANTLR4CPP_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2015\antlr4-runtime;$(IntermediateOutputPath);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2019\antlr4-runtime;$(IntermediateOutputPath);</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2015\lib\vs-2015\x64\Debug Static\antlr4-runtime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2019\lib\vs-2019\x64\Debug Static\antlr4-runtime.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>32000000</StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
@@ -128,7 +128,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;ANTLR4CPP_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2015\antlr4-runtime;$(IntermediateOutputPath);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2019\antlr4-runtime;$(IntermediateOutputPath);</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -136,7 +136,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2015\lib\vs-2015\x86\Debug Static\antlr4-runtime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2019\lib\vs-2019\x86\Debug Static\antlr4-runtime.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>32000000</StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
@@ -150,7 +150,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;ANTLR4CPP_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2015\antlr4-runtime;$(IntermediateOutputPath);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2019\antlr4-runtime;$(IntermediateOutputPath);</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -158,7 +158,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2015\lib\vs-2015\x64\Debug Static\antlr4-runtime.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files\Cpp\antlr4-cpp-runtime-4.8-vs2019\lib\vs-2019\x64\Debug Static\antlr4-runtime.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>32000000</StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
@@ -178,13 +178,13 @@
     <ClInclude Include="ErrorListener.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="..\packages\Antlr4BuildTasks.2.0.0\build\Antlr4BuildTasks.props" />
-  <Import Project="..\packages\Antlr4BuildTasks.2.0.0\build\Antlr4BuildTasks.targets" />
+  <Import Project="..\packages\Antlr4BuildTasks.2.0.1\build\Antlr4BuildTasks.props" />
+  <Import Project="..\packages\Antlr4BuildTasks.2.0.1\build\Antlr4BuildTasks.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Antlr4BuildTasks.2.0.0\build\Antlr4BuildTasks.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr4BuildTasks.1.0.11\build\Antlr4BuildTasks.props'))" />
-    <Error Condition="!Exists('..\packages\Antlr4BuildTasks.2.0.0\build\Antlr4BuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr4BuildTasks.1.0.11\build\Antlr4BuildTasks.targets'))" />
+    <Error Condition="!Exists('..\packages\Antlr4BuildTasks.2.0.1\build\Antlr4BuildTasks.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr4BuildTasks.2.0.1\build\Antlr4BuildTasks.props'))" />
+    <Error Condition="!Exists('..\packages\Antlr4BuildTasks.2.0.1\build\Antlr4BuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr4BuildTasks.2.0.1\build\Antlr4BuildTasks.targets'))" />
   </Target>
 </Project>
