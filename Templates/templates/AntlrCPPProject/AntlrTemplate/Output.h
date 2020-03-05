@@ -1,6 +1,6 @@
 #pragma once
 
-// Template generated code from Antlr4BuildTasks.Template v 2.0
+// Template generated code from Antlr4BuildTasks.Template v 2.2
 
 #include <CommonTokenStream.h>
 #include <Token.h>
