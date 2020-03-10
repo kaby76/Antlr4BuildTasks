@@ -51,9 +51,9 @@ aren't set.
 
 This package is a Net Standard assembly and works on Linux or Windows, and works only for Antlr4 grammars.
 
-To set grammar specific options for the Antlr tool, use VS2017 file properties or set the options in the CSPROJ file.
+To set grammar specific options for the Antlr tool, use VS2019 file properties or set the options in the CSPROJ file.
 
-Language support in Visual Studio 2017 itself--
+Language support in Visual Studio 2019 itself--
 e.g. colorized tagging of the Antlr grammar, go to definition, reformat, etc.--
 is a separate product, not part of the build rules for Antlr grammar files,
 which is what this package supports. You can use Harwell’s [Antlr Language Support](https://marketplace.visualstudio.com/items?itemName=SamHarwell.ANTLRLanguageSupport)
