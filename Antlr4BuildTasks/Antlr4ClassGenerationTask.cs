@@ -46,13 +46,49 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
+        public string LibPath
+        {
+            get;
+            set;
+        }
+
+        public bool GAtn
+        {
+            get;
+            set;
+        }
+
         public string Encoding
         {
             get;
             set;
         }
 
-        public string TargetLanguage
+        public bool Listener
+        {
+            get;
+            set;
+        }
+
+        public bool Visitor
+        {
+            get;
+            set;
+        }
+
+        public string Package
+        {
+            get;
+            set;
+        }
+
+        public string DOptions
+        {
+            get;
+            set;
+        }
+
+        public bool Error
         {
             get;
             set;
@@ -82,19 +118,7 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
-        public ITaskItem[] AbstractGrammarFiles
-        {
-            get;
-            set;
-        }
-
         public string GeneratedSourceExtension
-        {
-            get;
-            set;
-        }
-
-        public string TargetNamespace
         {
             get;
             set;
@@ -106,31 +130,7 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
-        public bool GenerateListener
-        {
-            get;
-            set;
-        }
-
-        public bool GenerateVisitor
-        {
-            get;
-            set;
-        }
-
         public bool ForceAtn
-        {
-            get;
-            set;
-        }
-
-        public bool AbstractGrammar
-        {
-            get;
-            set;
-        }
-
-        public bool GAtn
         {
             get;
             set;
@@ -299,17 +299,18 @@ namespace Antlr4.Build.Tasks
 
             wrapper.ToolPath = ToolPath;
             wrapper.SourceCodeFiles = sourceCodeFiles;
-            wrapper.TargetLanguage = TargetLanguage;
             wrapper.TargetFrameworkVersion = TargetFrameworkVersion;
             wrapper.OutputPath = OutputPath;
-            wrapper.Encoding = Encoding;
             wrapper.LanguageSourceExtensions = LanguageSourceExtensions;
-            wrapper.TargetNamespace = TargetNamespace;
-            wrapper.GenerateListener = GenerateListener;
-            wrapper.GenerateVisitor = GenerateVisitor;
-            wrapper.ForceAtn = ForceAtn;
-            wrapper.AbstractGrammar = AbstractGrammar;
+            wrapper.LibPath = LibPath;
             wrapper.GAtn = GAtn;
+            wrapper.Encoding = Encoding;
+            wrapper.Listener = Listener;
+            wrapper.Visitor = Visitor;
+            wrapper.Package = Package;
+            wrapper.DOptions = DOptions;
+            wrapper.Error = Error;
+            wrapper.ForceAtn = ForceAtn;
             wrapper.JavaVendor = JavaVendor;
             wrapper.JavaInstallation = JavaInstallation;
             wrapper.JavaExecutable = JavaExecutable;

@@ -20,40 +20,56 @@
 
       <StringProperty
 	      Category="ANTLR"
-	      Name="TargetLanguage"
-	      DisplayName="Language Target"
-	      Default="CSharp"
-	      Description="Explicitly specifies the grammar's target language. If set, this property overrides any value specified within the grammar itself." />
-      <BoolProperty
-	      Category="ANTLR"
-	      Name="Listener"
-	      DisplayName="Generate Listener"
-	      Default="true"
-	      Description="Generates a parse tree listener for the grammar." />
-      <BoolProperty
-	      Category="ANTLR"
-	      Name="Visitor"
-	      DisplayName="Generate Visitor"
-	      Default="true"
-	      Description="Generates a parse tree visitor for the grammar." />
-      <BoolProperty
-	      Category="ANTLR"
-	      Name="ForceAtn"
-	      DisplayName="Force ATN"
-	      Default="false"
-	      Description="Forces the parser to use AdaptivePredict for all decisions, including LL(1) decisions." />
-      <BoolProperty
-	      Category="ANTLR"
-	      Name="Abstract"
-	      DisplayName="Abstract Grammar"
-	      Default="false"
-	      Description="When true, the generated classes are marked as abstract." />
+	      Name="LibPath"
+	      DisplayName="Grammar file search path (-lib libdir)"
+	      Description="When looking for tokens files and imported grammars, ANTLR normally looks in the current directory. This option specifies which directory to look in instead. It is only used for resolving grammar references for the import statement and the tokenVocab option. The path to the primary grammar must always be fully specified. List multiple with semi-colon separations." />
       <BoolProperty
 	      Category="ANTLR"
 	      Name="GAtn"
-	      DisplayName="Generate ATN diagrams"
+	      DisplayName="Generate rule ATN diagrams (-atn)"
 	      Default="false"
-	      Description="Generates ATN network diagrams for the grammar." />
+	      Description="Generate DOT graph files that represent the internal ATN (augmented transition network) data structures that ANTLR uses to represent grammars. The files come out as Grammar.rule .dot. If the grammar is a combined grammar, the lexer rules are named Grammar Lexer.rule .dot." />
+      <StringProperty
+	      Category="ANTLR"
+	      Name="Encoding"
+	      DisplayName="Grammar file encoding; e.g., euc-jp (-encoding ...)"
+	      Default="UTF-8"
+	      Description="By default ANTLR loads grammar files using the UTF-8 encoding, which is a very common character file encoding that degenerates to ASCII for characters that fit in one byte. There are many character file encodings from around the world. If that grammar file is not the default encoding for your locale, you need this option so that ANTLR can properly interpret grammar files. This does not affect the input to the generated parsers, just the encoding of the grammars themselves." />
+      <BoolProperty
+	      Category="ANTLR"
+	      Name="Listener"
+	      DisplayName="Generate Listener (-listener)"
+	      Default="true"
+	      Description="This option tells ANTLR to generate a parse tree listener and is the default." />
+      <BoolProperty
+	      Category="ANTLR"
+	      Name="Visitor"
+	      DisplayName="Generate Visitor (-visitor)"
+	      Default="true"
+	      Description="ANTLR does not generate parse tree visitors by default. This option turns that feature on. ANTLR can generate both parse tree listeners and visitors; this option and -listener aren’t mutually exclusive." />
+      <StringProperty
+	      Category="ANTLR"
+	      Name="Package"
+	      DisplayName="Custom Tool Namespace (-package ...)"
+	      Description="Use this option to specify a package or namespace for ANTLR-generated files. Alternatively, you can add a @header {...} action but that ties the grammar to a specific language. If you use this option and @header, make sure that the header action does not contain a package specification otherwise the generated code will have two of them." />
+      <StringProperty
+	      Category="ANTLR"
+	      Name="DOptions"
+	      DisplayName="Grammar-level option (-Doption=...)"
+	      Default="language=CSharp"
+	      Description="Explicitly specifies the grammar's target language. If set, this property overrides any value specified within the grammar itself. Note, other options are superClass, contextSuperClass, TokenLableType, tokenVocab, accessLevel, exportMacro. Use ';' as separation character between options." />
+      <BoolProperty
+	      Category="ANTLR"
+	      Name="Error"
+	      DisplayName="Set build warnings as errors (-Werror)"
+	      Default="false"
+	      Description="As part of a large build, ANTLR warning messages could go unnoticed. Turn on this option to have warnings treated as errors, causing the ANTLR tool to report failure back to the invoking commandline shell." />
+      <BoolProperty
+	      Category="ANTLR"
+	      Name="ForceAtn"
+	      DisplayName="Force ATN (-Xforce-atn)"
+	      Default="false"
+	      Description="ANTLR normally builds traditional “switch on token type” decisions where possible (one token of lookahead is sufficient to distinguish between all alternatives in a decision). To force even these simple decisions into the adaptive LL(*) mechanism, use this option." />
 
 	  <!--
 	    The rest of these properties are not ANTLR-specific, but CPS provides no way to inherit properties, so if we fail to
@@ -82,12 +98,6 @@
 	      Category="Advanced"
 	      DisplayName="Custom Tool"
 	      Description="Specifies the tool that transforms a file at design time and places the output of that transformation into another file. For example, a dataset (.xsd) file comes with a default custom tool." />
-
-      <StringProperty
-	      Name="CustomToolNamespace"
-	      Category="Advanced"
-	      DisplayName="Custom Tool Namespace"
-	      Description="The namespace into which the output of the custom tool is placed." />
 
       <StringProperty
 	      Name="Identity"

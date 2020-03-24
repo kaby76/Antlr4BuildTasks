@@ -33,12 +33,6 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
-        public string TargetLanguage
-        {
-            get;
-            set;
-        }
-
         public string TargetFrameworkVersion
         {
             get;
@@ -51,31 +45,49 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
+        public string LibPath
+        {
+            get;
+            set;
+        }
+
+        public bool GAtn
+        {
+            get;
+            set;
+        }
+
         public string Encoding
         {
             get;
             set;
         }
 
-        public string TargetNamespace
+        public bool Listener
         {
             get;
             set;
         }
 
-        public string[] LanguageSourceExtensions
+        public bool Visitor
         {
             get;
             set;
         }
 
-        public bool GenerateListener
+        public string Package
         {
             get;
             set;
         }
 
-        public bool GenerateVisitor
+        public string DOptions
+        {
+            get;
+            set;
+        }
+
+        public bool Error
         {
             get;
             set;
@@ -87,17 +99,12 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
-        public bool AbstractGrammar
+        public string[] LanguageSourceExtensions
         {
             get;
             set;
         }
 
-        public bool GAtn
-        {
-            get;
-            set;
-        }
 
         public string JavaVendor
         {
@@ -208,44 +215,66 @@ namespace Antlr4.Build.Tasks
                     arguments.Add("-o");
                     arguments.Add(OutputPath);
 
+                    if (!string.IsNullOrEmpty(LibPath))
+                    {
+                        var split = LibPath.Split(';');
+                        foreach (var p in split)
+                        {
+                            if (string.IsNullOrEmpty(p))
+                                continue;
+                            if (string.IsNullOrWhiteSpace(p))
+                                continue;
+                            arguments.Add("-lib");
+                            arguments.Add(p);
+                        }
+                    }
+
+                    if (GAtn)
+                        arguments.Add("-atn");
+
                     if (!string.IsNullOrEmpty(Encoding))
                     {
                         arguments.Add("-encoding");
                         arguments.Add(Encoding);
                     }
 
-                    if (GenerateListener)
+                    if (Listener)
                         arguments.Add("-listener");
                     else
                         arguments.Add("-no-listener");
 
-                    if (GenerateVisitor)
+                    if (Visitor)
                         arguments.Add("-visitor");
                     else
                         arguments.Add("-no-visitor");
 
-                    if (ForceAtn)
-                        arguments.Add("-Xforce-atn");
+                    if (!(string.IsNullOrEmpty(Package) || string.IsNullOrWhiteSpace(Package)))
+                    {
+                        arguments.Add("-package");
+                        arguments.Add(Package);
+                    }
 
-                    if (GAtn)
-                        arguments.Add("-atn");
-
-                    if (AbstractGrammar)
-                        arguments.Add("-Dabstract=true");
-
-                    if (!string.IsNullOrEmpty(TargetLanguage))
+                    if (!string.IsNullOrEmpty(DOptions))
                     {
                         // Since the C# target currently produces the same code for all target framework versions, we can
                         // avoid bugs with support for newer frameworks by just passing CSharp as the language and allowing
                         // the tool to use a default.
-                        arguments.Add("-Dlanguage=" + TargetLanguage);
+                        var split = DOptions.Split(';');
+                        foreach (var p in split)
+                        {
+                            if (string.IsNullOrEmpty(p))
+                                continue;
+                            if (string.IsNullOrWhiteSpace(p))
+                                continue;
+                            arguments.Add("-D" + p);
+                        }
                     }
 
-                    if (!string.IsNullOrEmpty(TargetNamespace))
-                    {
-                        arguments.Add("-package");
-                        arguments.Add(TargetNamespace);
-                    }
+                    if (Error)
+                        arguments.Add("-Werror");
+
+                    if (ForceAtn)
+                        arguments.Add("-Xforce-atn");
 
                     arguments.AddRange(SourceCodeFiles);
 
@@ -287,44 +316,66 @@ namespace Antlr4.Build.Tasks
                     arguments.Add("-o");
                     arguments.Add(OutputPath);
 
+                    if (!string.IsNullOrEmpty(LibPath))
+                    {
+                        var split = LibPath.Split(';');
+                        foreach (var p in split)
+                        {
+                            if (string.IsNullOrEmpty(p))
+                                continue;
+                            if (string.IsNullOrWhiteSpace(p))
+                                continue;
+                            arguments.Add("-lib");
+                            arguments.Add(p);
+                        }
+                    }
+
+                    if (GAtn)
+                        arguments.Add("-atn");
+
                     if (!string.IsNullOrEmpty(Encoding))
                     {
                         arguments.Add("-encoding");
                         arguments.Add(Encoding);
                     }
 
-                    if (GenerateListener)
+                    if (Listener)
                         arguments.Add("-listener");
                     else
                         arguments.Add("-no-listener");
 
-                    if (GenerateVisitor)
+                    if (Visitor)
                         arguments.Add("-visitor");
                     else
                         arguments.Add("-no-visitor");
 
-                    if (ForceAtn)
-                        arguments.Add("-Xforce-atn");
+                    if (!(string.IsNullOrEmpty(Package) || string.IsNullOrWhiteSpace(Package)))
+                    {
+                        arguments.Add("-package");
+                        arguments.Add(Package);
+                    }
 
-		            if (GAtn)
-			            arguments.Add("-atn");
-
-                    if (AbstractGrammar)
-                        arguments.Add("-Dabstract=true");
-
-                    if (!string.IsNullOrEmpty(TargetLanguage))
+                    if (!string.IsNullOrEmpty(DOptions))
                     {
                         // Since the C# target currently produces the same code for all target framework versions, we can
                         // avoid bugs with support for newer frameworks by just passing CSharp as the language and allowing
                         // the tool to use a default.
-                        arguments.Add("-Dlanguage=" + TargetLanguage);
+                        var split = DOptions.Split(';');
+                        foreach (var p in split)
+                        {
+                            if (string.IsNullOrEmpty(p))
+                                continue;
+                            if (string.IsNullOrWhiteSpace(p))
+                                continue;
+                            arguments.Add("-D" + p);
+                        }
                     }
 
-                    if (!string.IsNullOrEmpty(TargetNamespace))
-                    {
-                        arguments.Add("-package");
-                        arguments.Add(TargetNamespace);
-                    }
+                    if (Error)
+                        arguments.Add("-Werror");
+
+                    if (ForceAtn)
+                        arguments.Add("-Xforce-atn");
 
                     arguments.AddRange(SourceCodeFiles);
 

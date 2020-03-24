@@ -7,13 +7,13 @@
   
   <ItemGroup>
     <Antlr4 Include="arithmetic.g4">
-      <CustomToolNamespace>AntlrTemplate</CustomToolNamespace>
+      <Package>AntlrTemplate</Package>
     </Antlr4>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
-    <PackageReference Include="Antlr4BuildTasks" Version="2.2" />
+    <PackageReference Include="Antlr4BuildTasks" Version="3.0" />
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
   </ItemGroup>
 

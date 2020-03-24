@@ -80,15 +80,16 @@
   <ItemDefinitionGroup>
     <Antlr4>
       <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace></CustomToolNamespace>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <LibPath></LibPath>
+      <GAtn>false</GAtn>
       <Encoding>UTF-8</Encoding>
-      <TargetLanguage>CSharp</TargetLanguage>
       <Listener>true</Listener>
       <Visitor>true</Visitor>
-      <Abstract>false</Abstract>
+      <Package></Package>
+      <DOptions>language=CSharp</DOptions>
+      <Error>false</Error>
       <ForceAtn>false</ForceAtn>
-      <GAtn>false</GAtn>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Antlr4>
   </ItemDefinitionGroup>
 
@@ -120,7 +121,7 @@
   <Target Name="Antlr4Compile"
           DependsOnTargets="$(Antlr4CompileDependsOn)"
           Condition="'@(Antlr4)' != ''"
-          Inputs="@(Antlr4);@(Antlr4Tokens);@(Antlr4AbstractGrammar)"
+          Inputs="@(Antlr4);@(Antlr4Tokens)"
           Outputs="@(Antlr4OutputCodeFilesList);
                   $(IntermediateOutputPath)$(Antlr4GenCodeFileNames);">
 
@@ -141,20 +142,22 @@
       JavaExecutable="$(Antlr4JavaExecutable)"
       BuildTaskPath="$(Antlr4BuildTaskLocation)"
       OutputPath="$(IntermediateOutputPath)"
+
+      LibPath="%(Antlr4.LibPath)"
+      GAtn="%(Antlr4.GAtn)"
       Encoding="%(Antlr4.Encoding)"
-      TargetLanguage="%(Antlr4.TargetLanguage)"
+      Listener="%(Antlr4.Listener)"
+      Visitor="%(Antlr4.Visitor)"
+      Package="%(Antlr4.Package)"
+      DOptions="%(Antlr4.DOptions)"
+      Error="%(Antlr4.Error)"
+      ForceAtn="%(Antlr4.ForceAtn)"
+
       TargetFrameworkVersion="$(TargetFrameworkVersion)"
-      TargetNamespace="%(Antlr4.CustomToolNamespace)"
       SourceCodeFiles="@(Antlr4 -> '%(FullPath)')"
       ContinueOnError="false"
       TokensFiles="@(Antlr4Tokens)"
-      AbstractGrammarFiles="@(Antlr4AbstractGrammar)"
       LanguageSourceExtensions="$(DefaultLanguageSourceExtension)"
-      GenerateListener="%(Antlr4.Listener)"
-      GenerateVisitor="%(Antlr4.Visitor)"
-      ForceAtn="%(Antlr4.ForceAtn)"
-      AbstractGrammar="%(Antlr4.Abstract)"
-      GAtn="%(Antlr4.GAtn)"
       >
 
       <Output ItemName="Antlr4GeneratedCodeFiles" TaskParameter="GeneratedCodeFiles" />
