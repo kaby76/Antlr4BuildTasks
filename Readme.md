@@ -64,8 +64,8 @@ The Net Core code for the Antlr Hello World example is [here in Github](https://
 
 # Modifying .csproj files for Antlr
 
-Instead of modifying your project in Visual Studio, you can directly modify
-a .csproj directly with these attributes and elements. The following example
+You can use the build plug-in independently of Visual Studio. Modify directly
+your .csproj with these attributes and elements. The following example
 will help you get started.
 
     <ItemGroup>
