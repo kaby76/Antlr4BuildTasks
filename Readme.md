@@ -93,7 +93,7 @@ the generated classes in.
 * &lt;Error&gt; -- Use this to specify whether you want the tool to
 flag warnings as errors and stop a build.
 * &lt;LibPath&gt; -- A string that specifies the path for token and grammar files
-* for the Antlr tool.
+for the Antlr tool.
 * &lt;Encoding&gt; -- A string that specifies the encoding of the input grammars.
 * &lt;DOptions&gt; -- A list of <option>=<value>, passed to the Antlr tool. E.g.,
 language=Java.
