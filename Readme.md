@@ -77,6 +77,13 @@ will help you get started.
             <Error>true</Error>
         </Antlr4>
     </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
+        <PackageReference Include="Antlr4BuildTasks" Version="3.0" />
+    </ItemGroup>
+
+You must include a reference to Antlr4BuildTasks and Antlr4.Runtime.Standard.
+Remove references to Antlr4 (Harwell's obsolete code).
 
 For every Antlr grammar file you want to have the Antlr Tool run on, list
 each as an element in an &lt;ItemGroup&gt; with the attribute Include set to the
