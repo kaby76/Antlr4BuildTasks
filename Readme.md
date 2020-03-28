@@ -66,7 +66,9 @@ The Net Core code for the Antlr Hello World example is [here in Github](https://
 
 You can use the build plug-in independently of Visual Studio. Modify directly
 your .csproj with these attributes and elements. The following example
-will help you get started.
+will help you get started. Note, the &lt&Antlr4&gt; element is similar to that used
+in Harwell's Antlr4BuildTasks, but uses different child elements as the wrapper programs
+have different options.
 
     <ItemGroup>
         <Antlr4 Include="ExpressionParser.g4">
