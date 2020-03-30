@@ -12,10 +12,7 @@ into the building of NET programs that reference Antlr. During a build,
 it calls the Antlr tool to generate the source code for the parser from grammar,
 then compiles and links. Using this package, you don't have to manually
 run the Antlr tool outside the IDE, then go back to the IDE to complete the build. It is
-all done seamlessly in the IDE. This project also assumes you are compiling for C# NET,
-using the Antlr runtime library for NET, [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard),
-(and which doesn't include any wrapper for the Java-based Antlr tool, nor build rules).
-This allows you to use the latest any version of Antlr.
+all done seamlessly in the IDE.
 
 # Installation of Prerequisites
 
