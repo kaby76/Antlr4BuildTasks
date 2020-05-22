@@ -314,7 +314,7 @@ namespace Antlr4.Build.Tasks
             wrapper.JavaVendor = JavaVendor;
             wrapper.JavaInstallation = JavaInstallation;
             wrapper.JavaExecutable = JavaExecutable;
-            wrapper.JavaHome = JavaHome;
+            wrapper.JavaExec = JavaHome;
             return wrapper;
         }
 

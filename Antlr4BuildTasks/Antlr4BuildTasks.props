@@ -9,6 +9,6 @@
     <Antlr4BuildTaskPath>$(MSBuildThisFileDirectory)..\lib\netstandard2.0</Antlr4BuildTaskPath>
     <!-- Path to the ANTLR tool itself -->
     <Antlr4ToolPath>$(Antlr4ToolPath)</Antlr4ToolPath>
-    <JavaHome>$(JAVA_HOME)</JavaHome>
+    <JavaHome>$(JAVA_EXEC)</JavaHome>
   </PropertyGroup>
 </Project>

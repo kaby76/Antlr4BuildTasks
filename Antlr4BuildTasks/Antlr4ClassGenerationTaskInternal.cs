@@ -144,7 +144,7 @@ namespace Antlr4.Build.Tasks
             }
         }
 
-        public string JavaHome
+        public string JavaExec
         {
             get;
             set;
@@ -156,13 +156,16 @@ namespace Antlr4.Build.Tasks
         {
             try
             {
-                // First, find JAVA_HOME. This could throw an exception with error message.
-                string javaHome = JavaHome;
-                if (!Directory.Exists(javaHome))
-                    throw new Exception("Cannot find Java home, currently set to "
-                                        + "'" + javaHome + "'"
-                                        + " Please set either the JAVA_HOME environment variable, "
-                                        + "or set a property for JAVA_HOME in your CSPROJ file.");
+                // First, find JAVA_EXE. This could throw an exception with error message.
+                string javaExec = JavaExec;
+                if (!File.Exists(javaExec))
+                    throw new Exception("Cannot find Java executable, currently set to "
+                                        + "'" + javaExec + "'"
+                                        + " Please set either the JAVA_EXEC environment variable, "
+                                        + "or set a property for JAVA_EXEC in your CSPROJ file."
+                                        + " The variable must be the full path name of the executable for Java."
+                                        + " E.g., on Linux, export JAVA_EXEC=\"/usr/bin/java\". On Windows,"
+                                        + " JAVA_EXEC=\"C:\\Program Files\\Java\\jdk-11.0.4\"");
 
                 // Next find Java.
                 string java_executable = null;
@@ -172,18 +175,9 @@ namespace Antlr4.Build.Tasks
                 }
                 else
                 {
-                    string java_name = "";
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                        java_name = "java";
-                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        java_name = "java.exe";
-                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                        java_name = "java";
-                    else
-                        throw new Exception("Yo, I haven't a clue what OS this is. Crashing...");
-                    java_executable = Path.Combine(Path.Combine(javaHome, "bin"), java_name);
+                    java_executable = javaExec;
                     if (!File.Exists(java_executable))
-                        throw new Exception("Yo, I haven't a clue where Java is on this system. Crashing...");
+                        throw new Exception("Yo, I haven't a clue where the Java executable is on this system. Crashing...");
                 }
 
                 if (!File.Exists(ToolPath))
