@@ -424,6 +424,13 @@ namespace Antlr4.Build.Tasks
                     return process.ExitCode == 0;
                 }
             }
+            catch (ArgumentException e)
+            {
+                throw new Exception("Arg exc? " +
+                    "ToolPath is \""
+                       + ToolPath + "\"" +
+                       " rest " + e.StackTrace);
+            }
             catch (Exception e)
             {
                 if (e is TargetInvocationException && e.InnerException != null)
