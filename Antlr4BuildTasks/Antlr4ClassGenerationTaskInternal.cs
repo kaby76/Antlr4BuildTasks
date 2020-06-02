@@ -156,6 +156,13 @@ namespace Antlr4.Build.Tasks
         {
             try
             {
+                this.BuildMessages.Add(new BuildMessage(
+                    TraceLevel.Info,
+                    "Starting Antlr4 Build Tasks. ToolPath is \""
+                        + ToolPath + "\"", "", 0, 0));
+
+                _ = Path.IsPathRooted(ToolPath);
+
                 // First, find JAVA_EXE. This could throw an exception with error message.
                 string javaExec = JavaExec;
                 if (!File.Exists(javaExec))

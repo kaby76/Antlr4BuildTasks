@@ -175,12 +175,6 @@ namespace Antlr4.Build.Tasks
 
             //System.Threading.Thread.Sleep(20000);
 
-            if (!Path.IsPathRooted(ToolPath))
-                ToolPath = Path.Combine(Path.GetDirectoryName(BuildEngine.ProjectFileOfTaskNode), ToolPath);
-
-            if (!Path.IsPathRooted(BuildTaskPath))
-                BuildTaskPath = Path.Combine(Path.GetDirectoryName(BuildEngine.ProjectFileOfTaskNode), BuildTaskPath);
-
             try
             {
                 AntlrClassGenerationTaskInternal wrapper = CreateBuildTaskWrapper();
@@ -228,7 +222,7 @@ namespace Antlr4.Build.Tasks
                 else
                 {
                     errorCode = "AC1000";
-                    logMessage = "Unknown build error: " + message.Message;
+                    logMessage = message.Message;
                 }
             }
 
