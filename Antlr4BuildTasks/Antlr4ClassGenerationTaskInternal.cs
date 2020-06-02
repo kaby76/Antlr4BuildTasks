@@ -541,10 +541,11 @@ namespace Antlr4.Build.Tasks
             }
             catch (Exception ex)
             {
+                _buildMessages.Add(new BuildMessage(ex.Message
+                    + ex.StackTrace));
+
                 if (Antlr4ClassGenerationTask.IsFatalException(ex))
                     throw;
-
-                _buildMessages.Add(new BuildMessage(ex.Message));
             }
         }
     }

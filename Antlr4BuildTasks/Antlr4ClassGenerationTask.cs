@@ -192,10 +192,11 @@ namespace Antlr4.Build.Tasks
             }
             catch (Exception exception)
             {
+                ProcessExceptionAsBuildMessage(exception);
+             
                 if (IsFatalException(exception))
                     throw;
 
-                ProcessExceptionAsBuildMessage(exception);
                 success = false;
             }
 
@@ -204,7 +205,8 @@ namespace Antlr4.Build.Tasks
 
         private void ProcessExceptionAsBuildMessage(Exception exception)
         {
-            ProcessBuildMessage(new BuildMessage(exception.Message));
+            ProcessBuildMessage(new BuildMessage(exception.Message
+                + exception.StackTrace));
         }
 
         private void ProcessBuildMessage(BuildMessage message)
