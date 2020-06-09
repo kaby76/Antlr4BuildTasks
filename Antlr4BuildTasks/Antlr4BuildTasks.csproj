@@ -8,8 +8,8 @@
     <RootNamespace>Antlr4.Build.Tasks</RootNamespace>
     <AssemblyName>Antlr4BuildTasks</AssemblyName>
 
-    <AssemblyVersion>7.0.0.0</AssemblyVersion>
-    <FileVersion>7.0.0.0</FileVersion>
+    <AssemblyVersion>7.3.0.0</AssemblyVersion>
+    <FileVersion>7.3.0.0</FileVersion>
 
     <Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
     <Copyright></Copyright>
@@ -38,9 +38,9 @@
     <PackageIconUrl>https://raw.github.com/antlr/website-antlr4/master/images/icons/antlr.png</PackageIconUrl>
     <PackageTags>antlr antlr4 parsing</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>7.0</Version>
+    <Version>7.3</Version>
     <Authors>Ken Domino</Authors>
-    <PackageReleaseNotes>v7.0: Adding location of generated output. See https://github.com/kaby76/Antlr4BuildTasks for details. Any previous csproj files that referenced Antlr4BuildTasks will need to be changed.</PackageReleaseNotes>
+    <PackageReleaseNotes>v7.3: Fixing "dir" problem. See https://github.com/kaby76/Antlr4BuildTasks for details. Any previous csproj files that referenced Antlr4BuildTasks will need to be changed.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

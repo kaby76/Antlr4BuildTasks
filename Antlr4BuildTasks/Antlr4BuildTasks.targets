@@ -170,7 +170,6 @@
 	<Target Name="CustomBeforeClean">
 		<Message Text="CustomBeforeClean target executed"/>
 		<Message Text="Yo file $(IntermediateOutputPath)$(Antlr4GenCodeFileNames)"/>
-		<Exec Command="dir $(IntermediateOutputPath)$(Antlr4GenCodeFileNames)"/>
 		<ReadLinesFromFile File="$(IntermediateOutputPath)$(Antlr4GenCodeFileNames)">
 			<Output TaskParameter="Lines" ItemName="ItemsFromFile" />
 		</ReadLinesFromFile>
@@ -184,7 +183,7 @@
 	<Target Name="Antlr4CompileAddFilesGenerated"
 			AfterTargets="Antlr4Compile"
 			Condition="'@(Antlr4)' != ''">
-		<ItemGroup>
+	<ItemGroup>
 			<Compile Include="@(Antlr4GeneratedCodeFiles)" />
 		</ItemGroup>
 	</Target>

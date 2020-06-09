@@ -443,11 +443,15 @@ namespace Antlr4.Build.Tasks
                     var gen_files = GeneratedCodeFiles.Distinct().ToList();
                     var clean_list = GeneratedCodeFiles.Distinct().ToList();
                     GeneratedCodeFiles.Clear();
+                    AllGeneratedFiles.Clear();
                     foreach (var fn in clean_list)
                     {
-                        AllGeneratedFiles.Add(fn);
                         var ext = Path.GetExtension(fn);
-                        if (ext == ".cs" || ext == ".java" || ext == ".cpp")
+                        if (File.Exists(fn) && !(ext == ".g4" && ext == ".g4"))
+                            AllGeneratedFiles.Add(fn);
+                        if ((ext == ".cs" || ext == ".java" || ext == ".cpp" ||
+                            ext == ".php" || ext == ".js") &&
+                            File.Exists(fn))
                             GeneratedCodeFiles.Add(fn);
                     }
                     return process.ExitCode == 0;
@@ -545,9 +549,12 @@ namespace Antlr4.Build.Tasks
                     BuildMessages.Add(new BuildMessage("Yo didn't fit pattern!"));
                     return;
                 }
-                string fileName = match.Groups["OUTPUT"].Value;
-                BuildMessages.Add(new BuildMessage("Yo filename is " + fileName));
-                GeneratedCodeFiles.Add(match.Groups["OUTPUT"].Value);
+                string fn = match.Groups["OUTPUT"].Value;
+                var ext = Path.GetExtension(fn);
+                if (ext == ".cs" || ext == ".java" || ext == ".cpp" ||
+                    ext == ".php" || ext == ".js" || ext == ".tokens" || ext == ".interp" ||
+                    ext == ".dot")
+                    GeneratedCodeFiles.Add(fn);
             }
             catch (Exception ex)
             {
