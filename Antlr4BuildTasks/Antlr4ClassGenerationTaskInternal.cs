@@ -16,6 +16,7 @@ namespace Antlr4.Build.Tasks
     internal class AntlrClassGenerationTaskInternal
     {
         private List<string> _generatedCodeFiles = new List<string>();
+        private List<string> _allGeneratedFiles = new List<string>();
         private IList<string> _sourceCodeFiles = new List<string>();
         private List<BuildMessage> _buildMessages = new List<BuildMessage>();
 
@@ -24,6 +25,14 @@ namespace Antlr4.Build.Tasks
             get
             {
                 return this._generatedCodeFiles;
+            }
+        }
+
+        public IList<string> AllGeneratedFiles
+        {
+            get
+            {
+                return this._allGeneratedFiles;
             }
         }
 
@@ -99,11 +108,6 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
-        public string[] LanguageSourceExtensions
-        {
-            get;
-            set;
-        }
 
 
         public string JavaVendor
@@ -301,7 +305,24 @@ namespace Antlr4.Build.Tasks
                     process.StandardInput.Dispose();
                     process.WaitForExit();
 
+                    this.BuildMessages.Add(new BuildMessage(TraceLevel.Info,
+                        "Finished command", "", 0, 0));
+                    this.BuildMessages.Add(new BuildMessage(TraceLevel.Info,
+                        "The generated file list contains " + GeneratedCodeFiles.Count() + " items.", "", 0, 0));
+
                     if (process.ExitCode != 0) return false;
+
+                    // Add in tokens and interp files since Antlr Tool does not do that.
+                    var old_list = GeneratedCodeFiles.ToList();
+                    foreach(var s in old_list)
+                    {
+                        var ext = Path.GetExtension(s);
+                        if (ext == ".tokens")
+                        {
+                            var interp = s.Replace(ext, ".interp");
+                            GeneratedCodeFiles.Add(interp);
+                        }
+                    }
                 }
                 // Second call.
                 {
@@ -402,6 +423,16 @@ namespace Antlr4.Build.Tasks
                     process.StandardInput.Dispose();
                     process.WaitForExit();
 
+                    this.BuildMessages.Add(new BuildMessage(TraceLevel.Info,
+                        "Finished command", "", 0, 0));
+                    this.BuildMessages.Add(new BuildMessage(TraceLevel.Info,
+                        "The generated file list contains "+ GeneratedCodeFiles.Count() + " items.", "", 0, 0));
+
+                    foreach (var fn in GeneratedCodeFiles)
+                        this.BuildMessages.Add(new BuildMessage("Generated file " + fn));
+                    this.BuildMessages.Add(new BuildMessage(TraceLevel.Info,
+                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments, "", 0, 0));
+
                     // At this point, regenerate the entire GeneratedCodeFiles list.
                     // This is because (1) it contains duplicates; (2) it contains
                     // files that really actually weren't generated. This can happen
@@ -411,16 +442,14 @@ namespace Antlr4.Build.Tasks
                     // indicate what type of grammar it is.)
                     var gen_files = GeneratedCodeFiles.Distinct().ToList();
                     var clean_list = GeneratedCodeFiles.Distinct().ToList();
-                    foreach (var fn in gen_files)
-                    {
-                        if (!File.Exists(fn))
-                        {
-                            clean_list.Remove(fn);
-                        }
-                    }
                     GeneratedCodeFiles.Clear();
-                    foreach (var fn in clean_list) GeneratedCodeFiles.Add(fn);
-
+                    foreach (var fn in clean_list)
+                    {
+                        AllGeneratedFiles.Add(fn);
+                        var ext = Path.GetExtension(fn);
+                        if (ext == ".cs" || ext == ".java" || ext == ".cpp")
+                            GeneratedCodeFiles.Add(fn);
+                    }
                     return process.ExitCode == 0;
                 }
             }
@@ -436,7 +465,7 @@ namespace Antlr4.Build.Tasks
                 if (e is TargetInvocationException && e.InnerException != null)
                     e = e.InnerException;
 
-                _buildMessages.Add(new BuildMessage(e.Message));
+                BuildMessages.Add(new BuildMessage(e.Message));
                 throw;
             }
         }
@@ -471,7 +500,6 @@ namespace Antlr4.Build.Tasks
         }
 
         private static readonly Regex GeneratedFileMessageFormat = new Regex(@"^Generating file '(?<OUTPUT>.*?)' for grammar '(?<GRAMMAR>.*?)'$", RegexOptions.Compiled);
-        private static readonly Regex GeneratedFileMessageFormatJavaTool = new Regex(@"^(?<OUTPUT>[^:]*?)\s*:", RegexOptions.Compiled);
 
         private void HandleErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
@@ -485,41 +513,48 @@ namespace Antlr4.Build.Tasks
 
             try
             {
-                _buildMessages.Add(new BuildMessage(data));
+                BuildMessages.Add(new BuildMessage(data));
             }
             catch (Exception ex)
             {
                 if (Antlr4ClassGenerationTask.IsFatalException(ex))
                     throw;
 
-                _buildMessages.Add(new BuildMessage(ex.Message));
+                BuildMessages.Add(new BuildMessage(ex.Message));
             }
         }
 
         private void HandleOutputDataReceivedFirstTime(object sender, DataReceivedEventArgs e)
         {
-            string dep = e.Data as string;
-            if (string.IsNullOrEmpty(dep))
+            string str = e.Data as string;
+            if (string.IsNullOrEmpty(str))
                 return;
+
+            BuildMessages.Add(new BuildMessage("Yo got " + str + " from Antlr Tool."));
+ 
+            // There could all kinds of shit coming out of the Antlr Tool, so we need to
+            // take care of what to record.
             // Parse the dep string as "file-name1 : file-name2". Strip off the name
-            // file-name1 and cache it.
+            // file-name1 and save it away.
             try
             {
-                Match match = GeneratedFileMessageFormatJavaTool.Match(dep);
+                Regex regex = new Regex(@"^(?<OUTPUT>\S+)\s*:");
+                Match match = regex.Match(str);
                 if (!match.Success)
                 {
+                    BuildMessages.Add(new BuildMessage("Yo didn't fit pattern!"));
                     return;
                 }
                 string fileName = match.Groups["OUTPUT"].Value;
-                if (LanguageSourceExtensions.Contains(Path.GetExtension(fileName), StringComparer.OrdinalIgnoreCase))
-                    GeneratedCodeFiles.Add(match.Groups["OUTPUT"].Value);
+                BuildMessages.Add(new BuildMessage("Yo filename is " + fileName));
+                GeneratedCodeFiles.Add(match.Groups["OUTPUT"].Value);
             }
             catch (Exception ex)
             {
                 if (Antlr4ClassGenerationTask.IsFatalException(ex))
                     throw;
 
-                _buildMessages.Add(new BuildMessage(ex.Message));
+                BuildMessages.Add(new BuildMessage(ex.Message));
             }
         }
 
@@ -533,22 +568,23 @@ namespace Antlr4.Build.Tasks
             if (string.IsNullOrEmpty(data))
                 return;
 
+            BuildMessages.Add(new BuildMessage("Yo got " + data + " from Antlr Tool."));
+
             try
             {
                 Match match = GeneratedFileMessageFormat.Match(data);
                 if (!match.Success)
                 {
-                    _buildMessages.Add(new BuildMessage(data));
+                    BuildMessages.Add(new BuildMessage(data));
                     return;
                 }
 
                 string fileName = match.Groups["OUTPUT"].Value;
-                if (LanguageSourceExtensions.Contains(Path.GetExtension(fileName), StringComparer.OrdinalIgnoreCase))
-                    GeneratedCodeFiles.Add(match.Groups["OUTPUT"].Value);
+                GeneratedCodeFiles.Add(match.Groups["OUTPUT"].Value);
             }
             catch (Exception ex)
             {
-                _buildMessages.Add(new BuildMessage(ex.Message
+                BuildMessages.Add(new BuildMessage(ex.Message
                     + ex.StackTrace));
 
                 if (Antlr4ClassGenerationTask.IsFatalException(ex))

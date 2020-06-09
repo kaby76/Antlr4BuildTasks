@@ -18,12 +18,17 @@
 	     <Category Name="ANTLR" DisplayName="ANTLR" />
       </Rule.Categories>
 
-      <StringProperty
-	      Category="ANTLR"
-	      Name="LibPath"
-	      DisplayName="Grammar file search path (-lib libdir)"
-	      Description="When looking for tokens files and imported grammars, ANTLR normally looks in the current directory. This option specifies which directory to look in instead. It is only used for resolving grammar references for the import statement and the tokenVocab option. The path to the primary grammar must always be fully specified. List multiple with semi-colon separations." />
-      <BoolProperty
+	   <StringProperty
+		   Category="ANTLR"
+		   Name="LibPath"
+		   DisplayName="Grammar file search path (-lib libdir)"
+		   Description="When looking for tokens files and imported grammars, ANTLR normally looks in the current directory. This option specifies which directory to look in instead. It is only used for resolving grammar references for the import statement and the tokenVocab option. The path to the primary grammar must always be fully specified. List multiple with semi-colon separations." />
+	   <StringProperty
+		   Category="ANTLR"
+		   Name="AntOutDir"
+           DisplayName="Directory of generated output files"
+		   Description="Place the generate parser, lexer, and other files in this directory." />
+	   <BoolProperty
 	      Category="ANTLR"
 	      Name="GAtn"
 	      DisplayName="Generate rule ATN diagrams (-atn)"

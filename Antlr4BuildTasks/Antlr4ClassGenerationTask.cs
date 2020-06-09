@@ -19,6 +19,7 @@ namespace Antlr4.Build.Tasks
     {
         private const string DefaultGeneratedSourceExtension = "g4";
         private List<ITaskItem> _generatedCodeFiles = new List<ITaskItem>();
+        private List<ITaskItem> _allGeneratedFiles = new List<ITaskItem>();
 
         public Antlr4ClassGenerationTask()
         {
@@ -124,11 +125,6 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
-        public string[] LanguageSourceExtensions
-        {
-            get;
-            set;
-        }
 
         public bool ForceAtn
         {
@@ -169,6 +165,19 @@ namespace Antlr4.Build.Tasks
             }
         }
 
+        [Output]
+        public ITaskItem[] AllGeneratedFiles
+        {
+            get
+            {
+                return this._allGeneratedFiles.ToArray();
+            }
+            set
+            {
+                this._allGeneratedFiles = new List<ITaskItem>(value);
+            }
+        }
+
         public override bool Execute()
         {
             bool success;
@@ -183,6 +192,7 @@ namespace Antlr4.Build.Tasks
                 if (success)
                 {
                     _generatedCodeFiles.AddRange(wrapper.GeneratedCodeFiles.Select(file => (ITaskItem)new TaskItem(file)));
+                    _allGeneratedFiles.AddRange(wrapper.AllGeneratedFiles.Select(file => (ITaskItem)new TaskItem(file)));
                 }
 
                 foreach (BuildMessage message in wrapper.BuildMessages)
@@ -211,22 +221,23 @@ namespace Antlr4.Build.Tasks
 
         private void ProcessBuildMessage(BuildMessage message)
         {
-            string logMessage;
             string errorCode;
-            errorCode = Log.ExtractMessageCode(message.Message, out logMessage);
-            if (string.IsNullOrEmpty(errorCode))
+            switch (message.Severity)
             {
-                if (message.Message.StartsWith("Executing command:", StringComparison.Ordinal) && message.Severity == TraceLevel.Info)
-                {
-                    // This is a known informational message
-                    logMessage = message.Message;
-                }
-                else
-                {
-                    errorCode = "AC1000";
-                    logMessage = message.Message;
-                }
+                case TraceLevel.Error:
+                    errorCode = "ANT02";
+                    break;
+                case TraceLevel.Warning:
+                    errorCode = "ANT01";
+                    break;
+                case TraceLevel.Info:
+                    errorCode = "ANT00";
+                    break;
+                default:
+                    errorCode = "ANT00";
+                    break;
             }
+            var logMessage = message.Message;
 
             string subcategory = null;
             string helpKeyword = null;
@@ -297,7 +308,6 @@ namespace Antlr4.Build.Tasks
             wrapper.SourceCodeFiles = sourceCodeFiles;
             wrapper.TargetFrameworkVersion = TargetFrameworkVersion;
             wrapper.OutputPath = OutputPath;
-            wrapper.LanguageSourceExtensions = LanguageSourceExtensions;
             wrapper.LibPath = LibPath;
             wrapper.GAtn = GAtn;
             wrapper.Encoding = Encoding;

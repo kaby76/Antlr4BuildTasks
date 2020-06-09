@@ -11,14 +11,18 @@ namespace Antlr4.Build.Tasks
 #endif
     internal struct BuildMessage
     {
-        private static readonly Regex BuildMessageFormat = new Regex(@"^\s*(?<SEVERITY>[a-z]+)\((?<CODE>[0-9]+)\):\s*((?<FILE>.*):(?<LINE>[0-9]+):(?<COLUMN>[0-9]+):)?\s*(?:syntax error:\s*)?(?<MESSAGE>.*)$", RegexOptions.Compiled);
 
         public BuildMessage(string message)
-            : this(TraceLevel.Error, message, null, 0, 0)
         {
+            Severity = TraceLevel.Info;
+            Message = message;
+            FileName = "";
+            LineNumber = 0;
+            ColumnNumber = 0;
             try
             {
-                Match match = BuildMessageFormat.Match(message);
+                Regex regex = new Regex(@"^\s*(?<SEVERITY>[a-z]+)\((?<CODE>[0-9]+)\):\s*((?<FILE>.*):(?<LINE>[0-9]+):(?<COLUMN>[0-9]+):)?\s*(?:syntax error:\s*)?(?<MESSAGE>.*)$", RegexOptions.Compiled);
+                Match match = regex.Match(message);
                 if (match.Success)
                 {
                     FileName = match.Groups["FILE"].Length > 0 ? match.Groups["FILE"].Value : "";
@@ -37,9 +41,6 @@ namespace Antlr4.Build.Tasks
                         Severity = TraceLevel.Info;
                         break;
                     }
-
-                    int code = int.Parse(match.Groups["CODE"].Value);
-                    Message = string.Format("AC{0:0000}: {1}", code, match.Groups["MESSAGE"].Value);
                 }
                 else
                 {
@@ -54,7 +55,6 @@ namespace Antlr4.Build.Tasks
         }
 
         public BuildMessage(TraceLevel severity, string message, string fileName, int lineNumber, int columnNumber)
-            : this()
         {
             Severity = severity;
             Message = message;
