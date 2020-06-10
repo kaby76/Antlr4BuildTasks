@@ -43,7 +43,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Antlr4GenCodeFileNames Condition="'$(Antlr4GenCodeFileNames)'==''">$(MSBuildProjectFile).AntlrFiles.txt</Antlr4GenCodeFileNames>
+		<Antlr4ToCompileListFile Condition="'$(Antlr4ToCompileListFile)'==''">$(IntermediateOutputPath)$(MSBuildProjectFile).AntlrToCompileList.txt</Antlr4ToCompileListFile>
+		<Antlr4AllListFile Condition="'$(Antlr4AllListFile)'==''">$(IntermediateOutputPath)$(MSBuildProjectFile).AntlrAllList.txt</Antlr4AllListFile>
 	</PropertyGroup>
 
 	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
@@ -88,7 +89,7 @@
 	</ItemDefinitionGroup>
 
 	<Target Name="Antlr4CompileReadGeneratedFileList">
-		<ReadLinesFromFile File="$(IntermediateOutputPath)$(Antlr4GenCodeFileNames)">
+		<ReadLinesFromFile File="$(Antlr4ToCompileListFile)">
 			<Output TaskParameter="Lines" ItemName="Antlr4OutputCodeFilesList"/>
 		</ReadLinesFromFile>
 	</Target>
@@ -96,10 +97,10 @@
 	<PropertyGroup>
 		<!-- Add grammar compilation to the CoreCompileDependsOn so that the IDE inproc compilers (particularly VB)
          can "see" the generated source files. -->
-	<!--	<CoreCompileDependsOn Condition="'$(BuildingInsideVisualStudio)' == 'true' ">
-			Antlr4DesignTimeGrammarCompilation;
+		<CoreCompileDependsOn>
+			Antlr4CompileReadGeneratedFileList;
 			$(CoreCompileDependsOn)
-		</CoreCompileDependsOn> -->
+		</CoreCompileDependsOn>
 	</PropertyGroup>
 
 	<Target Name="Antlr4DesignTimeGrammarCompilation">
@@ -111,7 +112,8 @@
 			Condition="'@(Antlr4)' != ''"
 			Inputs="@(Antlr4);@(Antlr4Tokens)"
 			Outputs="@(Antlr4OutputCodeFilesList);
-                  $(IntermediateOutputPath)$(Antlr4GenCodeFileNames);">
+                  $(Antlr4ToCompileListFile);
+				  $(Antlr4AllListFile)">
 
 		<Message Text="Running the Antlr Tool over the grammar files @(Antlr4);@(Antlr4Tokens)"/>
 
@@ -140,15 +142,21 @@
 		  SourceCodeFiles="@(Antlr4 -> '%(FullPath)')"
 		  ContinueOnError="false"
 		  TokensFiles="@(Antlr4Tokens)">
-			<Output ItemName="Antlr4GeneratedCodeFiles" TaskParameter="GeneratedCodeFiles" />
-			<Output ItemName="AllGeneratedFiles" TaskParameter="AllGeneratedFiles" />
+			<Output ItemName="ToCompileFiles" TaskParameter="GeneratedCodeFiles" />
+			<Output ItemName="AllFiles" TaskParameter="AllGeneratedFiles" />
 		</Antlr4ClassGenerationTask>
 
+		<Message Text="This is the Antlr4GeneratedCodeFiles from the Antlr Tool @(Antlr4GeneratedCodeFiles)"/>
 		<Message Text="This is the output of running Antlr Tool @(Antlr4GeneratedCodeFiles)"/>
 
 		<WriteLinesToFile
-		  File="$(IntermediateOutputPath)$(Antlr4GenCodeFileNames)"
-		  Lines="@(AllGeneratedFiles)"
+		  File="$(Antlr4ToCompileListFile)"
+		  Lines="@(ToCompileFiles)"
+		  Overwrite="true"/>
+
+		<WriteLinesToFile
+		  File="$(Antlr4AllListFile)"
+		  Lines="@(AllFiles)"
 		  Overwrite="true"/>
 
 	</Target>
@@ -159,31 +167,32 @@
 			 append items to that list before the clean cache is written to disk,
 			 which occurs in either the Clean or IncrementalClean target, depending 
 			 on the type of build that is executed." Therefore, we can't use this method.
+			 
+			 Instead, inject into CleanDependsOn a custom clean step. This target will
+			 read the code gen list from Antlr, and delete all files. Note that the files
+			 in the list must be exact, no wildcards.
 			 -->
-	<Target Name="AfterClean">
-		<Message Text="AfterClean target executed."/>
-	</Target>
-	<!-- Inject a custom target into Clean by extending CleanDependsOn -->
 	<PropertyGroup>
-		<CleanDependsOn> CustomBeforeClean; $(CleanDependsOn); CustomAfterClean </CleanDependsOn>
+		<CleanDependsOn> CustomBeforeClean; $(CleanDependsOn)</CleanDependsOn>
 	</PropertyGroup>
 	<Target Name="CustomBeforeClean">
 		<Message Text="CustomBeforeClean target executed"/>
-		<Message Text="Yo file $(IntermediateOutputPath)$(Antlr4GenCodeFileNames)"/>
-		<ReadLinesFromFile File="$(IntermediateOutputPath)$(Antlr4GenCodeFileNames)">
-			<Output TaskParameter="Lines" ItemName="ItemsFromFile" />
+		<Message Text="Removing files listed in $(Antlr4AllListFile)"/>
+		<ReadLinesFromFile File="$(Antlr4AllListFile)">
+			<Output TaskParameter="Lines" ItemName="ToRemove" />
 		</ReadLinesFromFile>
-		<Message Text="Going to delete @(ItemsFromFile)"/>
-		<Delete Files="@(ItemsFromFile)" TreatErrorsAsWarnings="true" />
-	</Target>
-	<Target Name="CustomAfterClean">
-		<Message Text="CustomAfterClean target executed"/>
+		<Message Text="Going to delete @(ToRemove)"/>
+		<Delete Files="@(ToRemove)" TreatErrorsAsWarnings="false" />
+		<Message Text="Removing file $(Antlr4AllListFile)"/>
+		<Delete Files="$(Antlr4AllListFile)" TreatErrorsAsWarnings="false" />
+		<Message Text="Removing file $(Antlr4ToCompileListFile)"/>
+		<Delete Files="$(Antlr4ToCompileListFile)" TreatErrorsAsWarnings="false" />
 	</Target>
 
 	<Target Name="Antlr4CompileAddFilesGenerated"
 			AfterTargets="Antlr4Compile"
 			Condition="'@(Antlr4)' != ''">
-	<ItemGroup>
+		<ItemGroup>
 			<Compile Include="@(Antlr4GeneratedCodeFiles)" />
 		</ItemGroup>
 	</Target>
