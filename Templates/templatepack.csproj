@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageType>Template</PackageType>
-    <PackageVersion>4.0</PackageVersion>
+    <PackageVersion>7.3</PackageVersion>
     <PackageId>Antlr4BuildTasks.Templates</PackageId>
     <Title>Antlr4 templates</Title>
     <Authors>Ken Domino</Authors>
@@ -14,7 +14,7 @@
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
-    <Version>4.0</Version>
+    <Version>7.3</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 

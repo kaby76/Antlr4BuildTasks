@@ -1,4 +1,4 @@
-﻿// Template generated code from Antlr4BuildTasks.Template v 4.0
+﻿// Template generated code from Antlr4BuildTasks.Template v 7.3
 namespace AntlrTemplate
 {
     using System;
