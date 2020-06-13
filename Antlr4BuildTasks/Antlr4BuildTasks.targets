@@ -51,6 +51,14 @@
 		TaskName="Antlr4.Build.Tasks.Antlr4ClassGenerationTask"
 		AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
+	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+			TaskName="Antlr4.Build.Tasks.SubtractList"
+			AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
+	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+			TaskName="Antlr4.Build.Tasks.MakeRelativeList"
+			AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
 	<PropertyGroup>
 		<BuildDependsOn>
 			Antlr4Compile;
@@ -179,6 +187,9 @@
 	<Target Name="Antlr4CompileAddFilesGenerated"
 		Condition="Exists($(Antlr4ToCompileListFile))">
 		<Message Text="Reading the list of files generated from the Antlr Tool."/>
+
+		<Message Text="yyyy @(Compile) yyyy" />
+
 		<ItemGroup>
 			<ToCompileFiles Remove="@(ToCompileFiles)"/>
 		</ItemGroup>
@@ -190,34 +201,27 @@
 				ItemName="ToCompileFiles"/>
 		</ReadLinesFromFile>
 
-		<Message Text="This is the ToCompileFiles list @(ToCompileFiles)"/>
+		<Message Text="yyy2 @(ToCompileFiles) yyyy" />
 
-		<RemoveDuplicates
-		  Inputs="@(ToCompileFiles)">
-			<Output TaskParameter="Filtered" ItemName="FilteredItems" />
-		</RemoveDuplicates>
+		<MakeRelativeList
+			List1="@(ToCompileFiles)">
+			<Output TaskParameter="Result" ItemName="FixedToCompileFiles"/>
+		</MakeRelativeList>
 
-		<Message Text="== @(FilteredItems) ==" />
+		<Message Text="yyy3 @(FixedToCompileFiles) yyyy" />
+		
+		<SubtractList
+			List1="@(FixedToCompileFiles)"
+			List2="@(Compile)">
+			<Output TaskParameter="Result" ItemName="Result"/>
+		</SubtractList>
 
-		<ItemGroup>
-			<PathsRelativeToBar Include="@(FilteredItems)">
-				<!-- Here is the magic... we're adding a piece of metadata with the relative path -->
-				<RelativePath>$([MSBuild]::MakeRelative($(ProjectDir), %(ToCompileFiles.FullPath)))</RelativePath>
-			</PathsRelativeToBar>
-		</ItemGroup>
-
-		<Message Text="----- Absolute paths -----" />
-		<Message Text="== %(FilteredItems.FullPath) ==" />
-		<Message Text="----- Relative paths (showing full path) -----" />
-		<Message Text="== %(PathsRelativeToBar.FullPath) ==" />
-		<Message Text="----- Relative paths (relative to $(ProjectDir)) -----" />
-		<Message Text="== %(PathsRelativeToBar.RelativePath) ==" />
-		<Message Text="xxxx @(PathsRelativeToBar.RelativePath) xxxx" />
+		<Message Text="yyy4 @(Result) yyyy" />
 
 		<ItemGroup>
-			<Compile Include="%(PathsRelativeToBar.RelativePath)"/>
-			<CompileDesignTime Include="%(PathsRelativeToBar.RelativePath)"/>
-			<_GeneratedCodeFiles Include="%(PathsRelativeToBar.RelativePath)" />
+			<Compile Include="@(Result)"/>
+			<CompileDesignTime Include="@(Result)"/>
+			<_GeneratedCodeFiles Include="@(Result)" />
 		</ItemGroup>
 	</Target>
 	
