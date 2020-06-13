@@ -58,9 +58,10 @@
 			$(BuildDependsOn)
 		</BuildDependsOn>
 	</PropertyGroup>
-		
+
 	<PropertyGroup>
 		<CoreCompileDependsOn>
+			Antlr4Compile;
 			Antlr4CompileAddFilesGenerated;
 			$(CoreCompileDependsOn)
 		</CoreCompileDependsOn>
