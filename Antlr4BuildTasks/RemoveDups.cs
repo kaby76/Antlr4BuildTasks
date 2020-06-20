@@ -1,9 +1,13 @@
-﻿using Microsoft.Build.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -14,16 +18,10 @@ using Path = System.IO.Path;
 
 namespace Antlr4.Build.Tasks
 {
-    public class SubtractList
-            : Task
+    public class RemoveDups
+        : Task
     {
         public ITaskItem[] List1
-        {
-            get;
-            set;
-        }
-
-        public ITaskItem[] List2
         {
             get;
             set;
@@ -32,7 +30,7 @@ namespace Antlr4.Build.Tasks
         private List<ITaskItem> _result = new List<ITaskItem>();
 
         [Output]
-        public ITaskItem[] Result
+        public ITaskItem[] RemovedDupsList
         {
             get
             {
@@ -44,26 +42,28 @@ namespace Antlr4.Build.Tasks
             }
         }
 
-
         public override bool Execute()
         {
-            _result = new List<ITaskItem>();
-            foreach (var v1 in List1)
-            {
-                bool found = false;
-                var v1_name = v1.ToString();
-                foreach (var v2 in List2)
-                {
-                    var v2_name = v2.ToString();
-                    if (v2_name == v1_name)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) _result.Add(v1);
-            }
+            _result = List1.DistinctBy(t=> t.ToString()).ToList();
             return true;
         }
+    }
+
+    static class FooBar
+    {
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>
+            (this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+        {
+            HashSet<TKey> seenKeys = new HashSet<TKey>();
+            foreach (TSource element in source)
+            {
+                if (seenKeys.Add(keySelector(element)))
+                {
+                    yield return element;
+                }
+            }
+        }
+
+
     }
 }

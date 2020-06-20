@@ -52,12 +52,16 @@
 		AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
 	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
-			TaskName="Antlr4.Build.Tasks.SubtractList"
-			AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+	           TaskName="Antlr4.Build.Tasks.SubtractList"
+	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
 	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
-			TaskName="Antlr4.Build.Tasks.MakeRelativeList"
-			AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+	           TaskName="Antlr4.Build.Tasks.RemoveDups"
+	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
+	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+	           TaskName="Antlr4.Build.Tasks.MakeRelativeList"
+	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
 	<PropertyGroup>
 		<BuildDependsOn>
@@ -210,8 +214,13 @@
 
 		<Message Text="yyy3 @(FixedToCompileFiles) yyyy" />
 		
+		<RemoveDups
+			List1="@(FixedToCompileFiles)">
+			<Output TaskParameter="RemovedDupsList" ItemName="RemovedDupsList"/>
+		</RemoveDups>
+
 		<SubtractList
-			List1="@(FixedToCompileFiles)"
+			List1="@(RemovedDupsList)"
 			List2="@(Compile)">
 			<Output TaskParameter="Result" ItemName="Result"/>
 		</SubtractList>
