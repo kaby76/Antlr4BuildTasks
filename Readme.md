@@ -10,15 +10,16 @@ version you want to use. The rest is taken care of by this tool.
 
 # Installation of Prerequisites
 
-* The only prerequisite is to have Net Core 3.1 installed. The package will look at your CSPROJ
+The only prerequisite you need is to have Net Core 3.1 installed. The package will look at your CSPROJ
 file to determine what runtime you have selected. Based on that, the appropriate Antlr Tool jar
-will be used. Currently, this build tool will support 4.8 and 4.7.2 of Antlr4.Runtime.Standard.
+will be used. You don't need to download the jar because the tool does it for you, but it caches the most
+recent version with this package. Currently, this build tool will support versions 4.8 and 4.7.2 of Antlr4.Runtime.Standard.
 
 If you must support another runtime, then you will need to set Antlr4ToolPath yourself.
 Make sure you do not have a version skew between the Java Antlr tool and the runtime versions.
 
-The tool is preconfigured to use a JRE that I added to this package to run the Antlr tool. If you want
-to use a different Java,
+The tool also contains a JRE built for the antlr4-4.8-complete.jar using Java 11 and jlink.
+If you want to use a different Java,
 install Java tool chain, either [OpenJDK](https://openjdk.java.net/) or [Oracle JDK SE](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and set JAVA_EXEC to the full path
 of the Java executable.
 
