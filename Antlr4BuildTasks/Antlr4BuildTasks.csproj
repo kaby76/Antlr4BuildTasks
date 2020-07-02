@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<EnableDefaultNoneItems>False</EnableDefaultNoneItems>
+
+		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
+		<AssemblyName>Antlr4BuildTasks</AssemblyName>
+
+		<AssemblyVersion>7.5.0.0</AssemblyVersion>
+		<FileVersion>7.5.0.0</FileVersion>
+
+		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
+		<Copyright></Copyright>
+		<Company>Domemtech</Company>
+		<AssemblyTitle>Antlr4BuildTasks</AssemblyTitle>
+		<ContentTargetFolders>build/</ContentTargetFolders>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DebugType>full</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageLicenseUrl>https://raw.githubusercontent.com/kaby76/antlr4cs/master/LICENSE.txt</PackageLicenseUrl>
+		<PackageProjectUrl>https://github.com/kaby76/Antlr4BuildTasks</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/kaby76/Antlr4BuildTasks</RepositoryUrl>
+		<RepositoryType>Git</RepositoryType>
+		<PackageIconUrl>https://raw.github.com/antlr/website-antlr4/master/images/icons/antlr.png</PackageIconUrl>
+		<PackageTags>antlr antlr4 parsing</PackageTags>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<Version>8.0</Version>
+		<Authors>Ken Domino</Authors>
+		<PackageReleaseNotes>v8.0: Downloading of Java and Antlr dependencies implemented. See https://github.com/kaby76/Antlr4BuildTasks for details. Any previous csproj files that referenced Antlr4BuildTasks will need to be changed.</PackageReleaseNotes>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="Antlr4BuildTasks.xml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Antlr4BuildTasks.props">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Antlr4BuildTasks.targets">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="antlr-4.8-complete.jar">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="jre.zip">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Build.Framework" Version="16.4.0" />
+		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.4.0" />
+		<PackageReference Include="System.Threading" Version="4.3.0" />
+	</ItemGroup>
+
+</Project>
