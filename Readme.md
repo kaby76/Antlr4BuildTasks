@@ -6,7 +6,7 @@ but has been completely rewritten and extended to function as a wrapper for the 
 Antlr4 Tool that uses Java to generate a parser for all targets, including C#.
 
 To use this package, just include PackageReference's for Antlr4BuildTasks and the Antlr4.Runtime.Standard
-version you want to use. The rest is taken care by this tool.
+version you want to use. The rest is taken care of by this tool.
 
 # Installation of Prerequisites
 
