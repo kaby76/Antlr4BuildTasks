@@ -28,6 +28,8 @@ namespace AntlrTemplate
         public static StringBuilder OutputTree(this IParseTree tree, CommonTokenStream stream)
         {
             StringBuilder sb = new StringBuilder();
+            changed = 0;
+            first_time = true;
             tree.ParenthesizedAST(sb, stream);
             return sb;
         }
