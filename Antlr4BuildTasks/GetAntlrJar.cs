@@ -1,19 +1,19 @@
-﻿using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-using System;
-using System.IO;
-using System.Net;
-using System.Reflection;
-
-namespace Antlr4.Build.Tasks
+﻿namespace Antlr4.Build.Tasks
 {
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
+    using System;
+    using System.IO;
+    using System.Net;
+    using System.Reflection;
+
     public class GetAntlrJar : Task
     {
         public GetAntlrJar()
         {
         }
 
-        public string ToolPath
+        public string IntermediateOutputPath
         {
             get;
             set;
@@ -25,19 +25,16 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
-
-        public string IntermediateOutputPath
+        public string ToolPath
         {
             get;
             set;
         }
 
-        private string result;
-
         [Output] public string UsingToolPath
         {
-            get { return result; }
-            set { }
+            get;
+            set;
         }
 
         public override bool Execute()
@@ -73,7 +70,7 @@ namespace Antlr4.Build.Tasks
                                                                + System.IO.Path.DirectorySeparatorChar
                                                                + System.IO.Path.GetFileName(@"antlr-4.8-complete.jar")
                         );
-                        result = archive_path;
+                        UsingToolPath = archive_path;
                     }
                     else if (version == "4.7.2")
                     {
@@ -90,7 +87,7 @@ namespace Antlr4.Build.Tasks
                             this.Log.LogMessage(MessageImportance.Normal, "Downloading " + jar);
                             webClient.DownloadFile(jar, archive_name);
                         }
-                        result = archive_name;
+                        UsingToolPath = archive_name;
                     }
                     else throw new Exception("Unhandled version of Antlr4.Runtime.Standard");
                 }
@@ -98,7 +95,7 @@ namespace Antlr4.Build.Tasks
             }
             else
             {
-                result = ToolPath;
+                UsingToolPath = ToolPath;
             }
             return true;
         }

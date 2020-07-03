@@ -58,10 +58,6 @@
 	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
 	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
-	           TaskName="Antlr4.Build.Tasks.GetRuntime"
-	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
-
-	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
 	           TaskName="Antlr4.Build.Tasks.GetAntlrJar"
 	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
