@@ -42,22 +42,6 @@
 	</PropertyGroup>
 
 	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
-		TaskName="Antlr4.Build.Tasks.RunAntlrTool"
-		AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
-
-	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
-	           TaskName="Antlr4.Build.Tasks.SubtractList"
-	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
-
-	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
-	           TaskName="Antlr4.Build.Tasks.RemoveDups"
-	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
-
-	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
-	           TaskName="Antlr4.Build.Tasks.MakeRelativeList"
-	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
-
-	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
 	           TaskName="Antlr4.Build.Tasks.GetAntlrJar"
 	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
@@ -66,8 +50,21 @@
 	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
 	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
-	           TaskName="Antlr4.Build.Tasks.ComputePackageReferences"
+	           TaskName="Antlr4.Build.Tasks.MakeRelativeList"
 	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
+	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+	           TaskName="Antlr4.Build.Tasks.RemoveDups"
+	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
+	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+	           TaskName="Antlr4.Build.Tasks.RunAntlrTool"
+	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
+	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+	           TaskName="Antlr4.Build.Tasks.SubtractList"
+	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
 
 
 	<PropertyGroup>
@@ -114,54 +111,9 @@
 		</Antlr4>
 	</ItemDefinitionGroup>
 
-
-	<!-- As per https://github.com/NuGet/Home/issues/7687, it seems that
-	     folks don't know how to compute the transitive closure of 
-		 the PackageReference relation.
-		 
-		 There is no good way to add a package reference conditionally
-		 or not with this targets file to the list of
-		 packages to restore. As noted, the only solution is to place the
-		 dependency in Antlr4BuildTasks.csproj itself, which just sucks.
-		 
-		 So, the following task cannot execute until someone fixes this
-		 poor design.
-		 
-		 The user must make the PackageReference to the runtime he want
-		 himself in his csproj file.
-		 
-	     ==================================================================
-	
-	     This target sets up a reference to Antlr4.Runtime.Standard.
-		 -->
-	<!--<PropertyGroup>
-		<_GenerateRestoreGraph>
-			Antlr4AddPackageReferences;
-			$(_GenerateRestoreGraph)
-		</_GenerateRestoreGraph>
-	</PropertyGroup>-->
-	<!--<Target Name="Antlr4AddPackageReferences"
-	        Condition="'@(Antlr4)' != ''">
-
-		--><!-- Compute whether the user has already included a runtime
-		     via a PackageReference for Antlr4.Runtime.Standard. If not,
-			 let's add that. If he made a mistake in setting up a different
-			 Antlr tool version, then that's their problem. They forgot
-			 to include the PackageReference explicitly.
-		  --><!--
-		<ComputePackageReferences List1="@(PackageReference)">
-			<Output TaskParameter="Result" ItemName="Result"/>
-		</ComputePackageReferences>
-
-		<Message Condition="'@(Result)'!=''" Text="ComputePackageReferences not null '@(Result)'"/>
-
-		<ItemGroup Condition="'@(Result)'!=''">
-			<PackageReference Include="Antlr4.Runtime.Standard" Version="4.8" />
-		</ItemGroup>
-
-	</Target>-->
-
-	<!-- This target sets up the Java dependency for the build.
+	<!-- This target sets up Java and the Antlr Tool jar, and sets
+	     UsingJavaExec and UsingToolPath variables which are used later on in the build.
+		 These variables indicate where to find Java and the Antlr Tool jar.
 		 -->
 	<Target Name="Antlr4GetBuildDeps"
 	        Condition="'@(Antlr4)' != ''">
