@@ -41,6 +41,8 @@
 		<Antlr4AllListFile Condition="'$(Antlr4AllListFile)'==''">$(IntermediateOutputPath)$(MSBuildProjectFile).AntlrAllList.txt</Antlr4AllListFile>
 	</PropertyGroup>
 
+	<!-- Let's add in all the tasks declared in this tool used in this .targets file.
+	  -->
 	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
 	           TaskName="Antlr4.Build.Tasks.GetAntlrJar"
 	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
@@ -66,7 +68,9 @@
 	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
 
-
+    <!-- Let's add in all the hooks for the build, including the BuildDependsOn,
+	     CoreCompileDependsOn, Antlr4CompileDependsOn, CleanDependsOn.
+	  -->
 	<PropertyGroup>
 		<BuildDependsOn>
 			Antlr4GetBuildDeps;
@@ -92,12 +96,16 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<CleanDependsOn> CustomBeforeClean; $(CleanDependsOn)</CleanDependsOn>
+		<CleanDependsOn>
+			CustomBeforeClean;
+			$(CleanDependsOn)
+		</CleanDependsOn>
 	</PropertyGroup>
 
 
-	<!-- These are the defaults for the XML properties of the Antlr grammar file.
-	  -->
+	<!-- These are the defaults for the XML properties of the Antlr grammar file. If it's not declared
+	     in the .csproj file for the <Antlr4> item, then these are assumed.
+      -->
 	<ItemDefinitionGroup>
 		<Antlr4>
 			<Generator>MSBuild:Compile</Generator>
@@ -119,7 +127,7 @@
 	<!-- This target sets up Java and the Antlr Tool jar, and sets
 	     UsingJavaExec and UsingToolPath variables which are used later on in the build.
 		 These variables indicate where to find Java and the Antlr Tool jar.
-		 -->
+	  -->
 	<Target Name="Antlr4GetBuildDeps"
 	        Condition="'@(Antlr4)' != ''">
 
@@ -147,7 +155,8 @@
 	<!-- This is the main Antlr tool calling method. The result of the
 	     tool is are generated files, and from this target, two files that
 		 list out all the files generated. After this is done, the files
-		 need to be read and then added to the build. -->
+		 need to be read and then added to the build.
+	  -->
 	<Target Name="Antlr4Compile"
 			DependsOnTargets="$(Antlr4CompileDependsOn)"
 			Condition="'@(Antlr4)' != ''"
@@ -199,7 +208,7 @@
 		 Instead, inject into CleanDependsOn a custom clean step. This target will
 		 read the code gen list from Antlr, and delete all files. Note that the files
 		 in the list must be exact, no wildcards.
-		 -->
+      -->
 	<Target Name="CustomBeforeClean">
 		<Message Text="CustomBeforeClean target executed"/>
 		<Message Text="Removing files listed in $(Antlr4AllListFile)"/>
@@ -222,7 +231,7 @@
 		 multiple times <Compile> for a file. So, this tasks computes whether
 		 the compile list includes files already listed
 		 in the <Compile> item list (see SubtractList step below).
-    -->
+      -->
 	<Target Name="Antlr4CompileAddFilesGenerated"
 		Condition="Exists($(Antlr4ToCompileListFile))">
 		<Message Text="Reading the list of files generated from the Antlr Tool."/>
