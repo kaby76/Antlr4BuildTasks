@@ -5,8 +5,9 @@ It is based on Harwell's excellent [Antlr4cs build tool](https://github.com/tunn
 but has been completely rewritten and extended to function as a wrapper for the official
 Antlr4 Tool that uses Java to generate a parser for all targets, including C#.
 
-To use this package, just include PackageReference's for Antlr4BuildTasks and the Antlr4.Runtime.Standard
-version you want to use. The rest is taken care of by this tool.
+To use this package, include PackageReference's for Antlr4BuildTasks and the Antlr4.Runtime.Standard
+version you want to use, then set the Build Action for your grammar files to Antlr4.
+The rest is taken care of by this tool.
 
 # Installation of Prerequisites
 
