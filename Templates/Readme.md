@@ -20,7 +20,7 @@ and [the instructions in poor English](https://docs.microsoft.com/en-us/dotnet/c
 
 e.g.,
 
-    dotnet new -i C:\Users\kenne\Documents\Antlr4BuildTasks\Templates\templates\AntlrCAProject'
+    dotnet new -i 'C:\Users\kenne\Documents\Antlr4BuildTasks\Templates\templates\AntlrCAProject'
 
 
 ## To create an Antlr C# program:
@@ -43,5 +43,5 @@ you need to use the full path of the "AntlrCAProject" directory.
 
 e.g.,
 
-    dotnet new -u C:\Users\kenne\Documents\Antlr4BuildTasks\Templates\templates\AntlrCAProject'
+    dotnet new -u 'C:\Users\kenne\Documents\Antlr4BuildTasks\Templates\templates\AntlrCAProject'
 
