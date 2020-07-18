@@ -89,7 +89,7 @@
                         }
                         UsingToolPath = archive_name;
                     }
-                    else throw new Exception("Unhandled version of Antlr4.Runtime.Standard");
+                    else throw new Exception("Unhandled version of Antlr4.Runtime.Standard. Make sure you add <PackageReference Include=\"Antlr4.Runtime.Standard\" Version=\"4.8\" /> to your csproj file.");
                 }
                 else throw new Exception("Which OS??");
             }

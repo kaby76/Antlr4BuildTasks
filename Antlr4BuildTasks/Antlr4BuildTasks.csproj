@@ -40,7 +40,7 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Version>8.1</Version>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>v8.1: Cleaned up. See https://github.com/kaby76/Antlr4BuildTasks for details. Any previous csproj files that referenced Antlr4BuildTasks will need to be changed.</PackageReleaseNotes>
+		<PackageReleaseNotes>v8.1: Fix crash in task. See https://github.com/kaby76/Antlr4BuildTasks for details. Any previous csproj files that referenced Antlr4BuildTasks will need to be changed.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
