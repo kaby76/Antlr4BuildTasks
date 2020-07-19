@@ -1,7 +1,7 @@
 # Antlr4BuildTasks.Templates
 
-This directory contains code for Antlr templates for Net Core. The template provided contains an expression
-grammar example, code to print out the Antlr parse trees and token stream. Also included is an error
+This directory contains code for Antlr templates for Net Core. The template provided contains a grammar
+for expressions, code to print out the Antlr parse trees and token stream. Also included is an error
 reporter that augments the error messages provided by the Antlr runtime that improves on the suggested input
 that it is looking for when a parse error occurs. You will need to install Net Core.
 
