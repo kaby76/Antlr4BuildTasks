@@ -108,3 +108,11 @@ add the following &lt;PropertyGroup&gt; to you .csproj file.
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <NoWarn>3021;1701;1702</NoWarn>
     </PropertyGroup>
+
+# Release notes
+
+## Release notes for v8.1 (19 July 2020):
+
+* Cleaned up templates.
+* Fix [Ungraceful crash if Antlr4.Runtime.Standard is not referenced #1](https://github.com/kaby76/Antlr4BuildTasks/issues/1).
+* Fix [Stack overflow in error listener #2](https://github.com/kaby76/Antlr4BuildTasks/issues/2).
