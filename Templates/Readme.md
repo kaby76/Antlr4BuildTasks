@@ -1,9 +1,9 @@
 # Antlr4BuildTasks.Templates
 
-This directory contains code for Antlr templates for Net Core. So far the only template it
-contains is a "Hello World" console app for Antlr4. You will need to download Java, and the ANTLR 4.8
-Java jar. See [Installation of Prerequisites](https://github.com/kaby76/Antlr4BuildTasks#installation-of-prerequisites)
-for full details.
+This directory contains code for Antlr templates for Net Core. The template provided contains an expression
+grammar example, code to print out the Antlr parse trees and token stream. Also included is an error
+reporter that augments the error messages provided by the Antlr runtime that improves on the suggested input
+that it is looking for when a parse error occurs. You will need to install Net Core.
 
 ## To install:
 
