@@ -74,7 +74,7 @@ properties of the grammar file.
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8" />
-        <PackageReference Include="Antlr4BuildTasks" Version="8.0" />
+        <PackageReference Include="Antlr4BuildTasks" Version="8.1" />
     </ItemGroup>
 
 You *must* include a PackageReference to Antlr4.Runtime.Standard and Antlr4BuildTasks.

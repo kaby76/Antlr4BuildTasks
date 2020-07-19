@@ -16,19 +16,26 @@ namespace AntlrTemplate
         private readonly CommonTokenStream _token_stream;
         private bool _first_time;
 
+        public bool UseNfaInterpForErrors
+        {
+            get;
+            set;
+        }
+
         public ErrorListener(Parser parser, Lexer lexer, CommonTokenStream token_stream)
         {
             _parser = parser;
             _lexer = lexer;
             _token_stream = token_stream;
             _first_time = true;
+            UseNfaInterpForErrors = true;
         }
 
         public override void SyntaxError(TextWriter output, IRecognizer recognizer, S offendingSymbol, int line,
             int col, string msg, RecognitionException e)
         {
             had_error = true;
-            if (_first_time)
+            if (_first_time && UseNfaInterpForErrors)
             {
                 try
                 {
@@ -51,11 +58,11 @@ namespace AntlrTemplate
                     {
                         base.SyntaxError(output, recognizer, offendingSymbol, line, col, msg, e);
                     }
-
                     return;
                 }
                 catch (Exception)
-                { }
+                {
+                }
             }
             base.SyntaxError(output, recognizer, offendingSymbol, line, col, msg, e);
         }

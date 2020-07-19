@@ -15,16 +15,30 @@ namespace AntlrTemplate
         private static int changed = 0;
         private static bool first_time = true;
 
-        public static StringBuilder OutputTokens(this CommonTokenStream stream)
+        public static StringBuilder OutputTokens(this CommonTokenStream stream, Lexer lexer)
         {
             StringBuilder sb = new StringBuilder();
             foreach (IToken token in stream.GetTokens())
             {
-                sb.AppendLine("Token " + token.TokenIndex + " " + token.Type + " " + "channel " + ((Lexer)stream.TokenSource).ChannelNames[token.Channel] + " " + Output.PerformEscapes(token.Text));
+                sb.AppendLine("Token " + token.TokenIndex
+                              + " line " + token.Line
+                              + " col " + token.Column
+                              + " "
+                              + GetName(lexer, token.Type)
+                              + "(" + token.Type + ")"
+                              + " channel " + ((Lexer)stream.TokenSource).ChannelNames[token.Channel] + " " + Output.PerformEscapes(token.Text));
             }
             return sb;
         }
 
+        public static string GetName(Lexer lexer, int type)
+        {
+            if (type == -1) return "EOF";
+            var vocab = lexer.Vocabulary;
+            if (vocab.GetLiteralName(type) != null) return vocab.GetLiteralName(type);
+            if (vocab.GetSymbolicName(type) != null) return vocab.GetSymbolicName(type);
+            else return type.ToString();
+        }
         public static StringBuilder OutputTree(this IParseTree tree, CommonTokenStream stream)
         {
             StringBuilder sb = new StringBuilder();
