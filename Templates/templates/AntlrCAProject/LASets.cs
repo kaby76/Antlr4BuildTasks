@@ -170,7 +170,7 @@ namespace AntlrTemplate
             int index_on_transition = t._index_at_transition;
             int token_index = t._index;
             ATNState state = t._to;
-            var rule_match = _parser.Atn.ruleToStartState.Where(t => t.stateNumber == state.stateNumber);
+            var rule_match = _parser.Atn.ruleToStartState.Where(v => v.stateNumber == state.stateNumber);
             var start_rule = rule_match.Any() ? rule_match.FirstOrDefault().ruleIndex : -1;
             var q = p.ToList();
             if (start_rule >= 0) q.Add(start_rule);
@@ -263,7 +263,7 @@ namespace AntlrTemplate
             {
                 if (_log_parse)
                 {
-                    var n = _parser.Atn.ruleToStartState.Where(t => t.stateNumber == state.stateNumber);
+                    var n = _parser.Atn.ruleToStartState.Where(v => v.stateNumber == state.stateNumber);
                     var r = n.Any() ? n.FirstOrDefault().ruleIndex : -1;
                     var name = (r >= 0) ? (" " + _parser.RuleNames[r]) : "";
                     System.Console.Error.Write(
@@ -528,7 +528,7 @@ namespace AntlrTemplate
 
             if (_log_parse)
             {
-                var n = _parser.Atn.ruleToStartState.Where(t => t.stateNumber == state.stateNumber);
+                var n = _parser.Atn.ruleToStartState.Where(v => v.stateNumber == state.stateNumber);
                 var r = n.Any() ? n.FirstOrDefault().ruleIndex : -1;
                 var name = (r >= 0) ? (" " + _parser.RuleNames[r]) : "";
                 System.Console.Error.Write(
