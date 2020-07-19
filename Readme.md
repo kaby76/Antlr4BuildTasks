@@ -111,6 +111,10 @@ add the following &lt;PropertyGroup&gt; to you .csproj file.
 
 # Release notes
 
+## Release notes for v8.1.1 (19 July 2020):
+
+* Fix typos in templates. Release only templates.
+
 ## Release notes for v8.1 (19 July 2020):
 
 * Cleaned up templates.
