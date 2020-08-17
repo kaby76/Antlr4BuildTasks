@@ -67,6 +67,10 @@
                                     + System.IO.Path.DirectorySeparatorChar
                                     + "java.exe";
                 }
+                else if (System.Environment.OSVersion.Platform == PlatformID.Unix)
+                {
+                    UsingJavaExec = "/usr/bin/java";
+                }
                 else throw new Exception("Which OS??");
             }
             else

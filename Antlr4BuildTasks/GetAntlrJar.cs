@@ -44,6 +44,7 @@
                 if (System.Environment.OSVersion.Platform == PlatformID.Win32NT
                     || System.Environment.OSVersion.Platform == PlatformID.Win32S
                     || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
+                    || System.Environment.OSVersion.Platform == PlatformID.Unix
                 )
                 {
                     string version = null;
