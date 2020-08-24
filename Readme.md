@@ -1,9 +1,13 @@
 # Antlr4BuildTasks
 
 This package is a build tool for Antlr4 C# programs with the Antl4.Runtime.Standard package.
-It is based on Harwell's excellent [Antlr4cs build tool](https://github.com/tunnelvisionlabs/antlr4cs/tree/master/runtime/CSharp/Antlr4BuildTasks),
-which integrates the build rules, IDE support, templates, and tool. Antlr4BuildTasks is a package
-that focuses on only the build rules, uses the currently maintained version of the Antlr tool and runtime.
+It is based on Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
+also known as the NuGet package [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/).
+That package is fine, but it is several versions behind the current
+Antlr4 tool. It also integrates the build rules, IDE support, templates, and tool, which you may
+not want. Antlr4BuildTasks is a package
+that focuses on only the build rules, uses the currently maintained version of the Antlr tool
+and runtime.
 
 To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packages
 to your project, you can use the "NuGet Package Manager", or add the following lines to your .csproj file:
