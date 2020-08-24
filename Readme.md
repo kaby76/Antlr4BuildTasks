@@ -69,13 +69,15 @@ add the following &lt;PropertyGroup&gt; to you .csproj file.
 
 ### Conversion from Antlr4.CodeGenerator/Antlr4.Runtime to Antlr4BuildTasks/Antlr4.Runtime.Standard
 
-* Change &lt;Antlr4&gt; items from
+Change items from
 
-    &lt;ItemGroup&gt;
-        &lt;Antlr4 Update="arithmetic.g4"&gt;<br>
+
+     <ItemGroup>
+         <Antlr4 Update="arithmetic.g4">
             etc etc etc
-        &lt;/Antlr4&gt;
-    &lt;/ItemGroup&gt;
+         </Antlr4>
+     </ItemGroup>
+
 
 to
 
@@ -84,7 +86,7 @@ to
     </ItemGroup>
 
 
-* Change package references from
+Change package references from
 
     <ItemGroup>
         <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
