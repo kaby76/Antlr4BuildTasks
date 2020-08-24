@@ -71,16 +71,15 @@ add the following &lt;PropertyGroup&gt; to you .csproj file.
 
 * Change &lt;Antlr4&gt; items from
 
-		<Antlr4 Update="arithmetic.g4">
-			<DefaultCustomToolNamespace>$([MSBuild]::ValueOrDefault('$(RootNamespace).%(DefaultCustomToolNamespace)', '').TrimEnd('.'))</DefaultCustomToolNamespace>
-			<CustomToolNamespace>$([MSBuild]::ValueOrDefault(%(CustomToolNamespace), %(DefaultCustomToolNamespace)))</CustomToolNamespace>
-		</Antlr4>
+    <Antlr4 Update="arithmetic.g4">
+        <DefaultCustomToolNamespace>$([MSBuild]::ValueOrDefault('$(RootNamespace).%(DefaultCustomToolNamespace)', '').TrimEnd('.'))</DefaultCustomToolNamespace>
+        <CustomToolNamespace>$([MSBuild]::ValueOrDefault(%(CustomToolNamespace), %(DefaultCustomToolNamespace)))</CustomToolNamespace>
+    </Antlr4>
 
 to
 
-	<ItemGroup>
-		<Antlr4 Include="arithmetic.g4" />
-	</ItemGroup>
+    <Antlr4 Include="arithmetic.g4" />
+
 
 * Change package references from
 
