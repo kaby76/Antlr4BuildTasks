@@ -11,11 +11,11 @@ Antlr4BuildTasks is a replacement for Antlr4.CodeGenerator
 requiring only minor changes to the .csproj file.
 
 To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packages
-to your project, you can use the "NuGet Package Manager", or add the following lines to your .csproj file:
+to your project. csproj file as shown below, otherwise you can use the "NuGet Package Manager":
 
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8" />
-        <PackageReference Include="Antlr4BuildTasks" Version="8.2" />
+        <PackageReference Include="Antlr4BuildTasks" Version="8.3" />
     </ItemGroup>
     
 Then, you will need to tag each Antlr4 grammar file you want the Antlr tool to process. You can change the
