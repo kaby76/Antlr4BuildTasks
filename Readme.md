@@ -100,7 +100,7 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="8.2" />
+        <PackageReference Include="Antlr4BuildTasks" Version="8.3" />
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8" />
     </ItemGroup>
 
