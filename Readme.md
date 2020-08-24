@@ -8,7 +8,7 @@ Antlr4 tool and runtime, and as far as I know, is not being maintained. Along wi
 [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard/)
 the maintained equivalent to [Antlr4.Runtime](https://www.nuget.org/packages/Antlr4.Runtime/),
 Antlr4BuildTasks is a replacement for Antlr4.CodeGenerator
-with only minor changes to the .csproj file.
+requiring only minor changes to the .csproj file.
 
 To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packages
 to your project, you can use the "NuGet Package Manager", or add the following lines to your .csproj file:
