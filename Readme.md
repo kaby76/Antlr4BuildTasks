@@ -71,12 +71,12 @@ add the following &lt;PropertyGroup&gt; to you .csproj file.
 
 * Change &lt;Antlr4&gt; items from
 
-    &lt;ItemGroup&gt;
-        &lt;Antlr4 Update="arithmetic.g4"&gt;
-            &lt;DefaultCustomToolNamespace&gt;&#36;(&#91;MSBuild&#93;::ValueOrDefault('&#36;(RootNamespace).&#37;(DefaultCustomToolNamespace)','').TrimEnd('.'))&lt;/DefaultCustomToolNamespace&gt;
-            &lt;CustomToolNamespace>&#36;(&#91;MSBuild&#93;::ValueOrDefault(&#37;(CustomToolNamespace), &#37;(DefaultCustomToolNamespace))&lt;/CustomToolNamespace&gt;
-        &lt;/Antlr4&gt;
-    &lt;/ItemGroup&gt;
+    &lt;ItemGroup&gt;<br>
+        &lt;Antlr4 Update="arithmetic.g4"&gt;<br>
+            &lt;DefaultCustomToolNamespace&gt;&#36;(&#91;MSBuild&#93;::ValueOrDefault('&#36;(RootNamespace).&#37;(DefaultCustomToolNamespace)','').TrimEnd('.'))&lt;/DefaultCustomToolNamespace&gt;<br>
+            &lt;CustomToolNamespace>&#36;(&#91;MSBuild&#93;::ValueOrDefault(&#37;(CustomToolNamespace), &#37;(DefaultCustomToolNamespace))&lt;/CustomToolNamespace&gt;<br>
+        &lt;/Antlr4&gt;<br>
+    &lt;/ItemGroup&gt;<br>
 
 to
 
