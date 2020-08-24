@@ -25,7 +25,7 @@ to your .csproj file for your "MyGrammar.g4" file:
         <Antlr4 Include="MyGrammar.g4" />
     </ItemGroup>
     
-# Setting arguments to the Antlr tool
+## Setting arguments to the Antlr tool
 
 You can set the arguments to the Antlr Tool in Visual Studio by modifying the properties
 for each grammar file. Or, you can modify the .csproj file to include the parameters you are
@@ -67,7 +67,7 @@ add the following &lt;PropertyGroup&gt; to you .csproj file.
         <NoWarn>3021;1701;1702</NoWarn>
     </PropertyGroup>
 
-# Conversion from Antlr4.CodeGenerator + Antlr4.Runtime to Antlr4BuildTasks + Antlr4.Runtime.Standard
+## Conversion from Antlr4.CodeGenerator/Antlr4.Runtime to Antlr4BuildTasks/Antlr4.Runtime.Standard
 
 * Change &lt;Antlr4&gt; items from
 
