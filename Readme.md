@@ -103,6 +103,6 @@ to
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8" />
     </ItemGroup>
 
-### Latest release v8.2 (17 Aug 2020):
+### Latest release v8.3 (17 Aug 2020):
 
 * Fix for Linux build.
