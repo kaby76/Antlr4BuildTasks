@@ -57,7 +57,7 @@ flag warnings as errors and stop a build.
 * &lt;LibPath&gt; -- A string that specifies the path for token and grammar files
 for the Antlr tool.
 * &lt;Encoding&gt; -- A string that specifies the encoding of the input grammars.
-* &lt;DOptions&gt; -- A list of <option>=<value>, passed to the Antlr tool. E.g.,
+* &lt;DOptions&gt; -- A list of &lt;option&gt;=&lt;value&gt;, passed to the Antlr tool. E.g.,
 language=Java.
 
 Antlr generates files that may produce a lot of compiler warnings. To ignore those,
