@@ -19,13 +19,13 @@ to your project, you can use the "NuGet Package Manager", or add the following l
     
 Then, you will need to tag each Antlr4 grammar file you want the Antlr tool to run on. You can change the
 "Build Action" property for the .g4 file from "None" to "ANTLR 4 grammar". Or, you can add the following lines
-to your .csproj file for your "MyGrammar.g4" grammar file:
+to your .csproj file for your "MyGrammar.g4" file:
 
     <ItemGroup>
         <Antlr4 Include="MyGrammar.g4" />
     </ItemGroup>
     
-# Additional customizations
+# Setting arguments to the Antlr tool
 
 You can set the arguments to the Antlr Tool in Visual Studio by modifying the properties
 for each grammar file. Or, you can modify the .csproj file to include the parameters you are
