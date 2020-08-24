@@ -2,12 +2,10 @@
 
 This package is a build tool for Antlr4 C# programs with the Antl4.Runtime.Standard package.
 It is based on Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
-also known as the NuGet package [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/).
-That package is fine, but it is several versions behind the current
-Antlr4 tool. It also integrates the build rules, IDE support, templates, and tool, which you may
-not want. Antlr4BuildTasks is a package
-that focuses only on the build, and uses the currently maintained version of the Antlr tool
-and runtime.
+which is published in NuGet as the [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
+package. Although Antlr4.CodeGenerator is fine, it is several versions behind the current
+Antlr4 tool and runtime, and as far as I know, is not being maintained.
+Antlr4BuildTasks is a replacement for Antlr4.CodeGenerator with only minor changes.
 
 To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packages
 to your project, you can use the "NuGet Package Manager", or add the following lines to your .csproj file:
@@ -66,6 +64,39 @@ add the following &lt;PropertyGroup&gt; to you .csproj file.
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <NoWarn>3021;1701;1702</NoWarn>
     </PropertyGroup>
+
+# Conversion from Antlr4.CodeGenerator + Antlr4.Runtime to Antlr4BuildTasks + Antlr4.Runtime.Standard
+
+* Change &lt;Antlr4&gt; items from
+
+		<Antlr4 Update="arithmetic.g4">
+			<DefaultCustomToolNamespace>$([MSBuild]::ValueOrDefault('$(RootNamespace).%(DefaultCustomToolNamespace)', '').TrimEnd('.'))</DefaultCustomToolNamespace>
+			<CustomToolNamespace>$([MSBuild]::ValueOrDefault(%(CustomToolNamespace), %(DefaultCustomToolNamespace)))</CustomToolNamespace>
+		</Antlr4>
+
+to
+
+	<ItemGroup>
+		<Antlr4 Include="arithmetic.g4" />
+	</ItemGroup>
+
+* Change package references from
+
+    <ItemGroup>
+        <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+    </ItemGroup>
+
+to
+
+    <ItemGroup>
+        <PackageReference Include="Antlr4BuildTasks" Version="8.2" />
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8" />
+    </ItemGroup>
+
 
 # Release notes
 
