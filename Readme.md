@@ -4,8 +4,9 @@ This package is a build tool for Antlr4 C# programs with the Antl4.Runtime.Stand
 It is based on Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
 which is published in NuGet as the [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
 package. Although Antlr4.CodeGenerator is fine, it is several versions behind the current
-Antlr4 tool and runtime, and as far as I know, is not being maintained.
-Antlr4BuildTasks is a replacement for Antlr4.CodeGenerator with only minor changes.
+Antlr4 tool and runtime, and as far as I know, is not being maintained. Along with Antlr4.Runtime.Standard
+the maintained equivalent to Antlr4.Runtime, Antlr4BuildTasks is a replacement for Antlr4.CodeGenerator
+with only minor changes to the .csproj file.
 
 To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packages
 to your project, you can use the "NuGet Package Manager", or add the following lines to your .csproj file:
