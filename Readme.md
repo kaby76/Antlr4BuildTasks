@@ -5,7 +5,8 @@ It is based on Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlab
 which is published in NuGet as the [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
 package. Although Antlr4.CodeGenerator is fine, it is several versions behind the current
 Antlr4 tool and runtime, and as far as I know, is not being maintained. Along with Antlr4.Runtime.Standard
-the maintained equivalent to Antlr4.Runtime, Antlr4BuildTasks is a replacement for Antlr4.CodeGenerator
+the maintained equivalent to [Antlr4.Runtime](https://www.nuget.org/packages/Antlr4.Runtime/),
+Antlr4BuildTasks is a replacement for Antlr4.CodeGenerator
 with only minor changes to the .csproj file.
 
 To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packages
