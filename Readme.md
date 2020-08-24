@@ -69,7 +69,7 @@ add the following &lt;PropertyGroup&gt; to you .csproj file.
 
 ### Conversion from Antlr4.CodeGenerator/Antlr4.Runtime to Antlr4BuildTasks/Antlr4.Runtime.Standard
 
-Change items from
+In the .csproj file, change items from
 
 
      <ItemGroup>
