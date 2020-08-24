@@ -6,7 +6,7 @@ also known as the NuGet package [Antlr4.CodeGenerator](https://www.nuget.org/pac
 That package is fine, but it is several versions behind the current
 Antlr4 tool. It also integrates the build rules, IDE support, templates, and tool, which you may
 not want. Antlr4BuildTasks is a package
-that focuses on only the build rules, uses the currently maintained version of the Antlr tool
+that focuses on only the build rules, and uses the currently maintained version of the Antlr tool
 and runtime.
 
 To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packages
