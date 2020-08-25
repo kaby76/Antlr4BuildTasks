@@ -37,23 +37,34 @@ namespace Antlr4.Build.Tasks
             {
                 _result = new List<ITaskItem>();
                 string current = Directory.GetCurrentDirectory();
-                if (List1 != null) foreach (var v2 in List1)
+                if (List1 != null)
                 {
-                    var f = v2.ItemSpec.ToString();
-                    var is_full_path = System.IO.Path.IsPathRooted(f);
-                    if (!is_full_path)
+                    foreach (var v1 in List1)
                     {
-                        f = System.IO.Path.GetFullPath(f);
-                    }
+                        if (v1 == null)
+                            continue;
+                        var f = v1.ItemSpec.ToString();
+                        try
+                        {
+                            var is_full_path = System.IO.Path.IsPathRooted(f);
+                            if (!is_full_path)
+                            {
+                                f = System.IO.Path.GetFullPath(f);
+                            }
 
-                    var absolute = f;
-                    var relative_path = f.Replace(current, "");
-                    if (relative_path[0] == '/' || relative_path[0] == '\\')
-                    {
-                        relative_path = relative_path.Substring(1);
+                            var absolute = f;
+                            var relative_path = f.Replace(current, "");
+                            if (relative_path[0] == '/' || relative_path[0] == '\\')
+                            {
+                                relative_path = relative_path.Substring(1);
+                            }
+                            _result.Add(new TaskItem() { ItemSpec = relative_path });
+                        }
+                        catch
+                        {
+                            _result.Add(v1);
+                        }
                     }
-
-                    _result.Add(new TaskItem() {ItemSpec = relative_path});
                 }
                 success = true;
             }
