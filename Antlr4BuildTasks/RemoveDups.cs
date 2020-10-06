@@ -1,20 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Build.Framework;
+﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Directory = System.IO.Directory;
-using File = System.IO.File;
-using FileAttributes = System.IO.FileAttributes;
-using Path = System.IO.Path;
 
 namespace Antlr4.Build.Tasks
 {
@@ -64,7 +52,5 @@ namespace Antlr4.Build.Tasks
                 }
             }
         }
-
-
     }
 }

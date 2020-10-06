@@ -45,6 +45,7 @@
                     || System.Environment.OSVersion.Platform == PlatformID.Win32S
                     || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
                     || System.Environment.OSVersion.Platform == PlatformID.Unix
+                    || System.Environment.OSVersion.Platform == PlatformID.MacOSX
                 )
                 {
                     string version = null;

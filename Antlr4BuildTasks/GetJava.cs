@@ -71,6 +71,10 @@
                 {
                     UsingJavaExec = "/usr/bin/java";
                 }
+                else if (System.Environment.OSVersion.Platform == PlatformID.MacOSX)
+                {
+                    UsingJavaExec = "/usr/bin/java";
+                }
                 else throw new Exception("Which OS??");
             }
             else

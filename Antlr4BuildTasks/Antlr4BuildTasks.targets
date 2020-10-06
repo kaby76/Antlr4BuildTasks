@@ -133,7 +133,7 @@
 
 		<Message Text="Tasks for Antlr in '$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll'"/>
 		<GetJava
-			JavaExec="$(JAVA_EXEC)"
+			JavaExec="$(AntlrvsixJavaExec)"
 			IntermediateOutputPath="$(IntermediateOutputPath)">
 			<Output TaskParameter="UsingJavaExec" ItemName="UsingJavaExec"/>
 		</GetJava>
@@ -141,7 +141,7 @@
 		<Message Text="The output from GetJava task is '@(UsingJavaExec)'"/>
 
 		<GetAntlrJar
-			ToolPath="$(Antlr4ToolPath)"
+			ToolPath="$(AntlrvsixToolPath)"
 			PackageReference="@(PackageReference)"
 			IntermediateOutputPath="$(IntermediateOutputPath)">
 			<Output TaskParameter="UsingToolPath" ItemName="UsingToolPath" />

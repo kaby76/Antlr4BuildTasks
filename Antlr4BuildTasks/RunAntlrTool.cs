@@ -2,29 +2,19 @@
 
 namespace Antlr4.Build.Tasks
 {
-    using System.Diagnostics;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Net;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-    using System.Runtime.InteropServices;
-    using System.Text.RegularExpressions;
-    using StringBuilder = System.Text.StringBuilder;
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
+    using System.Text.RegularExpressions;
     using Directory = System.IO.Directory;
     using File = System.IO.File;
     using FileAttributes = System.IO.FileAttributes;
     using Path = System.IO.Path;
+    using StringBuilder = System.Text.StringBuilder;
 
     public class RunAntlrTool : Task
     {
@@ -219,12 +209,7 @@ namespace Antlr4.Build.Tasks
 
                 if (!File.Exists(JavaExec))
                     throw new Exception("Cannot find Java executable, currently set to "
-                                        + "'" + JavaExec + "'"
-                                        + " Please set either the JAVA_EXEC environment variable, "
-                                        + "or set a property for JAVA_EXEC in your CSPROJ file."
-                                        + " The variable must be the full path name of the executable for Java."
-                                        + " E.g., on Linux, export JAVA_EXEC=\"/usr/bin/java\". On Windows,"
-                                        + " JAVA_EXEC=\"C:\\Program Files\\Java\\jdk-11.0.4\"");
+                                        + "'" + JavaExec + "'");
 
                 // Next find Java.
                 string java_executable = null;
@@ -268,9 +253,7 @@ namespace Antlr4.Build.Tasks
 
                 if (!File.Exists(ToolPath))
                     throw new Exception("Cannot find Antlr4 jar file, currently set to "
-                                        + "'" + ToolPath + "'"
-                                        + " Please set either the Antlr4ToolPath environment variable, "
-                                        + "or set a property for Antlr4ToolPath in your CSPROJ file.");
+                                        + "'" + ToolPath + "'");
 
 
                 // Because we're using the Java version of the Antlr tool,
