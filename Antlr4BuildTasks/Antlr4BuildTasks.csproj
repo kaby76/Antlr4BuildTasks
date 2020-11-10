@@ -8,8 +8,8 @@
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
 
-		<AssemblyVersion>8.3.0.0</AssemblyVersion>
-		<FileVersion>8.3.0.0</FileVersion>
+		<AssemblyVersion>8.7.0.0</AssemblyVersion>
+		<FileVersion>8.7.0.0</FileVersion>
 
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright></Copyright>
@@ -38,9 +38,9 @@
 		<PackageIconUrl>https://raw.github.com/antlr/website-antlr4/master/images/icons/antlr.png</PackageIconUrl>
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<Version>8.4</Version>
+		<Version>8.7</Version>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>v8.3: Fix for SubractList. See https://github.com/kaby76/Antlr4BuildTasks for details. Any previous csproj files that referenced Antlr4BuildTasks will need to be changed.</PackageReleaseNotes>
+		<PackageReleaseNotes>v8.7: Fix net standard. Any previous csproj files that referenced Antlr4BuildTasks will need to be changed.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>

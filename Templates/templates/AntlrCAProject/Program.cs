@@ -37,8 +37,8 @@ namespace AntlrTemplate
             var parser = new arithmeticParser(tokens);
             var listener_lexer = new ErrorListener<int>();
             var listener_parser = new ErrorListener<IToken>();
-            parser.AddErrorListener(listener);
-            lexer.AddErrorListener();
+            lexer.AddErrorListener(listener_lexer);
+            parser.AddErrorListener(listener_parser);
             var tree = parser.file();
             if (listener_lexer.had_error || listener_parser.had_error)
                 System.Console.WriteLine("error in parse.");
