@@ -1,14 +1,14 @@
-﻿// Template generated code from Antlr4BuildTasks.Template v 8.1
+﻿// Template generated code from Antlr4BuildTasks.Template v 8.4
 grammar arithmetic;
 
 file : expression (SEMI expression)* EOF;
 
 expression
-   :  left=expression op=POW right=expression
-   |  left=expression op=(TIMES | DIV) right=expression
-   |  left=expression op=(PLUS | MINUS) right=expression
-   |  LPAREN evalue=expression RPAREN
-   |  op=(PLUS | MINUS)* avalue=atom
+   :  expression POW expression
+   |  expression (TIMES | DIV) expression
+   |  expression (PLUS | MINUS) expression
+   |  LPAREN expression RPAREN
+   |  (PLUS | MINUS)* atom
    ;
 
 atom
