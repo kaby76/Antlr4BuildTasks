@@ -58,7 +58,7 @@
                         }
                     }
 
-                    if (version == "4.8" || version == "4.8.0")
+                    if (version == "4.9" || version == "4.9.0")
                     {
                         // Version exists already in package.
                         string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -70,28 +70,35 @@
                                                                + System.IO.Path.DirectorySeparatorChar
                                                                + "build"
                                                                + System.IO.Path.DirectorySeparatorChar
-                                                               + System.IO.Path.GetFileName(@"antlr-4.8-complete.jar")
+                                                               + System.IO.Path.GetFileName(@"antlr-4.9-complete.jar")
                         );
                         UsingToolPath = archive_path;
                     }
-                    else if (version == "4.7.2")
+                    else
                     {
-                        // Download.
-                        var jar =
-                            @"https://www.antlr.org/download/antlr-4.7.2-complete.jar"; WebClient webClient = new WebClient();
-                        System.IO.Directory.CreateDirectory(IntermediateOutputPath);
-                        var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
-                                           System.IO.Path.GetFileName(jar);
-                        var jar_dir = IntermediateOutputPath;
-                        System.IO.Directory.CreateDirectory(jar_dir);
-                        if (!File.Exists(archive_name))
+                        // For all others, try to download the file from the internet.
+                        try
                         {
-                            this.Log.LogMessage(MessageImportance.Normal, "Downloading " + jar);
-                            webClient.DownloadFile(jar, archive_name);
+                            var jar =
+                                @"https://www.antlr.org/download/antlr-" + version + "-complete.jar";
+                            WebClient webClient = new WebClient();
+                            System.IO.Directory.CreateDirectory(IntermediateOutputPath);
+                            var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
+                                               System.IO.Path.GetFileName(jar);
+                            var jar_dir = IntermediateOutputPath;
+                            System.IO.Directory.CreateDirectory(jar_dir);
+                            if (!File.Exists(archive_name))
+                            {
+                                this.Log.LogMessage(MessageImportance.Normal, "Downloading " + jar);
+                                webClient.DownloadFile(jar, archive_name);
+                            }
+                            UsingToolPath = archive_name;
                         }
-                        UsingToolPath = archive_name;
+                        catch (Exception eeks)
+                        {
+                            throw new Exception("Cannot download version " + version + " of the Antlr toolset. Please check the version and https://www.antlr.org/download/index.html for an available '-complete.jar' file version. Make sure the version number is exact, e.g., '4.9', not '4.9.0'.");
+                        }
                     }
-                    else throw new Exception("Unhandled version of Antlr4.Runtime.Standard. Make sure you add <PackageReference Include=\"Antlr4.Runtime.Standard\" Version=\"4.8\" /> to your csproj file.");
                 }
                 else throw new Exception("Which OS??");
             }

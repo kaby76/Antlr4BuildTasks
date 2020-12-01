@@ -221,7 +221,7 @@ namespace Antlr4.Build.Tasks
                 {
                     java_executable = JavaExec;
                     if (!File.Exists(java_executable))
-                        throw new Exception("Yo, I haven't a clue where the Java executable is on this system. Crashing...");
+                        throw new Exception("I haven't a clue where the Java executable is on this system. Quiting...");
                 }
 
                 if (ToolPath == null || ToolPath == "")
@@ -232,7 +232,7 @@ namespace Antlr4.Build.Tasks
                     )
                     {
                         var jar =
-                            @"https://www.antlr.org/download/antlr-4.8-complete.jar";
+                            @"https://www.antlr.org/download/antlr-4.9-complete.jar";
                         string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                         string archive_path = Path.GetFullPath(assemblyPath
                            + System.IO.Path.DirectorySeparatorChar
