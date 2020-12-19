@@ -81,7 +81,7 @@
 to identify which version of the Antlr Java tool to run to generate the parser and lexer.");
             }
 
-            if (AntlrProbePath == null)
+            if (AntlrProbePath == null || AntlrProbePath == "")
             {
                 throw new Exception(@"Antlr4BuildTasks requires an AntlrProbePath, which contains the list of places to find and download the Antlr .jar file. AntlrProbePath is null.");
             }
