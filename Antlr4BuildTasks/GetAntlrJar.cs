@@ -3,9 +3,12 @@
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.IO;
     using System.Net;
     using System.Reflection;
+    using System.Text.RegularExpressions;
 
     public class GetAntlrJar : Task
     {
@@ -31,6 +34,12 @@
             set;
         }
 
+        public string AntlrProbePath
+        {
+            get;
+            set;
+        }
+
         [Output] public string UsingToolPath
         {
             get;
@@ -39,74 +48,102 @@
 
         public override bool Execute()
         {
-            if (ToolPath == null || ToolPath == "")
-            {
-                if (System.Environment.OSVersion.Platform == PlatformID.Win32NT
-                    || System.Environment.OSVersion.Platform == PlatformID.Win32S
-                    || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
-                    || System.Environment.OSVersion.Platform == PlatformID.Unix
-                    || System.Environment.OSVersion.Platform == PlatformID.MacOSX
-                )
-                {
-                    string version = null;
-                    foreach (var i in PackageReference)
-                    {
-                        if (i.ItemSpec == "Antlr4.Runtime.Standard")
-                        {
-                            version = i.GetMetadata("Version");
-                            break;
-                        }
-                    }
-
-                    if (version == "4.9" || version == "4.9.0")
-                    {
-                        // Version exists already in package.
-                        string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                        string archive_path = Path.GetFullPath(assemblyPath
-                                                               + System.IO.Path.DirectorySeparatorChar
-                                                               + ".."
-                                                               + System.IO.Path.DirectorySeparatorChar
-                                                               + ".."
-                                                               + System.IO.Path.DirectorySeparatorChar
-                                                               + "build"
-                                                               + System.IO.Path.DirectorySeparatorChar
-                                                               + System.IO.Path.GetFileName(@"antlr-4.9-complete.jar")
-                        );
-                        UsingToolPath = archive_path;
-                    }
-                    else
-                    {
-                        // For all others, try to download the file from the internet.
-                        try
-                        {
-                            var jar =
-                                @"https://www.antlr.org/download/antlr-" + version + "-complete.jar";
-                            WebClient webClient = new WebClient();
-                            System.IO.Directory.CreateDirectory(IntermediateOutputPath);
-                            var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
-                                               System.IO.Path.GetFileName(jar);
-                            var jar_dir = IntermediateOutputPath;
-                            System.IO.Directory.CreateDirectory(jar_dir);
-                            if (!File.Exists(archive_name))
-                            {
-                                this.Log.LogMessage(MessageImportance.Normal, "Downloading " + jar);
-                                webClient.DownloadFile(jar, archive_name);
-                            }
-                            UsingToolPath = archive_name;
-                        }
-                        catch (Exception eeks)
-                        {
-                            throw new Exception("Cannot download version " + version + " of the Antlr toolset. Please check the version and https://www.antlr.org/download/index.html for an available '-complete.jar' file version. Make sure the version number is exact, e.g., '4.9', not '4.9.0'.");
-                        }
-                    }
-                }
-                else throw new Exception("Which OS??");
-            }
-            else
+            if (!(ToolPath == null || ToolPath == ""))
             {
                 UsingToolPath = ToolPath;
+                return true;
+            }
+
+            string version = null;
+            bool reference_standard_runtime = false;
+            foreach (var i in PackageReference)
+            {
+                if (i.ItemSpec == "Antlr4.Runtime.Standard")
+                {
+                    reference_standard_runtime = true;
+                    version = i.GetMetadata("Version");
+                    break;
+                }
+            }
+            if (version == null)
+            {
+                foreach (var i in PackageReference)
+                {
+                    if (i.ItemSpec == "Antlr4.Runtime")
+                    {
+                        throw new Exception(@"You are referencing Antlr4.Runtime. This build tool can only reference the NET Standard library https://www.nuget.org/packages/Antlr4.Runtime.Standard/");
+                    }
+                }
+                if (reference_standard_runtime)
+                    throw new Exception(@"Antlr4BuildTasks cannot identify the version number you are referencing. Check the Version parameter.");
+                else
+                    throw new Exception(@"You are not referencing Antlr4.Runtime.Standard in you .csproj file. Antlr4BuildTasks requires a reference to it in order
+to identify which version of the Antlr Java tool to run to generate the parser and lexer.");
+            }
+
+            if (AntlrProbePath == null)
+            {
+                throw new Exception(@"Antlr4BuildTasks requires an AntlrProbePath, which contains the list of places to find and download the Antlr .jar file. AntlrProbePath is null.");
+            }
+
+            // Assume that it's a string with semi-colon separation. Split, then search for the version.
+            var paths = AntlrProbePath.Split(';').ToList();
+            string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string archive_path = Path.GetFullPath(assemblyPath
+                                                   + System.IO.Path.DirectorySeparatorChar
+                                                   + ".."
+                                                   + System.IO.Path.DirectorySeparatorChar
+                                                   + ".."
+                                                   + System.IO.Path.DirectorySeparatorChar
+                                                   + "build"
+                                                   + System.IO.Path.DirectorySeparatorChar);
+
+            paths.Insert(0, archive_path);
+            foreach (var probe in paths)
+            {
+                Regex r2 = new Regex("^(?<TWOVERSION>[0-9]+[.][0-9]+)([.][0-9]*)?$");
+                var m2 = r2.Match(version);
+                var v2 = m2.Success && m2.Groups["TWOVERSION"].Length > 0 ? m2.Groups["TWOVERSION"].Value : null;
+                Regex r3 = new Regex("^(?<THREEVERSION>[0-9]+[.][0-9]+[.][0-9]+)$");
+                var m3 = r3.Match(version);
+                var v3 = m3.Success && m3.Groups["THREEVERSION"].Length > 0 ? m3.Groups["THREEVERSION"].Value : null;
+                if (v3 != null && TryProbe(probe, v3))
+                {
+                    return true;
+                }
+                if (v2 != null && TryProbe(probe, v2))
+                {
+                    return true;
+                }
             }
             return true;
+        }
+
+        private bool TryProbe(string path, string version)
+        {
+            try
+            {
+                var jar =
+                   path + @"/antlr4-" + version + @"-complete.jar";
+                Log.LogMessage(MessageImportance.Normal, "Trying " + jar);
+                WebClient webClient = new WebClient();
+                System.IO.Directory.CreateDirectory(IntermediateOutputPath);
+                var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
+                                   System.IO.Path.GetFileName(jar);
+                var jar_dir = IntermediateOutputPath;
+                System.IO.Directory.CreateDirectory(jar_dir);
+                if (!File.Exists(archive_name))
+                {
+                    this.Log.LogMessage(MessageImportance.Normal, "Downloading " + jar);
+                    webClient.DownloadFile(jar, archive_name);
+                }
+                UsingToolPath = archive_name;
+                return true;
+            }
+            catch (Exception eeks)
+            {
+            }
+            return false;
         }
     }
 }
