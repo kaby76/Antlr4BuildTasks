@@ -15,25 +15,25 @@
 
   <PropertyGroup>
     <AntlrProbePath>
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.9;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.8-1;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.8;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.7.2;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.7.1;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.7;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.6;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.3;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.2-1;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.2;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.1-1;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.1;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.3;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.2.2;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.2.1;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.2;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.1;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.0
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.9/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.8-1/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.8/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.7.2/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.7.1/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.7/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.6/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.3/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.2-1/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.2/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.1-1/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.1/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.3/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.2.2/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.2.1/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.2/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.1/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.0/
     </AntlrProbePath>
   </PropertyGroup>
 

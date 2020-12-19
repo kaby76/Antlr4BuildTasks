@@ -89,7 +89,7 @@ to identify which version of the Antlr Java tool to run to generate the parser a
             // Assume that it's a string with semi-colon separation. Split, then search for the version.
             var paths = AntlrProbePath.Split(';').ToList();
             string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string archive_path = Path.GetFullPath(assemblyPath
+            string archive_path = "file:///" + Path.GetFullPath(assemblyPath
                                                    + System.IO.Path.DirectorySeparatorChar
                                                    + ".."
                                                    + System.IO.Path.DirectorySeparatorChar
@@ -121,29 +121,104 @@ to identify which version of the Antlr Java tool to run to generate the parser a
 
         private bool TryProbe(string path, string version)
         {
-            try
+            if (!path.EndsWith("/")) path = path + "/";
+
+
             {
-                var jar =
-                   path + @"/antlr4-" + version + @"-complete.jar";
-                Log.LogMessage(MessageImportance.Normal, "Trying " + jar);
-                WebClient webClient = new WebClient();
-                System.IO.Directory.CreateDirectory(IntermediateOutputPath);
-                var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
-                                   System.IO.Path.GetFileName(jar);
-                var jar_dir = IntermediateOutputPath;
-                System.IO.Directory.CreateDirectory(jar_dir);
-                if (!File.Exists(archive_name))
+                var jar = path + @"antlr-" + version + @"-complete.jar";
+                Log.LogMessage(MessageImportance.Normal, "Probing " + jar);
+                if (jar.StartsWith("file:///"))
                 {
-                    this.Log.LogMessage(MessageImportance.Normal, "Downloading " + jar);
-                    webClient.DownloadFile(jar, archive_name);
+                    try
+                    {
+                        System.Uri uri = new Uri(jar);
+                        var local_file = uri.LocalPath;
+                        Log.LogMessage(MessageImportance.Normal, "Local path " + local_file);
+                        if (File.Exists(local_file))
+                        {
+                            Log.LogMessage(MessageImportance.Normal, "got it.");
+                            UsingToolPath = local_file;
+                            return true;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                    return false;
                 }
-                UsingToolPath = archive_name;
-                return true;
+                else
+                {
+                    try
+                    {
+                        WebClient webClient = new WebClient();
+                        System.IO.Directory.CreateDirectory(IntermediateOutputPath);
+                        var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
+                                           System.IO.Path.GetFileName(jar);
+                        var jar_dir = IntermediateOutputPath;
+                        System.IO.Directory.CreateDirectory(jar_dir);
+                        if (!File.Exists(archive_name))
+                        {
+                            this.Log.LogMessage(MessageImportance.Normal, "Downloading " + jar);
+                            webClient.DownloadFile(jar, archive_name);
+                        }
+                        Log.LogMessage(MessageImportance.Normal, "got it.");
+                        UsingToolPath = archive_name;
+                        return true;
+                    }
+                    catch
+                    {
+                    }
+                    return false;
+                }
             }
-            catch (Exception eeks)
             {
+                var jar = path + @"antlr4-" + version + @"-complete.jar";
+                Log.LogMessage(MessageImportance.Normal, "Probing " + jar);
+                if (jar.StartsWith("file:///"))
+                {
+                    try
+                    {
+                        System.Uri uri = new Uri(jar);
+                        var local_file = uri.LocalPath;
+                        Log.LogMessage(MessageImportance.Normal, "Local path " + local_file);
+                        if (File.Exists(local_file))
+                        {
+                            Log.LogMessage(MessageImportance.Normal, "got it.");
+                            UsingToolPath = local_file;
+                            return true;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                    return false;
+                }
+                else
+                {
+                    try
+                    {
+                        WebClient webClient = new WebClient();
+                        System.IO.Directory.CreateDirectory(IntermediateOutputPath);
+                        var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
+                                           System.IO.Path.GetFileName(jar);
+                        var jar_dir = IntermediateOutputPath;
+                        System.IO.Directory.CreateDirectory(jar_dir);
+                        if (!File.Exists(archive_name))
+                        {
+                            this.Log.LogMessage(MessageImportance.Normal, "Downloading " + jar);
+                            webClient.DownloadFile(jar, archive_name);
+                        }
+                        Log.LogMessage(MessageImportance.Normal, "got it.");
+                        UsingToolPath = archive_name;
+                        return true;
+                    }
+                    catch
+                    {
+                    }
+                    return false;
+                }
             }
-            return false;
+
         }
     }
 }
