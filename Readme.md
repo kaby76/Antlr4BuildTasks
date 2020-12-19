@@ -14,8 +14,8 @@ To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packag
 to your project. csproj file as shown below, otherwise you can use the "NuGet Package Manager":
 
     <ItemGroup>
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8" />
-        <PackageReference Include="Antlr4BuildTasks" Version="8.3" />
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.0" />
+        <PackageReference Include="Antlr4BuildTasks" Version="8.9" />
     </ItemGroup>
     
 Then, you will need to tag each Antlr4 grammar file you want the Antlr tool to process. You can change the
@@ -100,14 +100,31 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="8.3" />
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8" />
+        <PackageReference Include="Antlr4BuildTasks" Version="8.9" />
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.0" />
     </ItemGroup>
 
-### Latest release v8.4 (6 Oct 2020):
 
-* Clean ups.
+Antlr4BuildTasks examines PropertyGroup `AntlrProbePath`, a string of URI
+separated by semicolon, to find the version
+of the Antlr JAR file that you are looking for. Antlr4BuildTasks will look for a .jar
+with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.9.0)
+as
 
-### Release v8.3 (17 Aug 2020):
+    antlr-4.9.0-complete.jar
+    antlr-4.9.0-complete.jar
+    antlr4-4.9.0-complete.jar
+    antlr4-4.9.0-complete.jar
 
-* Fix for Linux build.
+for each path in `AntlrProbePath`. You can change the path by assigning the
+value in your .csproj file:
+
+    <PropertyGroup>
+          <AntlrProbePath>file:///c:/foobar/;https://foobar.com/...<AntlrProbePath>
+    </PropertyGroup>
+
+
+### Latest release v8.9 (19 Dec 2020):
+
+* Fix [Add probe list for Antlr jar location #10](https://github.com/kaby76/Antlr4BuildTasks/issues/10)
+

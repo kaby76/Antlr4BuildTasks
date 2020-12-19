@@ -1,4 +1,4 @@
-﻿// Template generated code from Antlr4BuildTasks.Template v 8.8
+﻿// Template generated code from Antlr4BuildTasks.Template v 8.9
 namespace AntlrTemplate
 {
     using Antlr4.Runtime;
