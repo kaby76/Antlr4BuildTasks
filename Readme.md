@@ -15,7 +15,9 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.0" />
-        <PackageReference Include="Antlr4BuildTasks" Version="8.9" />
+        <PackageReference Include="Antlr4BuildTasks" Version="8.9">
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
     </ItemGroup>
     
 Then, you will need to tag each Antlr4 grammar file you want the Antlr tool to process. You can change the
@@ -25,6 +27,11 @@ to your .csproj file for your "MyGrammar.g4" file:
     <ItemGroup>
         <Antlr4 Include="MyGrammar.g4" />
     </ItemGroup>
+
+Note: `<PrivateAssets>all</PrivateAssets>` is added to the package reference
+so that when you run `dotnet publish`, the Antlr4BuildTasks.dll is not included
+in your app; it's only used to build your application.
+Antlr4BuildTasks.dll is not currently digitally signed.
     
 ### Setting arguments to the Antlr tool
 
