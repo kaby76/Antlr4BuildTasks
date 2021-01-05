@@ -28,5 +28,7 @@ jobs:
         dotnet new -i ../Templates/templates/AntlrCAProject
         dotnet new antlr
         dotnet restore
+        dotnet build
+        dotnet run
     - name: Test
       run: dotnet test --no-build --verbosity normal
