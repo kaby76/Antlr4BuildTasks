@@ -25,7 +25,8 @@ jobs:
       run: |
         mkdir x
         cd x
-        dotnet -i  new -i ../Templates/templates/AntlrCAProject
+        dotnet new -i ../Templates/templates/AntlrCAProject
         dotnet new antlr
+        dotnet restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
