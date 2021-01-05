@@ -7,14 +7,14 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Antlr4 Include="arithmetic.g4">
+    <Antlr4 Include="MyGrammarFile">
       <Package>TemplateNamespace</Package>
     </Antlr4>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.0" />
-    <PackageReference Include="Antlr4BuildTasks" Version="8.9">
+    <PackageReference Include="Antlr4BuildTasks" Version="8.10">
       <PrivateAssets>Build</PrivateAssets>
     </PackageReference>
   </ItemGroup>

@@ -15,7 +15,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.0" />
-        <PackageReference Include="Antlr4BuildTasks" Version="8.9">
+        <PackageReference Include="Antlr4BuildTasks" Version="8.10">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
@@ -107,7 +107,7 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="8.9" />
+        <PackageReference Include="Antlr4BuildTasks" Version="8.10" />
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.0" />
     </ItemGroup>
 
@@ -131,7 +131,7 @@ value in your .csproj file:
     </PropertyGroup>
 
 
-### Latest release v8.9 (19 Dec 2020):
+### Latest release v8.10 (4 Jan 2021):
 
 * Fix [Add probe list for Antlr jar location #10](https://github.com/kaby76/Antlr4BuildTasks/issues/10)
 

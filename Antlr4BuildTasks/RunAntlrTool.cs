@@ -204,6 +204,16 @@ namespace Antlr4.Build.Tasks
                         ProcessBuildMessage(new BuildMessage(
                             TraceLevel.Info, "From now on, JavaExec is \"" + JavaExec + "\"", "", 0, 0));
                     }
+                    else if (System.Environment.OSVersion.Platform == PlatformID.Unix
+                        || System.Environment.OSVersion.Platform == PlatformID.MacOSX
+                        )
+                    {
+                        ProcessBuildMessage(new BuildMessage(
+                            TraceLevel.Info, "IntermediateOutputPath is \"" + IntermediateOutputPath + "\"", "", 0, 0));
+                        var JavaExec = "/usr/bin/java";
+                        ProcessBuildMessage(new BuildMessage(
+                            TraceLevel.Info, "From now on, JavaExec is \"" + JavaExec + "\"", "", 0, 0));
+                    }
                     else throw new Exception("Which OS??");
                 }
 
@@ -229,6 +239,8 @@ namespace Antlr4.Build.Tasks
                     if (System.Environment.OSVersion.Platform == PlatformID.Win32NT
                         || System.Environment.OSVersion.Platform == PlatformID.Win32S
                         || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
+                        || System.Environment.OSVersion.Platform == PlatformID.Unix
+                        || System.Environment.OSVersion.Platform == PlatformID.MacOSX
                     )
                     {
                         var jar =
