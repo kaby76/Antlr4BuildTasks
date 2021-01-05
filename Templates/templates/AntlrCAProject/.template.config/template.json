@@ -2,11 +2,37 @@
 	"author": "Ken Domino",
 	"classifications": [ "Common/Console" ],
 	"name": "Antlr4 Console App",
-	"identity": "AntlrConsole",        // Unique name for this template
-	"shortName": "antlr",                 // Short name that can be used on the cli
+	"identity": "AntlrConsole", // Unique name for this template
+	"shortName": "antlr", // Short name that can be used on the cli
 	"tags": {
-	    "language": "C#"                       // Specify that this template is in C#.
+		"language": "C#" // Specify that this template is in C#.
 	},
-	"sourceName": "AntlrTemplate",
-	"preferNameDirectory" : "true"
+	"sourceName": "TemplateNamespace",
+	"preferNameDirectory": "true",
+	"symbols": {
+		"package": {
+			"type": "parameter",
+			"replaces": "TemplateNamespace"
+		},
+		"start": {
+			"type": "parameter",
+			"replaces": "TemplateStart",
+			"defaultValue": "file"
+		},
+		"grammar": {
+			"type": "parameter",
+			"replaces": "MyGrammarFile",
+			"defaultValue": "arithmetic.g4"
+		},
+		"lexer": {
+			"type": "parameter",
+			"replaces": "MyLexerGrammar",
+			"defaultValue": "arithmeticLexer"
+		},
+		"parser": {
+			"type": "parameter",
+			"replaces": "MyParserGrammar",
+			"defaultValue": "arithmeticParser"
+		}
+	}
 }

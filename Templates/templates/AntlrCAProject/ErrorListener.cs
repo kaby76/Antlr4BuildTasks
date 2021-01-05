@@ -1,5 +1,5 @@
-﻿// Template generated code from Antlr4BuildTasks.Template v 8.9.1
-namespace AntlrTemplate
+﻿// Template generated code from Antlr4BuildTasks.Template v 8.10
+namespace TemplateNamespace
 {
     using Antlr4.Runtime;
     using Antlr4.Runtime.Misc;

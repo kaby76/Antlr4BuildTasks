@@ -8,7 +8,7 @@
   
   <ItemGroup>
     <Antlr4 Include="arithmetic.g4">
-      <Package>AntlrTemplate</Package>
+      <Package>TemplateNamespace</Package>
     </Antlr4>
   </ItemGroup>
 

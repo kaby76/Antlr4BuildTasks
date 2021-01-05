@@ -1,5 +1,5 @@
-﻿// Template generated code from Antlr4BuildTasks.Template v 8.9.1
-namespace AntlrTemplate
+﻿// Template generated code from Antlr4BuildTasks.Template v 8.10
+namespace TemplateNamespace
 {
     using Antlr4.Runtime;
     using System.Text;
@@ -32,14 +32,14 @@ namespace AntlrTemplate
         {
             var str = new AntlrInputStream(input);
             System.Console.WriteLine(input);
-            var lexer = new arithmeticLexer(str);
+            var lexer = new MyLexerGrammar(str);
             var tokens = new CommonTokenStream(lexer);
-            var parser = new arithmeticParser(tokens);
+            var parser = new MyParserGrammar(tokens);
             var listener_lexer = new ErrorListener<int>();
             var listener_parser = new ErrorListener<IToken>();
             lexer.AddErrorListener(listener_lexer);
             parser.AddErrorListener(listener_parser);
-            var tree = parser.file();
+            var tree = parser.TemplateStart();
             if (listener_lexer.had_error || listener_parser.had_error)
                 System.Console.WriteLine("error in parse.");
             else
