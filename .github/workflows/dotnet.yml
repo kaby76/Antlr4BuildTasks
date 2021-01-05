@@ -27,6 +27,7 @@ jobs:
         cd x
         dotnet new -i ../Templates/templates/AntlrCAProject
         dotnet new antlr
+        dotnet nuget add source ../Antlr4BuildTasks/bin/Debug/
         dotnet restore
         dotnet build
         dotnet run
