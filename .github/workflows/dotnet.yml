@@ -21,5 +21,11 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: Basic Antlr
+      run: |
+        mkdir x
+        cd x
+        dotnet -i  new -i ../Templates/templates/AntlrCAProject
+        dotnet new antlr
     - name: Test
       run: dotnet test --no-build --verbosity normal
