@@ -2,7 +2,7 @@
   <!-- Template generated code from Antlr4BuildTasks.Template v 8.10 -->
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net5.0;net471;net480;netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>AntlrTemplate</RootNamespace>
   </PropertyGroup>
   
@@ -14,9 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.0" />
-    <PackageReference Include="Antlr4BuildTasks" Version="8.10">
-      <PrivateAssets>Build</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Antlr4BuildTasks" Version="8.10" PrivateAssets="all" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

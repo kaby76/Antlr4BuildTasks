@@ -6,7 +6,6 @@ namespace TemplateNamespace
 
     public class Program
     {
-        static bool have_files = false;
         static void Main(string[] args)
         {
             Try("1 + 2 + 3");
