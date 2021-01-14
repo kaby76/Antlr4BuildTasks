@@ -7,7 +7,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Antlr4 Include="MyGrammarFile">
+    <Antlr4 Include="Arithmetic.g4">
       <Package>TemplateNamespace</Package>
     </Antlr4>
   </ItemGroup>
