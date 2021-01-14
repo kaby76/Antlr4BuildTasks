@@ -14,7 +14,7 @@ namespace TemplateNamespace
             {
                 for (int i = 0; i < args.Length; ++i)
                 {
-                    if (args[i].StartsWith('-')) continue;
+                    if (args[i].StartsWith("-")) continue;
                     var fn = args[i];
                     var input = ReadAllInput(fn);
                     Try(input);
