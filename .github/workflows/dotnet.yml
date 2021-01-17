@@ -34,3 +34,9 @@ jobs:
         dotnet run
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Upload Antlr4BuildTasks artifacts
+      uses: actions/upload-artifact@v2
+      with:
+         name: build-output
+         path: /home/runner/work/Antlr4BuildTasks/Antlr4BuildTasks/*/bin/Debug/*.*nupkg
+         retention-days: 3

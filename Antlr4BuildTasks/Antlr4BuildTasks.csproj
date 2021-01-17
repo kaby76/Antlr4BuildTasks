@@ -16,7 +16,9 @@
 		<Company>Domemtech</Company>
 		<AssemblyTitle>Antlr4BuildTasks</AssemblyTitle>
 		<ContentTargetFolders>build/</ContentTargetFolders>
-	</PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
