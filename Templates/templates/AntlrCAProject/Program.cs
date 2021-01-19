@@ -1,4 +1,4 @@
-﻿// Template generated code from Antlr4BuildTasks.Template v 8.10
+﻿// Template generated code from Antlr4BuildTasks.Template v 8.11
 namespace TemplateNamespace
 {
     using Antlr4.Runtime;
