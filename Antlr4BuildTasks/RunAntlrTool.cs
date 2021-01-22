@@ -40,48 +40,13 @@ namespace Antlr4.Build.Tasks
             }
         }
 
-        public string AntOutDir
-        {
-            get;
-            set;
-        }
-
-        public string BuildTaskPath
-        {
-            get;
-            set;
-        }
-
-        public string DOptions
-        {
-            get;
-            set;
-        }
-
-        public string Encoding
-        {
-            get;
-            set;
-        }
-
-        public bool Error
-        {
-            get;
-            set;
-        }
-
-        public bool ForceAtn
-        {
-            get;
-            set;
-        }
-
-        public bool GAtn
-        {
-            get;
-            set;
-        }
-
+        public string AntOutDir { get; set; }
+        public string BuildTaskPath { get; set; }
+        public string DOptions { get; set; }
+        public string Encoding { get; set; }
+        public bool Error { get; set; }
+        public bool ForceAtn { get; set; }
+        public bool GAtn { get; set; }
         [Output] public ITaskItem[] GeneratedCodeFiles
         {
             get
@@ -89,73 +54,17 @@ namespace Antlr4.Build.Tasks
                 return this._generatedCodeFiles.Select(t => new TaskItem(t)).ToArray();
             }
         }
-
-        public string GeneratedSourceExtension
-        {
-            get;
-            set;
-        }
-
-        [Required] public string IntermediateOutputPath
-        {
-            get;
-            set;
-        }
-
-        public string JavaExec
-        {
-            get;
-            set;
-        }
-
-        public string LibPath
-        {
-            get;
-            set;
-        }
-
-        public bool Listener
-        {
-            get;
-            set;
-        }
-
-        public string Package
-        {
-            get;
-            set;
-        }
-
-        [Required] public ITaskItem[] SourceCodeFiles
-        {
-            get;
-            set;
-        }
-
-        public string TargetFrameworkVersion
-        {
-            get;
-            set;
-        }
-
-        public ITaskItem[] TokensFiles
-        {
-            get;
-            set;
-        }
-
-        public string ToolPath
-        {
-            get;
-            set;
-        }
-
-        public bool Visitor
-        {
-            get;
-            set;
-        }
-
+        public string GeneratedSourceExtension { get; set; }
+        [Required] public string IntermediateOutputPath { get; set; }
+        public string JavaExec { get; set; }
+        public string LibPath { get; set; }
+        public bool Listener { get; set; }
+        public string Package { get; set; }
+        [Required] public ITaskItem[] SourceCodeFiles { get; set; }
+        public string TargetFrameworkVersion { get; set; }
+        public ITaskItem[] TokensFiles { get; set; }
+        public string ToolPath { get; set; }
+        public bool Visitor { get; set; }
 
 
         public override bool Execute()
