@@ -168,7 +168,6 @@ to identify which version of the Antlr Java tool to run to generate the parser a
                     catch
                     {
                     }
-                    return false;
                 }
             }
             {

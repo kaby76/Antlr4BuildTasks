@@ -58,7 +58,7 @@
 		<Content Include="Antlr4BuildTasks.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<Content Include="antlr-4.9-complete.jar">
+		<Content Include="antlr-4.9.1-complete.jar">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Include="jre.zip">
