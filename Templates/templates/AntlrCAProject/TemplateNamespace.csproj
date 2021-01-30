@@ -1,5 +1,5 @@
+<!-- Template generated code from Antlr4BuildTasks.Template v 8.11 -->
 <Project Sdk="Microsoft.NET.Sdk">
-  <!-- Template generated code from Antlr4BuildTasks.Template v 8.11 -->
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
