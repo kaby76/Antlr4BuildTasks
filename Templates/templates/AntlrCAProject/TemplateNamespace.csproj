@@ -1,4 +1,4 @@
-<!-- Template generated code from Antlr4BuildTasks.Template v 8.11 -->
+<!-- Template generated code from Antlr4BuildTasks.Template v 8.12 -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
