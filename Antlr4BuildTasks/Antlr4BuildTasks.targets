@@ -165,7 +165,7 @@
 		<Message Text="The output from GetJava task is '@(UsingJavaExec)'"/>
 
 		<GetAntlrJar
-			ToolPath="$(AntlrvsixToolPath)"
+			ToolPath="$(AntlrToolPath)"
 			PackageReference="@(PackageReference)"
 			IntermediateOutputPath="$(IntermediateOutputPath)"
       AntlrProbePath="$(AntlrProbePath)">

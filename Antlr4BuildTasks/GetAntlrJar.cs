@@ -50,7 +50,10 @@
         {
             if (!(ToolPath == null || ToolPath == ""))
             {
-                UsingToolPath = ToolPath;
+                var list = new Domemtech.Globbing.Glob().Contents(ToolPath);
+                if (list == null) return false;
+                else if (list.Count == 1) UsingToolPath = list.First().FullName;
+                else return false;
                 return true;
             }
 
