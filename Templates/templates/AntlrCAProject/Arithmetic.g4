@@ -1,4 +1,4 @@
-﻿// Template generated code from Antlr4BuildTasks.Template v 8.12
+﻿// Template generated code from Antlr4BuildTasks.Template v 8.14
 
 grammar Arithmetic;
 

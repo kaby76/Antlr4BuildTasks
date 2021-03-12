@@ -133,6 +133,6 @@ value in your .csproj file:
     </PropertyGroup>
 
 
-### Latest release v8.12 (30 Jan 2021):
+### Latest release v8.14 (12 Mar 2021):
 
-* Moving to Antlr4.Runtime.Standard v4.9.1. Fix assorted bugs.
+* Moving to Antlr4.Runtime.Standard v4.9.2. Fix assorted bugs.

@@ -15,6 +15,8 @@
 
   <PropertyGroup>
     <AntlrProbePath Condition="'$(AntlrProbePath)'==''">
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.2/;
+      https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.1/;
       https://repo1.maven.org/maven2/org/antlr/antlr4/4.9/;
       https://repo1.maven.org/maven2/org/antlr/antlr4/4.8-1/;
       https://repo1.maven.org/maven2/org/antlr/antlr4/4.8/;

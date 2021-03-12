@@ -8,8 +8,8 @@
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
 
-		<AssemblyVersion>8.13.0.0</AssemblyVersion>
-		<FileVersion>8.13.0.0</FileVersion>
+		<AssemblyVersion>8.14.0.0</AssemblyVersion>
+		<FileVersion>8.14.0.0</FileVersion>
 
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright></Copyright>
@@ -40,9 +40,9 @@
 		<PackageIconUrl>https://raw.github.com/antlr/website-antlr4/master/images/icons/antlr.png</PackageIconUrl>
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<Version>8.13</Version>
+		<Version>8.14</Version>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>v8.13: Adding globbing for Antlr Jar if you specify one.</PackageReleaseNotes>
+		<PackageReleaseNotes>v8.14: Update to Antlr 4.9.2.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -58,7 +58,7 @@
 		<Content Include="Antlr4BuildTasks.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<Content Include="antlr-4.9.1-complete.jar">
+		<Content Include="antlr-4.9.2-complete.jar">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Include="jre.zip">

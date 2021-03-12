@@ -5,11 +5,10 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 15.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{47C0086D-577C-43DA-ADC7-544F27656E45}"
 	ProjectSection(SolutionItems) = preProject
-		Antlr4BuildTasks\antlr-4.9-complete.jar = Antlr4BuildTasks\antlr-4.9-complete.jar
+		Antlr4BuildTasks\antlr-4.9.2-complete.jar = Antlr4BuildTasks\antlr-4.9.2-complete.jar
 		Antlr4BuildTasks\jre.zip = Antlr4BuildTasks\jre.zip
-		LICENSE.txt = LICENSE.txt
+		LICENSE = LICENSE
 		Readme.md = Readme.md
-		THIRD-PARTY-NOTICES.txt = THIRD-PARTY-NOTICES.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Antlr4BuildTasks", "Antlr4BuildTasks\Antlr4BuildTasks.csproj", "{515FDF32-DA0A-496E-A056-F7CCEBD88A9F}"
