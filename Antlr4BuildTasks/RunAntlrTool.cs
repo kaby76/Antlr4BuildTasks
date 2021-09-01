@@ -75,6 +75,11 @@ namespace Antlr4.Build.Tasks
 
             try
             {
+                // Uncomment to test that exception messages are outputted.
+                //int xx = 0;
+                //int yy = 0;
+                //xx = xx / yy;
+
                 ProcessBuildMessage(new BuildMessage(
                     TraceLevel.Info,
                     "Starting Antlr4 Build Tasks. ToolPath is \""
@@ -469,7 +474,7 @@ namespace Antlr4.Build.Tasks
 
         private void ProcessExceptionAsBuildMessage(Exception exception)
         {
-            ProcessBuildMessage(new BuildMessage(exception.Message
+            ProcessBuildMessage(BuildMessage.BuildCrashMessage(exception.Message
                 + exception.StackTrace));
         }
 

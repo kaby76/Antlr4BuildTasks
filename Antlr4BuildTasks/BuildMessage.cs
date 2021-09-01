@@ -31,15 +31,15 @@ namespace Antlr4.Build.Tasks
 
                     switch (match.Groups["SEVERITY"].Value)
                     {
-                    case "warning":
-                        Severity = TraceLevel.Warning;
-                        break;
-                    case "error":
-                        Severity = TraceLevel.Error;
-                        break;
-                    default:
-                        Severity = TraceLevel.Info;
-                        break;
+                        case "warning":
+                            Severity = TraceLevel.Warning;
+                            break;
+                        case "error":
+                            Severity = TraceLevel.Error;
+                            break;
+                        default:
+                            Severity = TraceLevel.Info;
+                            break;
                     }
                 }
                 else
@@ -52,6 +52,35 @@ namespace Antlr4.Build.Tasks
                 if (RunAntlrTool.IsFatalException(ex))
                     throw;
             }
+        }
+
+        public static BuildMessage BuildCrashMessage(string message)
+        {
+            var self = new BuildMessage();
+            self.Severity = TraceLevel.Error;
+            self.Message = message;
+            self.FileName = "";
+            self.LineNumber = 0;
+            self.ColumnNumber = 0;
+            try
+            {
+                Regex regex = new Regex(@"^\s*(?<SEVERITY>[a-z]+)\((?<CODE>[0-9]+)\):\s*((?<FILE>.*):(?<LINE>[0-9]+):(?<COLUMN>[0-9]+):)?\s*(?:syntax error:\s*)?(?<MESSAGE>.*)$", RegexOptions.Compiled);
+                Match match = regex.Match(message);
+                if (match.Success)
+                {
+                    self.FileName = match.Groups["FILE"].Length > 0 ? match.Groups["FILE"].Value : "";
+                    self.LineNumber = match.Groups["LINE"].Length > 0 ? int.Parse(match.Groups["LINE"].Value) : 0;
+                    self.ColumnNumber = match.Groups["COLUMN"].Length > 0 ? int.Parse(match.Groups["COLUMN"].Value) + 1 : 0;
+                }
+                else
+                {
+                    self.Message = message;
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return self;
         }
 
         public BuildMessage(TraceLevel severity, string message, string fileName, int lineNumber, int columnNumber)

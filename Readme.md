@@ -17,7 +17,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.2" />
-        <PackageReference Include="Antlr4BuildTasks" Version="8.14">
+        <PackageReference Include="Antlr4BuildTasks" Version="8.15">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
@@ -109,7 +109,7 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="8.14" />
+        <PackageReference Include="Antlr4BuildTasks" Version="8.15" />
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.2" />
     </ItemGroup>
 
@@ -133,6 +133,6 @@ value in your .csproj file:
     </PropertyGroup>
 
 
-### Latest release v8.14 (12 Mar 2021):
+### Latest release v8.15 (1 Sep 2021)
 
-* Moving to Antlr4.Runtime.Standard v4.9.2. Fix assorted bugs.
+* Fix missing message with 'task returned false but did not log an error'.
