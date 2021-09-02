@@ -28,6 +28,12 @@
             set;
         }
 
+        public ITaskItem[] PackageVersion
+        {
+            get;
+            set;
+        }
+
         public string ToolPath
         {
             get;
@@ -54,6 +60,10 @@
                 if (list == null) return false;
                 else if (list.Count == 1) UsingToolPath = list.First().FullName;
                 else return false;
+                if (UsingToolPath == null || UsingToolPath == "")
+                {
+                    throw new Exception(@"ToolPath was specified ('" + ToolPath + "'), but Antlr4BuildTasks is returning an empty UsingToolPath.");
+                }
                 return true;
             }
 
@@ -65,6 +75,18 @@
                 {
                     reference_standard_runtime = true;
                     version = i.GetMetadata("Version");
+                    if (version == null || version.Trim() == "")
+                    {
+                        foreach (var j in PackageVersion)
+                        {
+                            if (j.ItemSpec == "Antlr4.Runtime.Standard")
+                            {
+                                reference_standard_runtime = true;
+                                version = j.GetMetadata("Version");
+                                break;
+                            }
+                        }
+                    }
                     break;
                 }
             }
@@ -82,6 +104,14 @@
                 else
                     throw new Exception(@"You are not referencing Antlr4.Runtime.Standard in you .csproj file. Antlr4BuildTasks requires a reference to it in order
 to identify which version of the Antlr Java tool to run to generate the parser and lexer.");
+            }
+            else if (version.Trim() == "")
+            {
+                throw new Exception(@"Antlr4BuildTasks cannot determine the version of Antlr4.Runtime.Standard. It's ''!.
+version = '" + version + @"'
+PackageReference = '" + PackageReference.ToString() + @"'
+PackageVersion = '" + PackageVersion.ToString() + @"
+");
             }
 
             if (AntlrProbePath == null || AntlrProbePath == "")
@@ -112,20 +142,31 @@ to identify which version of the Antlr Java tool to run to generate the parser a
                 var v3 = m3.Success && m3.Groups["THREEVERSION"].Length > 0 ? m3.Groups["THREEVERSION"].Value : null;
                 if (v3 != null && TryProbe(probe, v3))
                 {
+                    if (UsingToolPath == null || UsingToolPath == "")
+                    {
+                        throw new Exception(@"Antlr4BuildTasks is going to return an empty UsingToolPath, but it should never do that.");
+                    }
                     return true;
                 }
                 if (v2 != null && TryProbe(probe, v2))
                 {
+                    if (UsingToolPath == null || UsingToolPath == "")
+                    {
+                        throw new Exception(@"Antlr4BuildTasks is going to return an empty UsingToolPath, but it should never do that.");
+                    }
                     return true;
                 }
+            }
+            if (UsingToolPath == null || UsingToolPath == "")
+            {
+                throw new Exception(@"Antlr4BuildTasks is going to return an empty UsingToolPath, but it should never do that.");
             }
             return true;
         }
 
         private bool TryProbe(string path, string version)
         {
-            if (!path.EndsWith("/")) path = path + "/";
-
+            if (!(path.EndsWith("/") || path.EndsWith("\\"))) path = path + "/";
 
             {
                 var jar = path + @"antlr-" + version + @"-complete.jar";
@@ -220,7 +261,6 @@ to identify which version of the Antlr Java tool to run to generate the parser a
                     return false;
                 }
             }
-
         }
     }
 }

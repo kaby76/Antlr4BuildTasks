@@ -169,6 +169,7 @@
 		<GetAntlrJar
 			ToolPath="$(AntlrToolPath)"
 			PackageReference="@(PackageReference)"
+			PackageVersion="@(PackageVersion)"
 			IntermediateOutputPath="$(IntermediateOutputPath)"
       AntlrProbePath="$(AntlrProbePath)">
 			<Output TaskParameter="UsingToolPath" ItemName="UsingToolPath" />
