@@ -16,8 +16,8 @@ To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packag
 to your project. csproj file as shown below, otherwise you can use the "NuGet Package Manager":
 
     <ItemGroup>
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.2" />
-        <PackageReference Include="Antlr4BuildTasks" Version="8.15">
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
+        <PackageReference Include="Antlr4BuildTasks" Version="8.17">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
@@ -109,30 +109,17 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="8.15" />
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.2" />
+        <PackageReference Include="Antlr4BuildTasks" Version="8.17" />
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
     </ItemGroup>
 
 
 Antlr4BuildTasks examines PropertyGroup `AntlrProbePath`, a string of URI
 separated by semicolon, to find the version
 of the Antlr JAR file that you are looking for. Antlr4BuildTasks will look for a .jar
-with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.9.2)
-as
+with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.9.3).
+_I recommend that you just use the PackageReference's defined above._
 
-    antlr-4.9.2-complete.jar
-    antlr-4.9.2-complete.jar
-    antlr4-4.9.2-complete.jar
-    antlr4-4.9.2-complete.jar
+### Latest release v8.17 (8 Nov 2021)
 
-for each path in `AntlrProbePath`. You can change the path by assigning the
-value in your .csproj file:
-
-    <PropertyGroup>
-          <AntlrProbePath>file:///c:/foobar/;https://foobar.com/...<AntlrProbePath>
-    </PropertyGroup>
-
-
-### Latest release v8.15 (1 Sep 2021)
-
-* Fix missing message with 'task returned false but did not log an error'.
+* Update to use Antlr 4.9.3 by default.
