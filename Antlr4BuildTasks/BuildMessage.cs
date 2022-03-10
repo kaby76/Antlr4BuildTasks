@@ -54,6 +54,27 @@ namespace Antlr4.Build.Tasks
             }
         }
 
+        public static BuildMessage BuildErrorMessage(string message)
+        {
+            var self = new BuildMessage(message);
+            self.Severity = TraceLevel.Error;
+            return self;
+        }
+
+        public static BuildMessage BuildWarningMessage(string message)
+        {
+            var self = new BuildMessage(message);
+            self.Severity = TraceLevel.Warning;
+            return self;
+        }
+
+        public static BuildMessage BuildInfoMessage(string message)
+        {
+            var self = new BuildMessage(message);
+            self.Severity = TraceLevel.Info;
+            return self;
+        }
+
         public static BuildMessage BuildCrashMessage(string message)
         {
             var self = new BuildMessage();

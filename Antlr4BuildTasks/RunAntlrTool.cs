@@ -80,10 +80,9 @@ namespace Antlr4.Build.Tasks
                 //int yy = 0;
                 //xx = xx / yy;
 
-                ProcessBuildMessage(new BuildMessage(
-                    TraceLevel.Info,
+                ProcessBuildMessage(BuildMessage.BuildInfoMessage(
                     "Starting Antlr4 Build Tasks. ToolPath is \""
-                    + ToolPath + "\"", "", 0, 0));
+                    + ToolPath + "\""));
 
                 if (AntOutDir == null || AntOutDir == "")
                 {
@@ -93,8 +92,8 @@ namespace Antlr4.Build.Tasks
                 Directory.CreateDirectory(AntOutDir);
 
                 // First, find JAVA_EXE. This could throw an exception with error message.
-                ProcessBuildMessage(new BuildMessage(
-                    TraceLevel.Info, "JavaExec is \"" + JavaExec + "\"", "", 0, 0));
+                ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                    "JavaExec is \"" + JavaExec + "\""));
                 
                 if (JavaExec == null || JavaExec == "")
                 {
@@ -103,8 +102,8 @@ namespace Antlr4.Build.Tasks
                         || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
                     )
                     {
-                        ProcessBuildMessage(new BuildMessage(
-                            TraceLevel.Info, "IntermediateOutputPath is \"" + IntermediateOutputPath + "\"", "", 0, 0));
+                        ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                            "IntermediateOutputPath is \"" + IntermediateOutputPath + "\""));
                         var java_dir = IntermediateOutputPath
                                        + System.IO.Path.DirectorySeparatorChar +
                                        "Java";
@@ -115,18 +114,18 @@ namespace Antlr4.Build.Tasks
                             + "bin"
                             + System.IO.Path.DirectorySeparatorChar
                             + "java.exe";
-                        ProcessBuildMessage(new BuildMessage(
-                            TraceLevel.Info, "From now on, JavaExec is \"" + JavaExec + "\"", "", 0, 0));
+                        ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                            "From now on, JavaExec is \"" + JavaExec + "\""));
                     }
                     else if (System.Environment.OSVersion.Platform == PlatformID.Unix
                         || System.Environment.OSVersion.Platform == PlatformID.MacOSX
                         )
                     {
-                        ProcessBuildMessage(new BuildMessage(
-                            TraceLevel.Info, "IntermediateOutputPath is \"" + IntermediateOutputPath + "\"", "", 0, 0));
+                        ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                            "IntermediateOutputPath is \"" + IntermediateOutputPath + "\""));
                         var JavaExec = "/usr/bin/java";
-                        ProcessBuildMessage(new BuildMessage(
-                            TraceLevel.Info, "From now on, JavaExec is \"" + JavaExec + "\"", "", 0, 0));
+                        ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                            "From now on, JavaExec is \"" + JavaExec + "\""));
                     }
                     else throw new Exception("Which OS??");
                 }
@@ -246,17 +245,20 @@ namespace Antlr4.Build.Tasks
 
                     if (!string.IsNullOrEmpty(DOptions))
                     {
-                        // Since the C# target currently produces the same code for all target framework versions, we can
-                        // avoid bugs with support for newer frameworks by just passing CSharp as the language and allowing
-                        // the tool to use a default.
+                        // The Antlr tool can take multiple -D options, but
+                        // DOptions is just a string. We allow for multiple
+                        // options by separating each with a semi-colon. At this
+                        // point, convert each option into separate "-D" option
+                        // arguments.
                         var split = DOptions.Split(';');
                         foreach (var p in split)
                         {
-                            if (string.IsNullOrEmpty(p))
+                            var q = p.Trim();
+                            if (string.IsNullOrEmpty(q))
                                 continue;
-                            if (string.IsNullOrWhiteSpace(p))
+                            if (string.IsNullOrWhiteSpace(q))
                                 continue;
-                            arguments.Add("-D" + p);
+                            arguments.Add("-D" + q);
                         }
                     }
 
@@ -277,8 +279,8 @@ namespace Antlr4.Build.Tasks
                         RedirectStandardError = true,
                     };
 
-                    ProcessBuildMessage(new BuildMessage(TraceLevel.Info,
-                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments, "", 0, 0));
+                    ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
 
                     Process process = new Process();
                     process.StartInfo = startInfo;
@@ -290,12 +292,16 @@ namespace Antlr4.Build.Tasks
                     process.StandardInput.Dispose();
                     process.WaitForExit();
 
-                    ProcessBuildMessage(new BuildMessage(TraceLevel.Info,
-                        "Finished command", "", 0, 0));
-                    ProcessBuildMessage(new BuildMessage(TraceLevel.Info,
-                        "The generated file list contains " + _generatedCodeFiles.Count() + " items.", "", 0, 0));
+                    ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                        "Finished executing Antlr jar command."));
+                    ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                        "The generated file list contains " + _generatedCodeFiles.Count() + " items."));
 
-                    if (process.ExitCode != 0) return false;
+                    if (process.ExitCode != 0)
+                    {
+                        ProcessBuildMessage(BuildMessage.BuildErrorMessage("The Antlr4 tool failed."));
+                        return false;
+                    }
 
                     // Add in tokens and interp files since Antlr Tool does not do that.
                     var old_list = _generatedCodeFiles.ToList();
@@ -398,8 +404,8 @@ namespace Antlr4.Build.Tasks
                         RedirectStandardError = true,
                     };
 
-                    ProcessBuildMessage(new BuildMessage(TraceLevel.Info,
-                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments, "", 0, 0));
+                    ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
 
                     Process process = new Process();
                     process.StartInfo = startInfo;
@@ -411,15 +417,15 @@ namespace Antlr4.Build.Tasks
                     process.StandardInput.Dispose();
                     process.WaitForExit();
 
-                    ProcessBuildMessage(new BuildMessage(TraceLevel.Info,
-                        "Finished command", "", 0, 0));
-                    ProcessBuildMessage(new BuildMessage(TraceLevel.Info,
-                        "The generated file list contains " + _generatedCodeFiles.Count() + " items.", "", 0, 0));
+                    ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                        "Finished executing Antlr jar command."));
+                    ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                        "The generated file list contains " + _generatedCodeFiles.Count() + " items."));
 
                     foreach (var fn in _generatedCodeFiles)
-                        ProcessBuildMessage(new BuildMessage("Generated file " + fn));
-                    ProcessBuildMessage(new BuildMessage(TraceLevel.Info,
-                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments, "", 0, 0));
+                        ProcessBuildMessage(BuildMessage.BuildInfoMessage("Generated file " + fn));
+                    ProcessBuildMessage(BuildMessage.BuildInfoMessage(
+                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
 
                     // At this point, regenerate the entire GeneratedCodeFiles list.
                     // This is because (1) it contains duplicates; (2) it contains
@@ -613,19 +619,20 @@ namespace Antlr4.Build.Tasks
 
         private void HandleErrorDataReceived(string data)
         {
+            //System.Console.Error.WriteLine("XXX3 " + data);
             if (string.IsNullOrEmpty(data))
                 return;
 
             try
             {
-                ProcessBuildMessage(new BuildMessage(data));
+                ProcessBuildMessage(BuildMessage.BuildErrorMessage(data));
             }
             catch (Exception ex)
             {
                 if (RunAntlrTool.IsFatalException(ex))
                     throw;
 
-                ProcessBuildMessage(new BuildMessage(ex.Message));
+                ProcessBuildMessage(BuildMessage.BuildCrashMessage(ex.Message));
             }
         }
 
@@ -692,7 +699,7 @@ namespace Antlr4.Build.Tasks
             }
             catch (Exception ex)
             {
-                ProcessBuildMessage(new BuildMessage(ex.Message
+                ProcessBuildMessage(BuildMessage.BuildErrorMessage(ex.Message
                                                             + ex.StackTrace));
 
                 if (RunAntlrTool.IsFatalException(ex))

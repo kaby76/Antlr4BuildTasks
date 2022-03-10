@@ -37,9 +37,9 @@
 		<PackageIconUrl>https://raw.github.com/antlr/website-antlr4/master/images/icons/antlr.png</PackageIconUrl>
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<Version>8.17</Version>
+		<Version>8.18</Version>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>v8.17: Default builds using Antlr 4.9.3.</PackageReleaseNotes>
+		<PackageReleaseNotes>v8.18: improved error messaging.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
