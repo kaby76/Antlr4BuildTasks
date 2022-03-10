@@ -17,7 +17,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
-        <PackageReference Include="Antlr4BuildTasks" Version="8.17">
+        <PackageReference Include="Antlr4BuildTasks" Version="8.18">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>

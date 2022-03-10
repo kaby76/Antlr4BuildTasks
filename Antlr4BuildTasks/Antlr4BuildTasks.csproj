@@ -6,8 +6,8 @@
 		<EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
-		<AssemblyVersion>8.17.0.0</AssemblyVersion>
-		<FileVersion>8.17.0.0</FileVersion>
+		<AssemblyVersion>8.18.0.0</AssemblyVersion>
+		<FileVersion>8.18.0.0</FileVersion>
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright></Copyright>
 		<Company>Domemtech</Company>
