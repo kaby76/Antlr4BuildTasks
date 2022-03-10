@@ -54,6 +54,12 @@ namespace Antlr4.Build.Tasks
             }
         }
 
+        public static BuildMessage BuildDefaultMessage(string message)
+        {
+            var self = new BuildMessage(message);
+            return self;
+        }
+
         public static BuildMessage BuildErrorMessage(string message)
         {
             var self = new BuildMessage(message);

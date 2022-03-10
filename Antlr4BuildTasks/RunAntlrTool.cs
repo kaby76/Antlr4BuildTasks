@@ -284,7 +284,7 @@ namespace Antlr4.Build.Tasks
 
                     Process process = new Process();
                     process.StartInfo = startInfo;
-                    process.ErrorDataReceived += HandleErrorDataReceived;
+                    process.ErrorDataReceived += HandleStderrDataReceived;
                     process.OutputDataReceived += HandleOutputDataReceivedFirstTime;
                     process.Start();
                     process.BeginErrorReadLine();
@@ -409,8 +409,8 @@ namespace Antlr4.Build.Tasks
 
                     Process process = new Process();
                     process.StartInfo = startInfo;
-                    process.ErrorDataReceived += HandleErrorDataReceived;
-                    process.OutputDataReceived += HandleOutputDataReceived;
+                    process.ErrorDataReceived += HandleStderrDataReceived;
+                    process.OutputDataReceived += HandleStdoutDataReceived;
                     process.Start();
                     process.BeginErrorReadLine();
                     process.BeginOutputReadLine();
@@ -612,12 +612,12 @@ namespace Antlr4.Build.Tasks
 
         private static readonly Regex GeneratedFileMessageFormat = new Regex(@"^Generating file '(?<OUTPUT>.*?)' for grammar '(?<GRAMMAR>.*?)'$", RegexOptions.Compiled);
 
-        private void HandleErrorDataReceived(object sender, DataReceivedEventArgs e)
+        private void HandleStderrDataReceived(object sender, DataReceivedEventArgs e)
         {
-            HandleErrorDataReceived(e.Data);
+            HandleStderrDataReceived(e.Data);
         }
 
-        private void HandleErrorDataReceived(string data)
+        private void HandleStderrDataReceived(string data)
         {
             //System.Console.Error.WriteLine("XXX3 " + data);
             if (string.IsNullOrEmpty(data))
@@ -625,7 +625,7 @@ namespace Antlr4.Build.Tasks
 
             try
             {
-                ProcessBuildMessage(BuildMessage.BuildErrorMessage(data));
+                ProcessBuildMessage(BuildMessage.BuildDefaultMessage(data));
             }
             catch (Exception ex)
             {
@@ -673,12 +673,12 @@ namespace Antlr4.Build.Tasks
             }
         }
 
-        private void HandleOutputDataReceived(object sender, DataReceivedEventArgs e)
+        private void HandleStdoutDataReceived(object sender, DataReceivedEventArgs e)
         {
-            HandleOutputDataReceived(e.Data);
+            HandleStdoutDataReceived(e.Data);
         }
 
-        private void HandleOutputDataReceived(string data)
+        private void HandleStdoutDataReceived(string data)
         {
             if (string.IsNullOrEmpty(data))
                 return;
