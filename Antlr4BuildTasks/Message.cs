@@ -6,16 +6,13 @@ namespace Antlr4.Build.Tasks
     using System;
     using System.Text.RegularExpressions;
 
-#if !NETSTANDARD
-    [Serializable]
-#endif
-    internal struct BuildMessage
-    {
 
-        public BuildMessage(string message)
+    internal class Message
+    {
+        public Message(string message)
         {
             Severity = TraceLevel.Info;
-            Message = message;
+            TheMessage = message;
             FileName = "";
             LineNumber = 0;
             ColumnNumber = 0;
@@ -44,7 +41,7 @@ namespace Antlr4.Build.Tasks
                 }
                 else
                 {
-                    Message = message;
+                    TheMessage = message;
                 }
             }
             catch (Exception ex)
@@ -54,38 +51,38 @@ namespace Antlr4.Build.Tasks
             }
         }
 
-        public static BuildMessage BuildDefaultMessage(string message)
+        public static Message BuildDefaultMessage(string message)
         {
-            var self = new BuildMessage(message);
+            var self = new Message(message);
             return self;
         }
 
-        public static BuildMessage BuildErrorMessage(string message)
+        public static Message BuildErrorMessage(string message)
         {
-            var self = new BuildMessage(message);
+            var self = new Message(message);
             self.Severity = TraceLevel.Error;
             return self;
         }
 
-        public static BuildMessage BuildWarningMessage(string message)
+        public static Message BuildWarningMessage(string message)
         {
-            var self = new BuildMessage(message);
+            var self = new Message(message);
             self.Severity = TraceLevel.Warning;
             return self;
         }
 
-        public static BuildMessage BuildInfoMessage(string message)
+        public static Message BuildInfoMessage(string message)
         {
-            var self = new BuildMessage(message);
+            var self = new Message(message);
             self.Severity = TraceLevel.Info;
             return self;
         }
 
-        public static BuildMessage BuildCrashMessage(string message)
+        public static Message BuildCrashMessage(string message)
         {
-            var self = new BuildMessage();
+            var self = new Message();
             self.Severity = TraceLevel.Error;
-            self.Message = message;
+            self.TheMessage = message;
             self.FileName = "";
             self.LineNumber = 0;
             self.ColumnNumber = 0;
@@ -101,7 +98,7 @@ namespace Antlr4.Build.Tasks
                 }
                 else
                 {
-                    self.Message = message;
+                    self.TheMessage = message;
                 }
             }
             catch (Exception ex)
@@ -110,13 +107,17 @@ namespace Antlr4.Build.Tasks
             return self;
         }
 
-        public BuildMessage(TraceLevel severity, string message, string fileName, int lineNumber, int columnNumber)
+        public Message(TraceLevel severity, string message, string fileName, int lineNumber, int columnNumber)
         {
             Severity = severity;
-            Message = message;
+            TheMessage = message;
             FileName = fileName;
             LineNumber = lineNumber;
             ColumnNumber = columnNumber;
+        }
+
+        public Message()
+        {
         }
 
         public TraceLevel Severity
@@ -125,7 +126,7 @@ namespace Antlr4.Build.Tasks
             set;
         }
 
-        public string Message
+        public string TheMessage
         {
             get;
             set;
