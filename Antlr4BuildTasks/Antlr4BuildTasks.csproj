@@ -1,12 +1,12 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
-		<AssemblyVersion>8.20.0.0</AssemblyVersion>
-		<FileVersion>8.20.0.0</FileVersion>
+		<AssemblyVersion>8.21.0.0</AssemblyVersion>
+		<FileVersion>8.21.0.0</FileVersion>
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright />
 		<Company>Domemtech</Company>
@@ -14,6 +14,16 @@
 		<ContentTargetFolders>build/</ContentTargetFolders>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/kaby76/Antlr4BuildTasks</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/kaby76/Antlr4BuildTasks</RepositoryUrl>
+		<RepositoryType>Git</RepositoryType>
+		<PackageTags>antlr antlr4 parsing</PackageTags>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<Version>8.21</Version>
+		<Authors>Ken Domino</Authors>
+		<PackageReleaseNotes>v8.21: improved error logic and messaging.</PackageReleaseNotes>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
@@ -23,19 +33,6 @@
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DebugType>pdbonly</DebugType>
 		<DebugSymbols>true</DebugSymbols>
-	</PropertyGroup>
-	<PropertyGroup>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageLicenseUrl>https://raw.githubusercontent.com/kaby76/antlr4cs/master/LICENSE.txt</PackageLicenseUrl>
-		<PackageProjectUrl>https://github.com/kaby76/Antlr4BuildTasks</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/kaby76/Antlr4BuildTasks</RepositoryUrl>
-		<RepositoryType>Git</RepositoryType>
-		<PackageIconUrl>https://raw.github.com/antlr/website-antlr4/master/images/icons/antlr.png</PackageIconUrl>
-		<PackageTags>antlr antlr4 parsing</PackageTags>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<Version>8.20</Version>
-		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>v8.20: improved error messaging.</PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>
 		<Content Include="Antlr4BuildTasks.xml">
@@ -49,7 +46,7 @@
 		<Content Include="Antlr4BuildTasks.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<Content Include="antlr-4.9.3-complete.jar">
+		<Content Include="antlr4-4.9.3-complete.jar">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Include="jre.zip">
@@ -60,5 +57,8 @@
 		<PackageReference Include="Microsoft.Build.Framework" Version="16.4.0" />
 		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.4.0" />
 		<PackageReference Include="System.Threading" Version="4.3.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="images\icon.png" Pack="true" PackagePath=""/>
 	</ItemGroup>
 </Project>

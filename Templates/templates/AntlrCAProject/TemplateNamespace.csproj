@@ -1,4 +1,4 @@
-<!-- Template generated code from Antlr4BuildTasks.Template v 8.17 -->
+<!-- Template generated code from Antlr4BuildTasks.Template v 8.21 -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
-    <PackageReference Include="Antlr4BuildTasks" Version="8.17" PrivateAssets="all" />
+    <PackageReference Include="Antlr4BuildTasks" Version="8.21" PrivateAssets="all" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

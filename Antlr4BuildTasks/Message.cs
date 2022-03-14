@@ -101,7 +101,7 @@ namespace Antlr4.Build.Tasks
                     self.TheMessage = message;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
             return self;

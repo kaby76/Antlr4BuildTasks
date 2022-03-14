@@ -2,19 +2,19 @@
 
   <PropertyGroup>
     <PackageType>Template</PackageType>
-    <PackageVersion>8.17</PackageVersion>
+    <PackageVersion>8.21</PackageVersion>
     <PackageId>Antlr4BuildTasks.Templates</PackageId>
     <Title>Antlr4 templates</Title>
     <Authors>Ken Domino</Authors>
     <Description>Templates to use when creating an Antlr application.</Description>
     <PackageTags>dotnet-new;templates;antlr</PackageTags>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/kaby76/Antlr4BuildTasks/master/LICENSE.txt</PackageLicenseUrl>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/kaby76/Antlr4BuildTasks/tree/master/Templates</PackageProjectUrl>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
-    <Version>8.17</Version>
+    <Version>8.21</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
