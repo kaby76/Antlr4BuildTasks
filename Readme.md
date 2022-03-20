@@ -132,6 +132,34 @@ Antlr4BuildTasks will output informational, warnings, and error messages. If the
 message detected, all messages are converted to an error so that you have maximal information
 to fix the build.
 
+### Visual Studio IDE or Visual Studio Code integration
+
+The VS IDE does not contain the Antlr4 Console App templates. Therefore, you cannot create
+a new project using VS IDE or Code. Instead, you will need to create it through a command line
+shell.
+
+#### Using "dotnet new"
+  
+You can generate a simple "Official" Antlr4 program using `dotnet new`. You will first need to
+add the template to the dotnet tool.
+
+```
+dotnet new -i Antlr4Templates
+```
+
+Then, create the "Arithmetic" example console application
+
+```
+mkdir application
+cd application
+dotnet new antlr4
+dotnet restore
+dotnet build
+dotnet run -input "1 + 2"
+```
+
+You can then open the application in VS IDE or Code.
+
 ### Latest release v8.20 (12 Mar 2022)
 
 * Improved error messages.
