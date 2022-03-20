@@ -17,10 +17,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
-    - name: Restore dependencies
-      run: dotnet restore
     - name: Build
-      run: dotnet build
+      run: make
     - name: Upload Antlr4BuildTasks artifacts
       uses: actions/upload-artifact@v2
       with:
