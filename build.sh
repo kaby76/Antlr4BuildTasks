@@ -1,5 +1,6 @@
 #!/bin/bash
 
+wget https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.3/antlr4-4.9.3-complete.jar
 dotnet restore
 dotnet build
 unameOut="$(uname -s)"
@@ -19,5 +20,5 @@ else
 fi
 echo "$machine"
 echo "$cwd"
-dotnet nuget add source $cwd/Antlr4BuildTasks/bin/Debug/ --name nuget-antlr4buildtasks > /dev/null 2>&1
+dotnet nuget add source $cwd/bin/Debug/ --name nuget-antlr4buildtasks > /dev/null 2>&1
 dotnet nuget list source
