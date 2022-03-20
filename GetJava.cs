@@ -1,33 +1,20 @@
-﻿namespace Antlr4.Build.Tasks
-{
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-    using System;
-    using System.IO;
-    using System.Reflection;
-    using Directory = System.IO.Directory;
+﻿using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+using System;
+using System.IO;
+using System.Reflection;
+using Directory = System.IO.Directory;
 
+namespace Antlr4.Build.Tasks
+{
     public class GetJava : Task
     {
         [Required]
-        public string IntermediateOutputPath
-        {
-            get;
-            set;
-        }
-
-        public string JavaExec
-        {
-            get;
-            set;
-        }
+        public string IntermediateOutputPath { get; set; }
+        public string JavaExec { get; set; }
 
         [Output]
-        public string UsingJavaExec
-        {
-            get;
-            set;
-        }
+        public string UsingJavaExec { get; set; }
 
         public override bool Execute()
         {

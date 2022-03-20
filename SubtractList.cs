@@ -4,34 +4,17 @@ using System.Collections.Generic;
 
 namespace Antlr4.Build.Tasks
 {
-    public class SubtractList
-            : Task
+    public class SubtractList : Task
     {
-        public ITaskItem[] List1
-        {
-            get;
-            set;
-        }
-
-        public ITaskItem[] List2
-        {
-            get;
-            set;
-        }
-
+        public ITaskItem[] List1 { get; set; }
+        public ITaskItem[] List2 { get; set; }
         private List<ITaskItem> _result = new List<ITaskItem>();
 
         [Output]
         public ITaskItem[] Result
         {
-            get
-            {
-                return _result.ToArray();
-            }
-            set
-            {
-                _result = new List<ITaskItem>(value);
-            }
+            get { return _result.ToArray(); }
+            set { _result = new List<ITaskItem>(value); }
         }
 
 

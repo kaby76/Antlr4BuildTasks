@@ -1,6 +1,5 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using System.Collections.Generic;
 
 namespace Antlr4.Build.Tasks
 {

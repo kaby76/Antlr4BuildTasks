@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Terence Parr, Sam Harwell. All Rights Reserved.
 // Licensed under the BSD License. See LICENSE.txt in the project root for license information.
 
+using System;
+using System.Text.RegularExpressions;
+
 namespace Antlr4.Build.Tasks
 {
-    using System;
-    using System.Text.RegularExpressions;
-
-
     internal class Message
     {
         public Message(string message)
@@ -25,7 +24,6 @@ namespace Antlr4.Build.Tasks
                     FileName = match.Groups["FILE"].Length > 0 ? match.Groups["FILE"].Value : "";
                     LineNumber = match.Groups["LINE"].Length > 0 ? int.Parse(match.Groups["LINE"].Value) : 0;
                     ColumnNumber = match.Groups["COLUMN"].Length > 0 ? int.Parse(match.Groups["COLUMN"].Value) + 1 : 0;
-
                     switch (match.Groups["SEVERITY"].Value)
                     {
                         case "warning":
@@ -116,38 +114,12 @@ namespace Antlr4.Build.Tasks
             ColumnNumber = columnNumber;
         }
 
-        public Message()
-        {
-        }
+        public Message() { }
 
-        public TraceLevel Severity
-        {
-            get;
-            set;
-        }
-
-        public string TheMessage
-        {
-            get;
-            set;
-        }
-
-        public string FileName
-        {
-            get;
-            set;
-        }
-
-        public int LineNumber
-        {
-            get;
-            set;
-        }
-
-        public int ColumnNumber
-        {
-            get;
-            set;
-        }
+        public TraceLevel Severity { get; set; }
+        public string TheMessage { get; set; }
+        public string FileName { get; set; }
+        public int LineNumber { get; set; }
+        public int ColumnNumber { get; set; }
     }
 }
