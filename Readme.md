@@ -2,7 +2,8 @@
 
 [![Build](https://github.com/kaby76/Antlr4BuildTasks/workflows/.NET/badge.svg)](https://github.com/kaby76/Antlr4BuildTasks/actions?query=workflow%3A.NET)
 
-This package is a build tool for Antlr4 C# programs with the Antl4.Runtime.Standard package.
+This package is a third-party build tool for C# programs with Antlr4 grammars
+using the "official" Antl4.Runtime.Standard package.
 It is based on Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
 which is published in NuGet as the [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
 package. Although Antlr4.CodeGenerator is fine, it is several versions behind the current
