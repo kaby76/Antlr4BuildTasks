@@ -3,7 +3,7 @@
 
 namespace Antlr4.Build.Tasks
 {
-    internal enum TraceLevel
+    public enum TraceLevel
     {
         Off,
         Error,

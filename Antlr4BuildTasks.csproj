@@ -5,15 +5,16 @@
 		<EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
-		<AssemblyVersion>8.21.0.0</AssemblyVersion>
-		<FileVersion>8.21.0.0</FileVersion>
+		<AssemblyVersion>8.22.0.0</AssemblyVersion>
+		<FileVersion>8.22.0.0</FileVersion>
+		<Version>8.22</Version>
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright />
 		<Company>Domemtech</Company>
 		<AssemblyTitle>Antlr4BuildTasks</AssemblyTitle>
 		<ContentTargetFolders>build/</ContentTargetFolders>
 		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<!-- <SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat> -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/kaby76/Antlr4BuildTasks</PackageProjectUrl>
@@ -21,9 +22,8 @@
 		<RepositoryType>Git</RepositoryType>
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<Version>8.21</Version>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>v8.21: improved error logic and messaging.</PackageReleaseNotes>
+		<PackageReleaseNotes>v8.22: dynamic parser generation and compiling.</PackageReleaseNotes>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
@@ -45,6 +45,8 @@
 		<Content Include="Antlr4BuildTasks.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+	</ItemGroup>
+	<ItemGroup>
 		<Content Include="antlr4-4.9.3-complete.jar">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
@@ -53,11 +55,16 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
+		<EmbeddedResource Include="antlr4-4.9.3-complete.jar" />
+		<EmbeddedResource Include="jre.zip" />
+	</ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="Microsoft.Build.Framework" Version="16.4.0" />
 		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.4.0" />
+		<PackageReference Include="System.CodeDom" Version="6.0.0" />
 		<PackageReference Include="System.Threading" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Include="images\icon.png" Pack="true" PackagePath=""/>
+		<None Include="images\icon.png" Pack="true" PackagePath="" />
 	</ItemGroup>
 </Project>

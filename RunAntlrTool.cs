@@ -1,4 +1,8 @@
-﻿// Derived from Terence Parr, Sam Harwell.
+﻿// Forked and highly modified from sources at https://github.com/tunnelvisionlabs/antlr4cs/tree/master/runtime/CSharp/Antlr4BuildTasks
+// Copyright 2022 Ken Domino, MIT License.
+
+// Copyright (c) Terence Parr, Sam Harwell. All Rights Reserved.
+// Licensed under the BSD License. See LICENSE.txt in the project root for license information.
 
 namespace Antlr4.Build.Tasks
 {
@@ -7,12 +11,13 @@ namespace Antlr4.Build.Tasks
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Reflection;
     using System.Text.RegularExpressions;
     using Directory = System.IO.Directory;
     using File = System.IO.File;
-    using FileAttributes = System.IO.FileAttributes;
     using Path = System.IO.Path;
     using StringBuilder = System.Text.StringBuilder;
 
@@ -33,7 +38,35 @@ namespace Antlr4.Build.Tasks
             set { this._allGeneratedFiles = value.Select(t => t.ItemSpec).ToList(); }
         }
         public string AntOutDir { get; set; }
-        public string BuildTaskPath { get; set; }
+        public List<string> AntlrProbePath
+        {
+            get;
+            set;
+        } = new List<string>()
+        {
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.3/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.2/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.1/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.8-1/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.8/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.7.2/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.7.1/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.7/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.6/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.3/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.2-1/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.2/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.1-1/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.1/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.3/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.2.2/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.2.1/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.2/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.1/",
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.0/",
+        };
         public string DOptions { get; set; }
         public string Encoding { get; set; }
         public bool Error { get; set; }
@@ -52,10 +85,14 @@ namespace Antlr4.Build.Tasks
         public string LibPath { get; set; }
         public bool Listener { get; set; }
         public string Package { get; set; }
+        public List<string> OtherSourceCodeFiles { get; set; }
+        [Required] public ITaskItem[] PackageReference { get; set; }
+        [Required] public ITaskItem[] PackageVersion { get; set; }
         [Required] public ITaskItem[] SourceCodeFiles { get; set; }
         public string TargetFrameworkVersion { get; set; }
         public ITaskItem[] TokensFiles { get; set; }
         public string ToolPath { get; set; }
+        public string Version { get; set; }
         public bool Visitor { get; set; }
 
         public override bool Execute()
@@ -64,319 +101,27 @@ namespace Antlr4.Build.Tasks
             //System.Threading.Thread.Sleep(20000);
             try
             {
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                    "Starting Antlr4 Build Tasks. ToolPath is \""
-                    + ToolPath + "\""));
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Starting Antlr4 Build Tasks."));
+                if (IntermediateOutputPath != null) IntermediateOutputPath = Path.GetFullPath(IntermediateOutputPath);
+                if (AntOutDir != null) AntOutDir = Path.GetFullPath(AntOutDir);
                 if (AntOutDir == null || AntOutDir == "")
                 {
-                    Log.LogMessage("Note AntOutDir is empty. Placing generated files in IntermediateOutputPath " + IntermediateOutputPath);
+                    Log.LogMessage("Placing generated files in IntermediateOutputPath " + IntermediateOutputPath);
                     AntOutDir = IntermediateOutputPath;
                 }
                 Directory.CreateDirectory(AntOutDir);
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                    "JavaExec is \"" + JavaExec + "\""));
-                if (JavaExec == null || JavaExec == "")
-                {
-                    if (System.Environment.OSVersion.Platform == PlatformID.Win32NT
-                        || System.Environment.OSVersion.Platform == PlatformID.Win32S
-                        || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
-                    )
-                    {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                            "IntermediateOutputPath is \"" + IntermediateOutputPath + "\""));
-                        var java_dir = IntermediateOutputPath
-                                       + System.IO.Path.DirectorySeparatorChar +
-                                       "Java";
-                        JavaExec = java_dir
-                            + System.IO.Path.DirectorySeparatorChar
-                            + "jre"
-                            + System.IO.Path.DirectorySeparatorChar
-                            + "bin"
-                            + System.IO.Path.DirectorySeparatorChar
-                            + "java.exe";
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                            "From now on, JavaExec is \"" + JavaExec + "\""));
-                    }
-                    else if (System.Environment.OSVersion.Platform == PlatformID.Unix
-                        || System.Environment.OSVersion.Platform == PlatformID.MacOSX
-                        )
-                    {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                            "IntermediateOutputPath is \"" + IntermediateOutputPath + "\""));
-                        var JavaExec = "/usr/bin/java";
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                            "From now on, JavaExec is \"" + JavaExec + "\""));
-                    }
-                    else throw new Exception("Which OS??");
-                }
+                JavaExec = SetupJava();
                 if (!File.Exists(JavaExec))
-                    throw new Exception("Cannot find Java executable, currently set to "
-                                        + "'" + JavaExec + "'");
-                // Next find Java.
-                string java_executable = null;
-                if (!string.IsNullOrEmpty(JavaExec))
-                {
-                    java_executable = JavaExec;
-                }
-                else
-                {
-                    java_executable = JavaExec;
-                    if (!File.Exists(java_executable))
-                        throw new Exception("I haven't a clue where the Java executable is on this system. Quiting...");
-                }
-                if (ToolPath == null || ToolPath == "")
-                {
-                    if (System.Environment.OSVersion.Platform == PlatformID.Win32NT
-                        || System.Environment.OSVersion.Platform == PlatformID.Win32S
-                        || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
-                        || System.Environment.OSVersion.Platform == PlatformID.Unix
-                        || System.Environment.OSVersion.Platform == PlatformID.MacOSX
-                    )
-                    {
-                        var jar =
-                            @"https://www.antlr.org/download/antlr-4.9-complete.jar";
-                        string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                        string archive_path = Path.GetFullPath(assemblyPath
-                           + System.IO.Path.DirectorySeparatorChar
-                           + ".."
-                           + System.IO.Path.DirectorySeparatorChar
-                           + ".."
-                           + System.IO.Path.DirectorySeparatorChar
-                           + "build"
-                           + System.IO.Path.DirectorySeparatorChar
-                           + System.IO.Path.GetFileName(jar)
-                        );
-                        ToolPath = archive_path;
-                    }
-                    else throw new Exception("Which OS??");
-                }
-                _ = Path.IsPathRooted(ToolPath);
-                if (!File.Exists(ToolPath))
-                    throw new Exception("Cannot find Antlr4 jar file, currently set to "
-                                        + "'" + ToolPath + "'");
-                // Because we're using the Java version of the Antlr tool,
-                // we're going to execute this command twice: first with the
-                // -depend option so as to get the list of generated files,
-                // then a second time to actually generate the files.
-                // The code that was here probably worked, but only for the C#
-                // version of the Antlr tool chain.
-                //
-                // After collecting the output of the first command, convert the
-                // output so as to get a clean list of files generated.
-                {
-                    List<string> arguments = new List<string>();
-                    arguments.Add("-cp");
-                    arguments.Add(ToolPath);
-                    arguments.Add("org.antlr.v4.Tool");
-                    arguments.Add("-depend");
-                    arguments.Add("-o");
-                    arguments.Add(AntOutDir);
-                    if (!string.IsNullOrEmpty(LibPath))
-                    {
-                        var split = LibPath.Split(';');
-                        foreach (var p in split)
-                        {
-                            if (string.IsNullOrEmpty(p))
-                                continue;
-                            if (string.IsNullOrWhiteSpace(p))
-                                continue;
-                            arguments.Add("-lib");
-                            arguments.Add(p);
-                        }
-                    }
-                    if (GAtn) arguments.Add("-atn");
-                    if (!string.IsNullOrEmpty(Encoding))
-                    {
-                        arguments.Add("-encoding");
-                        arguments.Add(Encoding);
-                    }
-                    arguments.Add(Listener ? "-listener" : "-no-listener");
-                    arguments.Add(Visitor ? "-visitor" : "-no-visitor");
-                    if (!(string.IsNullOrEmpty(Package) || string.IsNullOrWhiteSpace(Package)))
-                    {
-                        arguments.Add("-package");
-                        arguments.Add(Package);
-                    }
-                    if (!string.IsNullOrEmpty(DOptions))
-                    {
-                        // The Antlr tool can take multiple -D options, but
-                        // DOptions is just a string. We allow for multiple
-                        // options by separating each with a semi-colon. At this
-                        // point, convert each option into separate "-D" option
-                        // arguments.
-                        var split = DOptions.Split(';');
-                        foreach (var p in split)
-                        {
-                            var q = p.Trim();
-                            if (string.IsNullOrEmpty(q))
-                                continue;
-                            if (string.IsNullOrWhiteSpace(q))
-                                continue;
-                            arguments.Add("-D" + q);
-                        }
-                    }
-                    if (Error) arguments.Add("-Werror");
-                    if (ForceAtn) arguments.Add("-Xforce-atn");
-                    arguments.AddRange(SourceCodeFiles?.Select(s => s.ItemSpec));
-                    ProcessStartInfo startInfo = new ProcessStartInfo(java_executable, JoinArguments(arguments))
-                    {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                    };
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
-                    Process process = new Process();
-                    process.StartInfo = startInfo;
-                    process.ErrorDataReceived += HandleStderrDataReceived;
-                    process.OutputDataReceived += HandleOutputDataReceivedFirstTime;
-                    process.Start();
-                    process.BeginErrorReadLine();
-                    process.BeginOutputReadLine();
-                    process.StandardInput.Dispose();
-                    process.WaitForExit();
-                    MessageQueue.EnqueueMessage( Message.BuildInfoMessage(
-                        "Finished executing Antlr jar command."));
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        "The generated file list contains " + _generatedCodeFiles.Count() + " items."));
-                    if (process.ExitCode != 0)
-                    {
-                        return false;
-                    }
-                    // Add in tokens and interp files since Antlr Tool does not do that.
-                    var old_list = _generatedCodeFiles.ToList();
-                    var new_list = new List<string>();
-                    foreach (var s in old_list)
-                    {
-                        if (Path.GetExtension(s) == ".tokens")
-                        {
-                            var interp = s.Replace(Path.GetExtension(s), ".interp");
-                            new_list.Append(interp);
-                        }
-                        else
-                            new_list.Add(s);
-                    }
-                    _generatedCodeFiles = new_list.ToList();
-                }
-                // Second call.
-                {
-                    List<string> arguments = new List<string>();
-                    {
-                        arguments.Add("-cp");
-                        arguments.Add(ToolPath);
-                        //arguments.Add("org.antlr.v4.CSharpTool");
-                        arguments.Add("org.antlr.v4.Tool");
-                    }
-                    arguments.Add("-o");
-                    arguments.Add(AntOutDir);
-                    if (!string.IsNullOrEmpty(LibPath))
-                    {
-                        var split = LibPath.Split(';');
-                        foreach (var p in split)
-                        {
-                            if (string.IsNullOrEmpty(p))
-                                continue;
-                            if (string.IsNullOrWhiteSpace(p))
-                                continue;
-                            arguments.Add("-lib");
-                            arguments.Add(p);
-                        }
-                    }
-                    if (GAtn) arguments.Add("-atn");
-                    if (!string.IsNullOrEmpty(Encoding))
-                    {
-                        arguments.Add("-encoding");
-                        arguments.Add(Encoding);
-                    }
-                    arguments.Add(Listener ? "-listener" : "-no-listener");
-                    arguments.Add(Visitor ? "-visitor" : "-no-visitor");
-                    if (!(string.IsNullOrEmpty(Package) || string.IsNullOrWhiteSpace(Package)))
-                    {
-                        arguments.Add("-package");
-                        arguments.Add(Package);
-                    }
-                    if (!string.IsNullOrEmpty(DOptions))
-                    {
-                        // Since the C# target currently produces the same code for all target framework versions, we can
-                        // avoid bugs with support for newer frameworks by just passing CSharp as the language and allowing
-                        // the tool to use a default.
-                        var split = DOptions.Split(';');
-                        foreach (var p in split)
-                        {
-                            if (string.IsNullOrEmpty(p))
-                                continue;
-                            if (string.IsNullOrWhiteSpace(p))
-                                continue;
-                            arguments.Add("-D" + p);
-                        }
-                    }
-                    if (Error) arguments.Add("-Werror");
-                    if (ForceAtn) arguments.Add("-Xforce-atn");
-                    arguments.AddRange(SourceCodeFiles.Select(s => s.ItemSpec));
-                    ProcessStartInfo startInfo = new ProcessStartInfo(java_executable, JoinArguments(arguments))
-                    {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                    };
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
-                    Process process = new Process();
-                    process.StartInfo = startInfo;
-                    process.ErrorDataReceived += HandleStderrDataReceived;
-                    process.OutputDataReceived += HandleStdoutDataReceived;
-                    process.Start();
-                    process.BeginErrorReadLine();
-                    process.BeginOutputReadLine();
-                    process.StandardInput.Dispose();
-                    process.WaitForExit();
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        "Finished executing Antlr jar command."));
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        "The generated file list contains " + _generatedCodeFiles.Count() + " items."));
-                    foreach (var fn in _generatedCodeFiles)
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Generated file " + fn));
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
-                    // At this point, regenerate the entire GeneratedCodeFiles list.
-                    // This is because (1) it contains duplicates; (2) it contains
-                    // files that really actually weren't generated. This can happen
-                    // if the grammar was a Lexer grammar. (Note, I don't think it
-                    // wise to look at the grammar file to figure out what it is, nor
-                    // do I think it wise to expose a switch to the user for him to
-                    // indicate what type of grammar it is.)
-                    var new_code_list = new List<string>();
-                    var new_all_list = new List<string>();
-                    foreach (var fn in _generatedCodeFiles.Distinct().ToList())
-                    {
-                        var ext = Path.GetExtension(fn);
-                        if (File.Exists(fn) && !(ext == ".g4" && ext == ".g4"))
-                            new_all_list.Add(fn);
-                        if ((ext == ".cs" || ext == ".java" || ext == ".cpp" ||
-                             ext == ".php" || ext == ".js") && File.Exists(fn))
-                            new_code_list.Add(fn);
-                    }
-                    foreach (var fn in _allGeneratedFiles.Distinct().ToList())
-                    {
-                        var ext = Path.GetExtension(fn);
-                        if (File.Exists(fn) && !(ext == ".g4" && ext == ".g4"))
-                            new_all_list.Add(fn);
-                        if ((ext == ".cs" || ext == ".java" || ext == ".cpp" ||
-                             ext == ".php" || ext == ".js") && File.Exists(fn))
-                            new_code_list.Add(fn);
-                    }
-                    _allGeneratedFiles = new_all_list.ToList();
-                    _generatedCodeFiles = new_code_list.ToList();
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List of generated files "
-                                   + String.Join(" ", _allGeneratedFiles)));
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List of generated code files "
-                                   + String.Join(" ", _generatedCodeFiles)));
-                    success = process.ExitCode == 0;
-                }
+                    throw new Exception("Cannot find Java executable, currently set to " + "'" + JavaExec + "'");
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("JavaExec is \"" + JavaExec + "\""));
+
+                ToolPath = SetupAntlrJar();
+                if (!File.Exists(JavaExec))
+                    throw new Exception("Cannot find Antlr jar, currently set to " + "'" + ToolPath + "'");
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("ToolPath is \"" + ToolPath + "\""));
+
+                GetGeneratedFileNameList(JavaExec);
+                GenerateFiles(JavaExec, out success);
             }
             catch (Exception exception)
             {
@@ -395,6 +140,485 @@ namespace Antlr4.Build.Tasks
                 MessageQueue.EmptyMessageQueue(Log);
             }
             return success;
+        }
+
+        private string SetupAntlrJar()
+        {
+            string result = null;
+            // Make sure old crusty Tunnelvision port not being used.
+            foreach (var i in PackageReference)
+            {
+                if (i.ItemSpec == "Antlr4.Runtime")
+                {
+                    throw new Exception(
+                        @"You are referencing Antlr4.Runtime in your .csproj file. This build tool can only reference the NET Standard library https://www.nuget.org/packages/Antlr4.Runtime.Standard/. You can only use either the 'official' Antlr4 or the 'tunnelvision' fork, but not both. You have to choose one.");
+                }
+            }
+            string version = null;
+            bool reference_standard_runtime = false;
+            foreach (var i in PackageReference)
+            {
+                if (i.ItemSpec == "Antlr4.Runtime.Standard")
+                {
+                    reference_standard_runtime = true;
+                    version = i.GetMetadata("Version");
+                    if (version == null || version.Trim() == "")
+                    {
+                        foreach (var j in PackageVersion)
+                        {
+                            if (j.ItemSpec == "Antlr4.Runtime.Standard")
+                            {
+                                reference_standard_runtime = true;
+                                version = j.GetMetadata("Version");
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+            if (version == null)
+            {
+                if (reference_standard_runtime)
+                    throw new Exception(
+                        @"Antlr4BuildTasks cannot identify the version number you are referencing. Check the Version parameter for Antlr4.Runtime.Standard.");
+                else
+                    throw new Exception(
+                        @"You are not referencing Antlr4.Runtime.Standard in your .csproj file. Antlr4BuildTasks requires a reference to it in order
+to identify which version of the Antlr Java tool to run to generate the parser and lexer.");
+            }
+            else if (version.Trim() == "")
+            {
+                throw new Exception(
+                    @"Antlr4BuildTasks cannot determine the version of Antlr4.Runtime.Standard. It's ''!.
+version = '" + version + @"'
+PackageReference = '" + PackageReference.ToString() + @"'
+PackageVersion = '" + PackageVersion.ToString() + @"
+");
+            }
+            Version = version;
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                @"Antlr4BuildTasks identified that you are looking for version "
+                + Version
+                + " of the Antlr4 tool jar."));
+            if (AntlrProbePath == null || AntlrProbePath.Count == 0)
+            {
+                throw new Exception(
+                    @"Antlr4BuildTasks requires an AntlrProbePath, which contains the list of places to find and download the Antlr .jar file. AntlrProbePath is null.");
+            }
+            var assembly = this.GetType().Assembly;
+            var dir = IntermediateOutputPath;
+            dir = dir.Replace("\\", "/");
+            if (!dir.EndsWith("/"))
+            {
+                dir = dir + "/";
+            }
+            var archive = dir + "antlr4-4.9.3-complete.jar";
+            if (!File.Exists(archive))
+            {
+                System.IO.Directory.CreateDirectory(dir);
+                var names = assembly.GetManifestResourceNames();
+                var jar = @"Antlr4.Build.Tasks.antlr4-4.9.3-complete.jar";
+                Stream contents = this.GetType().Assembly.GetManifestResourceStream(jar);
+                var destinationFileStream = new FileStream(archive, FileMode.OpenOrCreate);
+                while (contents.Position < contents.Length)
+                {
+                    destinationFileStream.WriteByte((byte)contents.ReadByte());
+                }
+                destinationFileStream.Close();
+            }
+
+            //string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            //assemblyPath = Path.GetFullPath(assemblyPath + "/../../build/").Replace("\\", "/");
+            //string archive_path = "file:///" + assemblyPath;
+
+            var paths = AntlrProbePath;
+            var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
+            paths.Insert(0, full_path);
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Paths to search for Antlr4 jar, in order, are: "
+                + String.Join(";", paths)));
+            foreach (var probe in paths)
+            {
+                Regex r2 = new Regex("^(?<TWOVERSION>[0-9]+[.][0-9]+)([.][0-9]*)?$");
+                var m2 = r2.Match(Version);
+                var v2 = m2.Success && m2.Groups["TWOVERSION"].Length > 0 ? m2.Groups["TWOVERSION"].Value : null;
+                Regex r3 = new Regex("^(?<THREEVERSION>[0-9]+[.][0-9]+[.][0-9]+)$");
+                var m3 = r3.Match(Version);
+                var v3 = m3.Success && m3.Groups["THREEVERSION"].Length > 0 ? m3.Groups["THREEVERSION"].Value : null;
+                if (v3 != null && TryProbe(probe, v3, out string where))
+                {
+                    if (where == null || where == "")
+                    {
+                        throw new Exception(
+                            @"Antlr4BuildTasks is going to return an empty UsingToolPath, but it should never do that.");
+                    }
+                    else
+                    {
+                        return where;
+                    }
+                }
+                if (v2 != null && TryProbe(probe, v2, out string w2))
+                {
+                    if (w2 == null || w2 == "")
+                    {
+                        throw new Exception(
+                            @"Antlr4BuildTasks is going to return an empty UsingToolPath, but it should never do that.");
+                    }
+                    else
+                    {
+                        result = w2;
+                        break;
+                    }
+                }
+            }
+            if (result == null || result == "")
+            {
+                MessageQueue.EnqueueMessage(Message.BuildErrorMessage(
+                    @"Went through the complete probe list looking for an Antlr4 tool jar, but could not find anything. Fail!"));
+            }
+            if (!File.Exists(result))
+                throw new Exception("Cannot find Antlr4 jar file, currently set to "
+                                    + "'" + result + "'");
+            return result;
+        }
+
+        private bool TryProbe(string path, string version, out string where)
+        {
+            bool result = false;
+            where = null;
+            path = path.Trim();
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("path is " + path));
+            if (!(path.EndsWith("/") || path.EndsWith("\\"))) path = path + "/";
+
+            var jar = path + @"antlr4-" + version + @"-complete.jar";
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + jar));
+            if (jar.StartsWith("file://"))
+            {
+                try
+                {
+                    System.Uri uri = new Uri(jar);
+                    var local_file = uri.LocalPath;
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Local path " + local_file));
+                    if (File.Exists(local_file))
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                        where = local_file;
+                        result = true;
+                    }
+                }
+                catch
+                {
+                }
+            }
+            else if (jar.StartsWith("https://"))
+            {
+                try
+                {
+                    WebClient webClient = new WebClient();
+                    System.IO.Directory.CreateDirectory(IntermediateOutputPath);
+                    var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
+                                       System.IO.Path.GetFileName(jar);
+                    var jar_dir = IntermediateOutputPath;
+                    System.IO.Directory.CreateDirectory(jar_dir);
+                    if (!File.Exists(archive_name))
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + jar));
+                        webClient.DownloadFile(jar, archive_name);
+                    }
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
+                        + archive_name));
+                    where = archive_name;
+                    result = true;
+                }
+                catch
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                        "Problem downloading or saving probed file."));
+                }
+            }
+            else
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                    @"The AntlrProbePath contains '"
+                        + jar
+                        + "', which doesn't start with 'file://' or 'https://'. "
+                        + @"Edit your .csproj file to make sure the path follows that syntax."));
+            }
+            return result;
+        }
+
+        public string SetupJava()
+        {
+            // https://download.java.net/java/GA/jdk14.0.1/664493ef4a6946b186ff29eb326336a2/7/GPL/openjdk-14.0.1_windows-x64_bin.zip
+            if (System.Environment.OSVersion.Platform == PlatformID.Win32NT
+                  || System.Environment.OSVersion.Platform == PlatformID.Win32S
+                  || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
+                 )
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                    "AntOutDir is \"" + AntOutDir + "\""));
+                var assembly = this.GetType().Assembly;
+                var zip = @"Antlr4.Build.Tasks.jre.zip";
+                var java_dir = AntOutDir;
+                java_dir = java_dir.Replace("\\", "/");
+                if (!java_dir.EndsWith("/"))
+                {
+                    java_dir = java_dir + "/";
+                }
+                java_dir = java_dir + "Java/";
+                var archive = java_dir + "jre.zip";
+                if (!Directory.Exists(java_dir))
+                {
+                    System.IO.Directory.CreateDirectory(java_dir);
+                    var names = assembly.GetManifestResourceNames();
+                    Stream contents = this.GetType().Assembly.GetManifestResourceStream(zip);
+                    var destinationFileStream = new FileStream(archive, FileMode.OpenOrCreate);
+                    while (contents.Position < contents.Length)
+                    {
+                        destinationFileStream.WriteByte((byte)contents.ReadByte());
+                    }
+                    destinationFileStream.Close();
+                    System.IO.Compression.ZipFile.ExtractToDirectory(archive, java_dir);
+                }
+                var result = java_dir + "jre/bin/java.exe";
+                return result;
+            }
+            else if (System.Environment.OSVersion.Platform == PlatformID.Unix
+                     || System.Environment.OSVersion.Platform == PlatformID.MacOSX
+                    )
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                    "AntOutDir is \"" + AntOutDir + "\""));
+                var result = "/usr/bin/java";
+                return result;
+            }
+            else throw new Exception("Which OS??");
+        }
+
+        private void GetGeneratedFileNameList(string java_executable)
+        {
+            // Because we're using the Java version of the Antlr tool,
+            // we're going to execute this command twice: first with the
+            // -depend option so as to get the list of generated files,
+            // then a second time to actually generate the files.
+            // The code that was here probably worked, but only for the C#
+            // version of the Antlr tool chain.
+            //
+            // After collecting the output of the first command, convert the
+            // output so as to get a clean list of files generated.
+            List<string> arguments = new List<string>();
+            arguments.Add("-cp");
+            arguments.Add(ToolPath);
+            arguments.Add("org.antlr.v4.Tool");
+            arguments.Add("-depend");
+            arguments.Add("-o");
+            arguments.Add(AntOutDir);
+            if (!string.IsNullOrEmpty(LibPath))
+            {
+                var split = LibPath.Split(';');
+                foreach (var p in split)
+                {
+                    if (string.IsNullOrEmpty(p))
+                        continue;
+                    if (string.IsNullOrWhiteSpace(p))
+                        continue;
+                    arguments.Add("-lib");
+                    arguments.Add(p);
+                }
+            }
+            if (GAtn) arguments.Add("-atn");
+            if (!string.IsNullOrEmpty(Encoding))
+            {
+                arguments.Add("-encoding");
+                arguments.Add(Encoding);
+            }
+            arguments.Add(Listener ? "-listener" : "-no-listener");
+            arguments.Add(Visitor ? "-visitor" : "-no-visitor");
+            if (!(string.IsNullOrEmpty(Package) || string.IsNullOrWhiteSpace(Package)))
+            {
+                arguments.Add("-package");
+                arguments.Add(Package);
+            }
+            if (!string.IsNullOrEmpty(DOptions))
+            {
+                // The Antlr tool can take multiple -D options, but
+                // DOptions is just a string. We allow for multiple
+                // options by separating each with a semi-colon. At this
+                // point, convert each option into separate "-D" option
+                // arguments.
+                var split = DOptions.Split(';');
+                foreach (var p in split)
+                {
+                    var q = p.Trim();
+                    if (string.IsNullOrEmpty(q))
+                        continue;
+                    if (string.IsNullOrWhiteSpace(q))
+                        continue;
+                    arguments.Add("-D" + q);
+                }
+            }
+            if (Error) arguments.Add("-Werror");
+            if (ForceAtn) arguments.Add("-Xforce-atn");
+            if (SourceCodeFiles == null) arguments.AddRange(OtherSourceCodeFiles);
+            else arguments.AddRange(SourceCodeFiles?.Select(s => s.ItemSpec));
+            ProcessStartInfo startInfo = new ProcessStartInfo(java_executable, JoinArguments(arguments))
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
+            Process process = new Process();
+            process.StartInfo = startInfo;
+            process.ErrorDataReceived += HandleStderrDataReceived;
+            process.OutputDataReceived += HandleOutputDataReceivedFirstTime;
+            process.Start();
+            process.BeginErrorReadLine();
+            process.BeginOutputReadLine();
+            process.StandardInput.Dispose();
+            process.WaitForExit();
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                "Finished executing Antlr jar command."));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                "The generated file list contains " + _generatedCodeFiles.Count() + " items."));
+            if (process.ExitCode != 0)
+            {
+                return; // return false;
+            }
+            // Add in tokens and interp files since Antlr Tool does not do that.
+            var old_list = _generatedCodeFiles.ToList();
+            var new_list = new List<string>();
+            foreach (var s in old_list)
+            {
+                if (Path.GetExtension(s) == ".tokens")
+                {
+                    var interp = s.Replace(Path.GetExtension(s), ".interp");
+                    new_list.Append(interp);
+                }
+                else
+                    new_list.Add(s);
+            }
+            _generatedCodeFiles = new_list.ToList();
+        }
+
+        private void GenerateFiles(string java_executable, out bool success)
+        {
+            List<string> arguments = new List<string>();
+            {
+                arguments.Add("-cp");
+                arguments.Add(ToolPath);
+                //arguments.Add("org.antlr.v4.CSharpTool");
+                arguments.Add("org.antlr.v4.Tool");
+            }
+            arguments.Add("-o");
+            arguments.Add(AntOutDir);
+            if (!string.IsNullOrEmpty(LibPath))
+            {
+                var split = LibPath.Split(';');
+                foreach (var p in split)
+                {
+                    if (string.IsNullOrEmpty(p))
+                        continue;
+                    if (string.IsNullOrWhiteSpace(p))
+                        continue;
+                    arguments.Add("-lib");
+                    arguments.Add(p);
+                }
+            }
+            if (GAtn) arguments.Add("-atn");
+            if (!string.IsNullOrEmpty(Encoding))
+            {
+                arguments.Add("-encoding");
+                arguments.Add(Encoding);
+            }
+            arguments.Add(Listener ? "-listener" : "-no-listener");
+            arguments.Add(Visitor ? "-visitor" : "-no-visitor");
+            if (!(string.IsNullOrEmpty(Package) || string.IsNullOrWhiteSpace(Package)))
+            {
+                arguments.Add("-package");
+                arguments.Add(Package);
+            }
+            if (!string.IsNullOrEmpty(DOptions))
+            {
+                // Since the C# target currently produces the same code for all target framework versions, we can
+                // avoid bugs with support for newer frameworks by just passing CSharp as the language and allowing
+                // the tool to use a default.
+                var split = DOptions.Split(';');
+                foreach (var p in split)
+                {
+                    if (string.IsNullOrEmpty(p))
+                        continue;
+                    if (string.IsNullOrWhiteSpace(p))
+                        continue;
+                    arguments.Add("-D" + p);
+                }
+            }
+            if (Error) arguments.Add("-Werror");
+            if (ForceAtn) arguments.Add("-Xforce-atn");
+            if (SourceCodeFiles == null) arguments.AddRange(OtherSourceCodeFiles);
+            else arguments.AddRange(SourceCodeFiles?.Select(s => s.ItemSpec));
+            ProcessStartInfo startInfo = new ProcessStartInfo(java_executable, JoinArguments(arguments))
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
+            Process process = new Process();
+            process.StartInfo = startInfo;
+            process.ErrorDataReceived += HandleStderrDataReceived;
+            process.OutputDataReceived += HandleStdoutDataReceived;
+            process.Start();
+            process.BeginErrorReadLine();
+            process.BeginOutputReadLine();
+            process.StandardInput.Dispose();
+            process.WaitForExit();
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                "Finished executing Antlr jar command."));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                "The generated file list contains " + _generatedCodeFiles.Count() + " items."));
+            foreach (var fn in _generatedCodeFiles)
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Generated file " + fn));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
+            // At this point, regenerate the entire GeneratedCodeFiles list.
+            // This is because (1) it contains duplicates; (2) it contains
+            // files that really actually weren't generated. This can happen
+            // if the grammar was a Lexer grammar. (Note, I don't think it
+            // wise to look at the grammar file to figure out what it is, nor
+            // do I think it wise to expose a switch to the user for him to
+            // indicate what type of grammar it is.)
+            var new_code_list = new List<string>();
+            var new_all_list = new List<string>();
+            foreach (var fn in _generatedCodeFiles.Distinct().ToList())
+            {
+                var ext = Path.GetExtension(fn);
+                if (File.Exists(fn) && !(ext == ".g4" && ext == ".g4"))
+                    new_all_list.Add(fn);
+                if ((ext == ".cs" || ext == ".java" || ext == ".cpp" ||
+                     ext == ".php" || ext == ".js") && File.Exists(fn))
+                    new_code_list.Add(fn);
+            }
+            foreach (var fn in _allGeneratedFiles.Distinct().ToList())
+            {
+                var ext = Path.GetExtension(fn);
+                if (File.Exists(fn) && !(ext == ".g4" && ext == ".g4"))
+                    new_all_list.Add(fn);
+                if ((ext == ".cs" || ext == ".java" || ext == ".cpp" ||
+                     ext == ".php" || ext == ".js") && File.Exists(fn))
+                    new_code_list.Add(fn);
+            }
+            _allGeneratedFiles = new_all_list.ToList();
+            _generatedCodeFiles = new_code_list.ToList();
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List of generated files " + String.Join(" ", _allGeneratedFiles)));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List of generated code files " + String.Join(" ", _generatedCodeFiles)));
+            success = process.ExitCode == 0;
         }
 
         private void ProcessExceptionAsBuildMessage(Exception exception)

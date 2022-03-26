@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Antlr4.Build.Tasks
 {
-    internal class Message
+    public class Message
     {
         public Message(string message)
         {

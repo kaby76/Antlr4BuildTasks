@@ -3,7 +3,7 @@ using Microsoft.Build.Utilities;
 
 namespace Antlr4.Build.Tasks
 {
-    internal class MessageQueue
+    public class MessageQueue
     {
         private static StackQueue<Message> _messages = new StackQueue<Message>();
 

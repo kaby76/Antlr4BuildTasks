@@ -14,33 +14,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AntlrProbePath Condition="'$(AntlrProbePath)'==''">
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.3/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.2/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.1/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.9/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.8-1/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.8/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.7.2/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.7.1/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.7/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.6/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.3/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.2-1/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.2/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.1-1/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.1/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.5/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.3/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.2.2/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.2.1/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.2/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.1/;
-      https://repo1.maven.org/maven2/org/antlr/antlr4/4.0/
-    </AntlrProbePath>
-  </PropertyGroup>
-
-  <PropertyGroup>
 		<BuildSystem>MSBuild</BuildSystem>
 		<TaskVersion>4.0.0.0</TaskVersion>
 		<TaskKeyToken>eb42632606e9261f</TaskKeyToken>
@@ -72,10 +45,6 @@
 	  -->
 	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
 	           TaskName="Antlr4.Build.Tasks.GetAntlrJar"
-	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
-
-	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
-	           TaskName="Antlr4.Build.Tasks.GetJava"
 	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
 	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
@@ -158,26 +127,6 @@
 	<Target Name="Antlr4GetBuildDeps"
 	        Condition="'@(Antlr4)' != ''">
 
-		<Message Text="Tasks for Antlr in '$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll'"/>
-		<GetJava
-			JavaExec="$(AntlrvsixJavaExec)"
-			IntermediateOutputPath="$(IntermediateOutputPath)">
-			<Output TaskParameter="UsingJavaExec" ItemName="UsingJavaExec"/>
-		</GetJava>
-
-		<Message Text="The output from GetJava task is '@(UsingJavaExec)'"/>
-
-		<GetAntlrJar
-			ToolPath="$(AntlrToolPath)"
-			PackageReference="@(PackageReference)"
-			PackageVersion="@(PackageVersion)"
-			IntermediateOutputPath="$(IntermediateOutputPath)"
-      AntlrProbePath="$(AntlrProbePath)">
-			<Output TaskParameter="UsingToolPath" ItemName="UsingToolPath" />
-		</GetAntlrJar>
-
-		<Message Text="The output from GetAntlrJar task is '@(UsingToolPath)'"/>
-
 	</Target>
 
 
@@ -196,7 +145,6 @@
 
 		<RunAntlrTool
 			AntOutDir="%(Antlr4.AntOutDir)"
-			BuildTaskPath="$(Antlr4BuildTaskLocation)"
 			ContinueOnError="false"
 			DOptions="%(Antlr4.DOptions)"
 			Encoding="%(Antlr4.Encoding)"
@@ -204,11 +152,12 @@
 			ForceAtn="%(Antlr4.ForceAtn)"
 			GAtn="%(Antlr4.GAtn)"
 			IntermediateOutputPath="$(IntermediateOutputPath)"
-			JavaExec="@(UsingJavaExec)"
 			LibPath="%(Antlr4.LibPath)"
 			Listener="%(Antlr4.Listener)"
 			Package="%(Antlr4.Package)"
-			SourceCodeFiles="@(Antlr4 -> '%(FullPath)')"
+			PackageReference="@(PackageReference)"
+			PackageVersion="@(PackageVersion)"
+            SourceCodeFiles="@(Antlr4 -> '%(FullPath)')"
 			TargetFrameworkVersion="$(TargetFrameworkVersion)"
 			TokensFiles="@(Antlr4Tokens)"
 			ToolPath="@(UsingToolPath)"
