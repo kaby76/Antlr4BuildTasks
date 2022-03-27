@@ -44,10 +44,6 @@
 	<!-- Let's add in all the tasks declared in this tool used in this .targets file.
 	  -->
 	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
-	           TaskName="Antlr4.Build.Tasks.GetAntlrJar"
-	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
-
-	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
 	           TaskName="Antlr4.Build.Tasks.MakeRelativeList"
 	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
 
@@ -69,7 +65,6 @@
 	  -->
 	<PropertyGroup>
 		<BuildDependsOn>
-			Antlr4GetBuildDeps;
 			Antlr4Compile;
 			Antlr4CompileAddFilesGenerated;
 			$(BuildDependsOn)
@@ -78,7 +73,6 @@
 
 	<PropertyGroup>
 		<CoreCompileDependsOn>
-			Antlr4GetBuildDeps;
 			Antlr4Compile;
 			Antlr4CompileAddFilesGenerated;
 			$(CoreCompileDependsOn)
@@ -119,16 +113,6 @@
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Antlr4>
 	</ItemDefinitionGroup>
-
-	<!-- This target sets up Java and the Antlr Tool jar, and sets
-	     UsingJavaExec and UsingToolPath variables which are used later on in the build.
-		 These variables indicate where to find Java and the Antlr Tool jar.
-	  -->
-	<Target Name="Antlr4GetBuildDeps"
-	        Condition="'@(Antlr4)' != ''">
-
-	</Target>
-
 
 	<!-- This is the main Antlr tool calling method. The result of the
 	     tool is are generated files, and from this target, two files that

@@ -5,9 +5,9 @@
 		<EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
-		<AssemblyVersion>8.22.0.0</AssemblyVersion>
-		<FileVersion>8.22.0.0</FileVersion>
-		<Version>8.22</Version>
+		<AssemblyVersion>9.0.0.0</AssemblyVersion>
+		<FileVersion>9.0.0.0</FileVersion>
+		<Version>9.0</Version>
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright />
 		<Company>Domemtech</Company>
@@ -23,7 +23,7 @@
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>v8.22: dynamic parser generation and compiling.</PackageReleaseNotes>
+		<PackageReleaseNotes>v9.0: reorganization of source code.</PackageReleaseNotes>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
