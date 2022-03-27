@@ -134,32 +134,13 @@ to fix the build.
 
 ### Visual Studio IDE or Visual Studio Code integration
 
-The VS IDE does not contain the Antlr4 Console App templates. Therefore, you cannot create
-a new project using VS IDE or Code. Instead, you will need to create it through a command line
-shell.
+The package here has little to do with VS other than builds under VS can use Antlr4BuildTasks
+for a seemless build. You will just need to add the package references and other items to
+the .csproj file as outlined above.
 
-#### Using "dotnet new"
-  
-You can generate a simple "Official" Antlr4 program using `dotnet new`. You will first need to
-add the template to the dotnet tool.
+If you are looking for a set of templates to create a console application that uses Antlr4,
+then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-```
-dotnet new -i Antlr4Templates
-```
+### Latest release v9.0 (27 Mar 2022)
 
-Then, create the "Arithmetic" example console application
-
-```
-mkdir application
-cd application
-dotnet new antlr4
-dotnet restore
-dotnet build
-dotnet run -input "1 + 2"
-```
-
-You can then open the application in VS IDE or Code.
-
-### Latest release v8.20 (12 Mar 2022)
-
-* Improved error messages.
+* Cleaned up code and simplified.
