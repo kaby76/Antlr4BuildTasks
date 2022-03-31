@@ -106,7 +106,7 @@ namespace Antlr4.Build.Tasks
                 if (AntOutDir != null) AntOutDir = Path.GetFullPath(AntOutDir);
                 if (AntOutDir == null || AntOutDir == "")
                 {
-                    Log.LogMessage("Placing generated files in IntermediateOutputPath " + IntermediateOutputPath);
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Placing generated files in IntermediateOutputPath " + IntermediateOutputPath));
                     AntOutDir = IntermediateOutputPath;
                 }
                 Directory.CreateDirectory(AntOutDir);
@@ -683,15 +683,30 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             HandleStderrDataReceived(e.Data);
         }
 
+        bool start = false;
+        StringBuilder sb = new StringBuilder();
         private void HandleStderrDataReceived(string data)
         {
             //System.Console.Error.WriteLine("XXX3 " + data);
             if (string.IsNullOrEmpty(data))
                 return;
-
             try
             {
-                MessageQueue.EnqueueMessage(Message.BuildDefaultMessage(data));
+                if (data.Contains("Exception in thread"))
+                {
+                    start = true;
+                    sb.AppendLine(data);
+                }
+                else if (start)
+                {
+                    sb.AppendLine(data);
+                    if (data.Contains("at org.antlr.v4.Tool.main(Tool.java"))
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildErrorMessage(sb.ToString()));
+                    }
+                }
+                else
+                    MessageQueue.EnqueueMessage(Message.BuildDefaultMessage(data));
             }
             catch (Exception ex)
             {
