@@ -120,8 +120,8 @@ namespace Antlr4.Build.Tasks
                     throw new Exception("Cannot find Antlr jar, currently set to " + "'" + ToolPath + "'");
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("ToolPath is \"" + ToolPath + "\""));
 
-                GetGeneratedFileNameList(JavaExec);
-                GenerateFiles(JavaExec, out success);
+                success = GetGeneratedFileNameList(JavaExec)
+                    && GenerateFiles(JavaExec, out success);
             }
             catch (Exception exception)
             {
@@ -395,7 +395,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             else throw new Exception("Which OS??");
         }
 
-        private void GetGeneratedFileNameList(string java_executable)
+        private bool GetGeneratedFileNameList(string java_executable)
         {
             // Because we're using the Java version of the Antlr tool,
             // we're going to execute this command twice: first with the
@@ -486,7 +486,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 "The generated file list contains " + _generatedCodeFiles.Count() + " items."));
             if (process.ExitCode != 0)
             {
-                return; // return false;
+                return false;
             }
             // Add in tokens and interp files since Antlr Tool does not do that.
             var old_list = _generatedCodeFiles.ToList();
@@ -502,9 +502,10 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     new_list.Add(s);
             }
             _generatedCodeFiles = new_list.ToList();
+            return true;
         }
 
-        private void GenerateFiles(string java_executable, out bool success)
+        private bool GenerateFiles(string java_executable, out bool success)
         {
             List<string> arguments = new List<string>();
             {
@@ -619,6 +620,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List of generated files " + String.Join(" ", _allGeneratedFiles)));
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List of generated code files " + String.Join(" ", _generatedCodeFiles)));
             success = process.ExitCode == 0;
+            return success;
         }
 
         private void ProcessExceptionAsBuildMessage(Exception exception)
@@ -703,6 +705,8 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     if (data.Contains("at org.antlr.v4.Tool.main(Tool.java"))
                     {
                         MessageQueue.EnqueueMessage(Message.BuildErrorMessage(sb.ToString()));
+                        sb = new StringBuilder();
+                        start = false;
                     }
                 }
                 else

@@ -23,7 +23,7 @@
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>v9.0: reorganization of source code.</PackageReleaseNotes>
+		<PackageReleaseNotes>v9.1: improved error messages when Antlr tool crashes.</PackageReleaseNotes>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
