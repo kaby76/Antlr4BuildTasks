@@ -25,7 +25,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
-        <PackageReference Include="Antlr4BuildTasks" Version="8.20">
+        <PackageReference Include="Antlr4BuildTasks" Version="9.2">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
@@ -115,7 +115,7 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="8.20" />
+        <PackageReference Include="Antlr4BuildTasks" Version="9.2" />
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
     </ItemGroup>
 
