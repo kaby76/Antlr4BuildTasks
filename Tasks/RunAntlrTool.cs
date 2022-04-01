@@ -25,17 +25,32 @@ namespace Antlr4.Build.Tasks
     {
         private const string DefaultGeneratedSourceExtension = "g4";
         private List<string> _generatedCodeFiles = new List<string>();
-        private List<string> _allGeneratedFiles = new List<string>();
+        private List<string> _generatedDirectories = new List<string>();
+        private List<string> _generatedFiles = new List<string>();
 
         public RunAntlrTool()
         {
             this.GeneratedSourceExtension = DefaultGeneratedSourceExtension;
         }
 
-        [Output] public ITaskItem[] AllGeneratedFiles
+        [Output] public ITaskItem[] GeneratedFiles
         {
-            get { return this._allGeneratedFiles.Select(t => new TaskItem(t)).ToArray(); }
-            set { this._allGeneratedFiles = value.Select(t => t.ItemSpec).ToList(); }
+            get { return this._generatedFiles
+                    .Select(t => t.Replace("\\", "/"))
+                    .Distinct()
+                    .OrderBy(q => q)
+                    .Select(t => new TaskItem(t)).ToArray(); }
+            set { this._generatedFiles = value.Select(t => t.ItemSpec).ToList(); }
+        }
+        [Output] public ITaskItem[] GeneratedDirectories
+        {
+            get { return this._generatedDirectories
+                     .Select(t => t.Replace("\\", "/"))
+                    .Distinct()
+                    .OrderBy(q => q)
+                    .Select(t => new TaskItem(t)).ToArray();
+            }
+            set { this._generatedDirectories = value.Select(t => t.ItemSpec).ToList(); }
         }
         public string AntOutDir { get; set; }
         public List<string> AntlrProbePath
@@ -76,10 +91,14 @@ namespace Antlr4.Build.Tasks
         {
             get
             {
-                return this._generatedCodeFiles.Select(t => new TaskItem(t)).ToArray();
+                return this._generatedCodeFiles
+                    .Select(t => t.Replace("\\", "/"))
+                    .Distinct()
+                    .OrderBy(q => q)
+                    .Select(t => new TaskItem(t)).ToArray();
             }
         }
-        public string GeneratedSourceExtension { get; set; }
+        [Output] public string GeneratedSourceExtension { get; set; }
         [Required] public string IntermediateOutputPath { get; set; }
         public string JavaExec { get; set; }
         public string LibPath { get; set; }
@@ -135,7 +154,8 @@ namespace Antlr4.Build.Tasks
                     MessageQueue.EnqueueMessage(Message.BuildErrorMessage("The Antlr4 tool failed."));
                     MessageQueue.MutateToError();
                     _generatedCodeFiles.Clear();
-                    _allGeneratedFiles.Clear();
+                    _generatedFiles.Clear();
+                    _generatedDirectories.Clear();
                 }
                 MessageQueue.EmptyMessageQueue(Log);
             }
@@ -214,6 +234,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 dir = dir + "/";
             }
             var archive = dir + "antlr4-4.9.3-complete.jar";
+            _generatedFiles.Add(archive);
             if (!File.Exists(archive))
             {
                 System.IO.Directory.CreateDirectory(dir);
@@ -366,7 +387,9 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     java_dir = java_dir + "/";
                 }
                 java_dir = java_dir + "Java/";
+                _generatedDirectories.Add(java_dir);
                 var archive = java_dir + "jre.zip";
+                _generatedFiles.Add(archive);
                 if (!Directory.Exists(java_dir))
                 {
                     System.IO.Directory.CreateDirectory(java_dir);
@@ -489,19 +512,16 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 return false;
             }
             // Add in tokens and interp files since Antlr Tool does not do that.
-            var old_list = _generatedCodeFiles.ToList();
-            var new_list = new List<string>();
-            foreach (var s in old_list)
+            // pick off lexer and add in .interp and .tokens.
+            var lexer = _generatedCodeFiles.Where(s => s.EndsWith("Lexer.cs")).ToList();
+            foreach (var l in lexer)
             {
-                if (Path.GetExtension(s) == ".tokens")
-                {
-                    var interp = s.Replace(Path.GetExtension(s), ".interp");
-                    new_list.Append(interp);
-                }
-                else
-                    new_list.Add(s);
+                var dire = Path.GetDirectoryName(l);
+                var filen = Path.GetFileName(l);
+                var stem = Path.GetFileNameWithoutExtension(l);
+                var pre = dire + "/" + stem;
+                _generatedFiles.Add(pre + ".tokens");
             }
-            _generatedCodeFiles = new_list.ToList();
             return true;
         }
 
@@ -600,24 +620,34 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             foreach (var fn in _generatedCodeFiles.Distinct().ToList())
             {
                 var ext = Path.GetExtension(fn);
-                if (File.Exists(fn) && !(ext == ".g4" && ext == ".g4"))
+                if ((ext == ".tokens"))
+                {
+                    var interp = fn.Substring(0, fn.Length - ext.Length) + ".interp";
+                    new_all_list.Add(interp);
+                }
+                if (File.Exists(fn) && !(ext == ".g4" && ext == ".g"))
                     new_all_list.Add(fn);
                 if ((ext == ".cs" || ext == ".java" || ext == ".cpp" ||
                      ext == ".php" || ext == ".js") && File.Exists(fn))
                     new_code_list.Add(fn);
             }
-            foreach (var fn in _allGeneratedFiles.Distinct().ToList())
+            foreach (var fn in _generatedFiles.Distinct().ToList())
             {
                 var ext = Path.GetExtension(fn);
-                if (File.Exists(fn) && !(ext == ".g4" && ext == ".g4"))
+                if ((ext == ".tokens"))
+                {
+                    var interp = fn.Substring(0, fn.Length - ext.Length) + ".interp";
+                    new_all_list.Add(interp);
+                }
+                if (File.Exists(fn) && !(ext == ".g4" && ext == ".g"))
                     new_all_list.Add(fn);
                 if ((ext == ".cs" || ext == ".java" || ext == ".cpp" ||
                      ext == ".php" || ext == ".js") && File.Exists(fn))
                     new_code_list.Add(fn);
             }
-            _allGeneratedFiles = new_all_list.ToList();
+            _generatedFiles = new_all_list.ToList();
             _generatedCodeFiles = new_code_list.ToList();
-            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List of generated files " + String.Join(" ", _allGeneratedFiles)));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List of generated files " + String.Join(" ", _generatedFiles)));
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List of generated code files " + String.Join(" ", _generatedCodeFiles)));
             success = process.ExitCode == 0;
             return success;

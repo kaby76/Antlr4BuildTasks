@@ -57,11 +57,12 @@ namespace Antlr4.Build.Tasks
         internal static void MutateToError()
         {
             return;
-            for (int i = 0; i < _messages.Count; ++i)
+/*            for (int i = 0; i < _messages.Count; ++i)
             {
                 var message = _messages[i];
                 message.Severity = TraceLevel.Error;
             }
+*/
         }
     }
 }

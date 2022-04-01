@@ -39,6 +39,7 @@
 	<PropertyGroup>
 		<Antlr4ToCompileListFile Condition="'$(Antlr4ToCompileListFile)'==''">$(IntermediateOutputPath)$(MSBuildProjectFile).AntlrToCompileList.txt</Antlr4ToCompileListFile>
 		<Antlr4AllListFile Condition="'$(Antlr4AllListFile)'==''">$(IntermediateOutputPath)$(MSBuildProjectFile).AntlrAllList.txt</Antlr4AllListFile>
+		<Antlr4AllDirectoriesFile Condition="'$(Antlr4AllDirectoriesFile)'==''">$(IntermediateOutputPath)$(MSBuildProjectFile).AntlrAllDirectories.txt</Antlr4AllDirectoriesFile>
 	</PropertyGroup>
 
 	<!-- Let's add in all the tasks declared in this tool used in this .targets file.
@@ -123,7 +124,7 @@
 			DependsOnTargets="$(Antlr4CompileDependsOn)"
 			Condition="'@(Antlr4)' != ''"
 			Inputs="@(Antlr4);@(Antlr4Tokens)"
-			Outputs="$(Antlr4ToCompileListFile);$(Antlr4AllListFile)">
+			Outputs="$(Antlr4ToCompileListFile);$(Antlr4AllListFile);$(Antlr4AllDirectoriesFile)">
 
 		<Message Text="Running the Java Antlr Tool over the grammar files '@(Antlr4)'."/>
 
@@ -148,14 +149,16 @@
 			Visitor="%(Antlr4.Visitor)"
 		  >
 			<Output ItemName="ToCompileFiles" TaskParameter="GeneratedCodeFiles" />
-			<Output ItemName="AllFiles" TaskParameter="AllGeneratedFiles" />
+			<Output ItemName="AllFiles" TaskParameter="GeneratedFiles" />
+			<Output ItemName="AllDirectories" TaskParameter="GeneratedDirectories" />
 		</RunAntlrTool>
 
 		<Message Text="Output GeneratedCodeFiles from RunAntlrTool is '@(ToCompileFiles)'"/>
-		<Message Text="Output AllGeneratedFiles from RunAntlrTool is '@(AllFiles)'"/>
+		<Message Text="Output GeneratedFiles from RunAntlrTool is '@(AllFiles)'"/>
 		<Message Text="Writing out these lists as two txt files in $(IntermediateOutputPath)." />
 		<WriteLinesToFile File="$(Antlr4ToCompileListFile)" Lines="@(ToCompileFiles)" Overwrite="true"/>
 		<WriteLinesToFile File="$(Antlr4AllListFile)" Lines="@(AllFiles)" Overwrite="true"/>
+		<WriteLinesToFile File="$(Antlr4AllDirectoriesFile)" Lines="@(AllDirectories)" Overwrite="true"/>
 
 	</Target>
 
@@ -173,16 +176,17 @@
       -->
 	<Target Name="CustomBeforeClean">
 		<Message Text="CustomBeforeClean target executed"/>
-		<Message Text="Removing files listed in $(Antlr4AllListFile)"/>
 		<ReadLinesFromFile File="$(Antlr4AllListFile)">
 			<Output TaskParameter="Lines" ItemName="ToRemove" />
 		</ReadLinesFromFile>
-		<Message Text="Going to delete @(ToRemove)"/>
+		<ReadLinesFromFile File="$(Antlr4AllDirectoriesFile)">
+			<Output TaskParameter="Lines" ItemName="ToRemoveDirs" />
+		</ReadLinesFromFile>
 		<Delete Files="@(ToRemove)" TreatErrorsAsWarnings="false" />
-		<Message Text="Removing file $(Antlr4AllListFile)"/>
+		<RemoveDir Directories="@(ToRemoveDirs)" />
 		<Delete Files="$(Antlr4AllListFile)" TreatErrorsAsWarnings="false" />
-		<Message Text="Removing file $(Antlr4ToCompileListFile)"/>
 		<Delete Files="$(Antlr4ToCompileListFile)" TreatErrorsAsWarnings="false" />
+		<Delete Files="$(Antlr4AllDirectoriesFile)" TreatErrorsAsWarnings="false" />
 	</Target>
 	
 	
