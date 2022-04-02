@@ -33,25 +33,6 @@ namespace Antlr4.Build.Tasks
             this.GeneratedSourceExtension = DefaultGeneratedSourceExtension;
         }
 
-        [Output] public ITaskItem[] GeneratedFiles
-        {
-            get { return this._generatedFiles
-                    .Select(t => t.Replace("\\", "/"))
-                    .Distinct()
-                    .OrderBy(q => q)
-                    .Select(t => new TaskItem(t)).ToArray(); }
-            set { this._generatedFiles = value.Select(t => t.ItemSpec).ToList(); }
-        }
-        [Output] public ITaskItem[] GeneratedDirectories
-        {
-            get { return this._generatedDirectories
-                     .Select(t => t.Replace("\\", "/"))
-                    .Distinct()
-                    .OrderBy(q => q)
-                    .Select(t => new TaskItem(t)).ToArray();
-            }
-            set { this._generatedDirectories = value.Select(t => t.ItemSpec).ToList(); }
-        }
         public string AntOutDir { get; set; }
         public List<string> AntlrProbePath
         {
@@ -97,6 +78,30 @@ namespace Antlr4.Build.Tasks
                     .OrderBy(q => q)
                     .Select(t => new TaskItem(t)).ToArray();
             }
+        }
+        [Output] public ITaskItem[] GeneratedFiles
+        {
+            get
+            {
+                return this._generatedFiles
+                  .Select(t => t.Replace("\\", "/"))
+                  .Distinct()
+                  .OrderBy(q => q)
+                  .Select(t => new TaskItem(t)).ToArray();
+            }
+            set { this._generatedFiles = value.Select(t => t.ItemSpec).ToList(); }
+        }
+        [Output] public ITaskItem[] GeneratedDirectories
+        {
+            get
+            {
+                return this._generatedDirectories
+                   .Select(t => t.Replace("\\", "/"))
+                  .Distinct()
+                  .OrderBy(q => q)
+                  .Select(t => new TaskItem(t)).ToArray();
+            }
+            set { this._generatedDirectories = value.Select(t => t.ItemSpec).ToList(); }
         }
         [Output] public string GeneratedSourceExtension { get; set; }
         [Required] public string IntermediateOutputPath { get; set; }
@@ -431,11 +436,11 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             // output so as to get a clean list of files generated.
             List<string> arguments = new List<string>();
             arguments.Add("-cp");
-            arguments.Add(ToolPath);
+            arguments.Add(ToolPath.Replace("\\", "/"));
             arguments.Add("org.antlr.v4.Tool");
             arguments.Add("-depend");
             arguments.Add("-o");
-            arguments.Add(AntOutDir);
+            arguments.Add(AntOutDir.Replace("\\", "/"));
             if (!string.IsNullOrEmpty(LibPath))
             {
                 var split = LibPath.Split(';');
@@ -446,7 +451,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     if (string.IsNullOrWhiteSpace(p))
                         continue;
                     arguments.Add("-lib");
-                    arguments.Add(p);
+                    arguments.Add(p.Replace("\\", "/"));
                 }
             }
             if (GAtn) arguments.Add("-atn");
@@ -484,7 +489,8 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (ForceAtn) arguments.Add("-Xforce-atn");
             if (SourceCodeFiles == null) arguments.AddRange(OtherSourceCodeFiles);
             else arguments.AddRange(SourceCodeFiles?.Select(s => s.ItemSpec));
-            ProcessStartInfo startInfo = new ProcessStartInfo(java_executable, JoinArguments(arguments))
+            ProcessStartInfo startInfo = new ProcessStartInfo(
+                java_executable, JoinArguments(arguments))
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -530,12 +536,12 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             List<string> arguments = new List<string>();
             {
                 arguments.Add("-cp");
-                arguments.Add(ToolPath);
+                arguments.Add(ToolPath.Replace("\\", "/"));
                 //arguments.Add("org.antlr.v4.CSharpTool");
                 arguments.Add("org.antlr.v4.Tool");
             }
             arguments.Add("-o");
-            arguments.Add(AntOutDir);
+            arguments.Add(AntOutDir.Replace("\\", "/"));
             if (!string.IsNullOrEmpty(LibPath))
             {
                 var split = LibPath.Split(';');
@@ -546,7 +552,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     if (string.IsNullOrWhiteSpace(p))
                         continue;
                     arguments.Add("-lib");
-                    arguments.Add(p);
+                    arguments.Add(p.Replace("\\", "/"));
                 }
             }
             if (GAtn) arguments.Add("-atn");
@@ -757,7 +763,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (string.IsNullOrEmpty(str))
                 return;
 
-            MessageQueue.EnqueueMessage(new Message("Yo got " + str + " from Antlr Tool."));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Got '" + str + "' from Antlr Tool."));
 
             // There could all kinds of shit coming out of the Antlr Tool, so we need to
             // take care of what to record.
@@ -765,14 +771,18 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             // file-name1 and save it away.
             try
             {
-                Regex regex = new Regex(@"^(?<OUTPUT>\S+)\s*:");
+                Regex regex = new Regex(@"^(?<OUTPUT>[^\n\r]+)\s{0,}[:]\s{1,}");
                 Match match = regex.Match(str);
                 if (!match.Success)
                 {
-                    MessageQueue.EnqueueMessage(new Message("Yo didn't fit pattern!"));
+                    MessageQueue.EnqueueMessage(Message.BuildErrorMessage("Output from Antlr4 tool was '"
+                        + str
+                        + "'. It wasn't expected!"));
                     return;
                 }
                 string fn = match.Groups["OUTPUT"].Value;
+                fn = fn.Trim();
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Yo value matched is " + fn));
                 var ext = Path.GetExtension(fn);
                 if (ext == ".cs" || ext == ".java" || ext == ".cpp" ||
                     ext == ".php" || ext == ".js" || ext == ".tokens" || ext == ".interp" ||
@@ -784,7 +794,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 if (RunAntlrTool.IsFatalException(ex))
                     throw;
 
-                MessageQueue.EnqueueMessage(new Message(ex.Message));
+                MessageQueue.EnqueueMessage(Message.BuildCrashMessage(ex.Message));
             }
         }
 
@@ -798,14 +808,14 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (string.IsNullOrEmpty(data))
                 return;
 
-            MessageQueue.EnqueueMessage(new Message("Yo got " + data + " from Antlr Tool."));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Yo got " + data + " from Antlr Tool."));
 
             try
             {
                 Match match = GeneratedFileMessageFormat.Match(data);
                 if (!match.Success)
                 {
-                    MessageQueue.EnqueueMessage(new Message(data));
+                    MessageQueue.EnqueueMessage(Message.BuildErrorMessage(data));
                     return;
                 }
 
