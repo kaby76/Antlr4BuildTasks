@@ -25,7 +25,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
-        <PackageReference Include="Antlr4BuildTasks" Version="8.20">
+        <PackageReference Include="Antlr4BuildTasks" Version="9.2">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
@@ -115,7 +115,7 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="8.20" />
+        <PackageReference Include="Antlr4BuildTasks" Version="9.2" />
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
     </ItemGroup>
 
@@ -126,12 +126,6 @@ of the Antlr JAR file that you are looking for. Antlr4BuildTasks will look for a
 with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.9.3).
 _I recommend that you just use the PackageReference's defined above._
 
-### Error messages
-
-Antlr4BuildTasks will output informational, warnings, and error messages. If there is one error
-message detected, all messages are converted to an error so that you have maximal information
-to fix the build.
-
 ### Visual Studio IDE or Visual Studio Code integration
 
 The package here has little to do with VS other than builds under VS can use Antlr4BuildTasks
@@ -141,6 +135,6 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v9.0 (27 Mar 2022)
+### Latest release v9.2 (1 Apr 2022)
 
-* Cleaned up code and simplified.
+* Fix code for "dotnet clean".
