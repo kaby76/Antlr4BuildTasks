@@ -25,7 +25,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
-        <PackageReference Include="Antlr4BuildTasks" Version="9.2">
+        <PackageReference Include="Antlr4BuildTasks" Version="9.3">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
@@ -115,7 +115,7 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="9.2" />
+        <PackageReference Include="Antlr4BuildTasks" Version="9.3" />
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
     </ItemGroup>
 
@@ -135,6 +135,6 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v9.2 (1 Apr 2022)
+### Latest release v9.3 (2 Apr 2022)
 
-* Fix code for "dotnet clean".
+* Fixed problems with path names with spaces.
