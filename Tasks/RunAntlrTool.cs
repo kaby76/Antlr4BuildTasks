@@ -40,6 +40,7 @@ namespace Antlr4.Build.Tasks
             set;
         } = new List<string>()
         {
+            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.10/",
             "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.3/",
             "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.2/",
             "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.1/",
@@ -238,13 +239,13 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             {
                 dir = dir + "/";
             }
-            var archive = dir + "antlr4-4.9.3-complete.jar";
+            var archive = dir + "antlr4-4.10-complete.jar";
             _generatedFiles.Add(archive);
             if (!File.Exists(archive))
             {
                 System.IO.Directory.CreateDirectory(dir);
                 var names = assembly.GetManifestResourceNames();
-                var jar = @"Antlr4.Build.Tasks.antlr4-4.9.3-complete.jar";
+                var jar = @"Antlr4.Build.Tasks.antlr4-4.10-complete.jar";
                 Stream contents = this.GetType().Assembly.GetManifestResourceStream(jar);
                 var destinationFileStream = new FileStream(archive, FileMode.OpenOrCreate);
                 while (contents.Position < contents.Length)

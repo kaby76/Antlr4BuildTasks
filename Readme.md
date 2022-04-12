@@ -24,8 +24,8 @@ To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packag
 to your project. csproj file as shown below, otherwise you can use the "NuGet Package Manager":
 
     <ItemGroup>
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
-        <PackageReference Include="Antlr4BuildTasks" Version="9.3">
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10" />
+        <PackageReference Include="Antlr4BuildTasks" Version="10.0">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
@@ -115,15 +115,15 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="9.3" />
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
+        <PackageReference Include="Antlr4BuildTasks" Version="10.0" />
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10" />
     </ItemGroup>
 
 
 Antlr4BuildTasks examines PropertyGroup `AntlrProbePath`, a string of URI
 separated by semicolon, to find the version
 of the Antlr JAR file that you are looking for. Antlr4BuildTasks will look for a .jar
-with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.9.3).
+with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.10).
 _I recommend that you just use the PackageReference's defined above._
 
 ### Visual Studio IDE or Visual Studio Code integration

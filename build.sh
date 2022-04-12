@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wget https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.3/antlr4-4.9.3-complete.jar
+wget https://repo1.maven.org/maven2/org/antlr/antlr4/4.10/antlr4-4.10-complete.jar
 dotnet restore
 dotnet build
 unameOut="$(uname -s)"
