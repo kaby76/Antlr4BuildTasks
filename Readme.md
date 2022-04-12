@@ -135,6 +135,6 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v9.3 (2 Apr 2022)
+### Latest release v10.0 (12 Apr 2022)
 
-* Fixed problems with path names with spaces.
+* Update to Antlr 4.10.
