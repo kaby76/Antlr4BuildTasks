@@ -25,7 +25,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10" />
-        <PackageReference Include="Antlr4BuildTasks" Version="10.0">
+        <PackageReference Include="Antlr4BuildTasks" Version="10.1">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
@@ -115,7 +115,7 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="10.0" />
+        <PackageReference Include="Antlr4BuildTasks" Version="10.1" />
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10" />
     </ItemGroup>
 
@@ -135,6 +135,6 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v10.0 (12 Apr 2022)
+### Latest release v10.1 (13 Apr 2022)
 
-* Update to Antlr 4.10.
+* Update to Antlr 4.10. Fix JavaExec option.
