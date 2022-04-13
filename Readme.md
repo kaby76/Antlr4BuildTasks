@@ -77,6 +77,7 @@ for the Antlr tool.
 * &lt;Encoding&gt; -- A string that specifies the encoding of the input grammars.
 * &lt;DOptions&gt; -- A list of &lt;option&gt;=&lt;value&gt;, passed to the Antlr tool. E.g.,
 language=Java. Multiple options can be specified using a semi-colon separating each.
+* &lt;JavaExec&gt; -- Full path name of the Java executable.
 
 Antlr generates files that may produce a lot of compiler warnings. To ignore those,
 add the following &lt;PropertyGroup&gt; to you .csproj file.
