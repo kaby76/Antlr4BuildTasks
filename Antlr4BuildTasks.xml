@@ -77,10 +77,10 @@
 	      Description="ANTLR normally builds traditional “switch on token type” decisions where possible (one token of lookahead is sufficient to distinguish between all alternatives in a decision). To force even these simple decisions into the adaptive LL(*) mechanism, use this option." />
 	   <StringProperty
 		   Category="ANTLR"
-		   Name="JavaExe"
-		   DisplayName="Full path of Java.exe"
+		   Name="JavaExec"
+		   DisplayName="Full path of Java executable"
 		   Default=""
-		   Description="This is the full path of java.exe installed on your system. The default is blank, which means to download an install a copy of the latest Java for the build." />
+		   Description="This is the full path of java installed on your system. The default is blank, which means to download an install a copy of the latest Java for the build." />
 	   <StringProperty
 		   Category="ANTLR"
 		   Name="AntlrRuntime"
