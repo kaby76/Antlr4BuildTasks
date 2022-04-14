@@ -182,7 +182,7 @@ namespace Antlr4.Build.Tasks
             if (_top > 0)
             {
                 T cur = _items[0];
-                for (int i = 1; i <= _top; ++i)
+                for (int i = 1; i < _top; ++i)
                     _items[i - 1] = _items[i];
                 _top--;
                 return cur;
