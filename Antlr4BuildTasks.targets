@@ -130,6 +130,7 @@
 
 		<RunAntlrTool
                         AntOutDir="%(Antlr4.AntOutDir)"
+                        AntlrToolJar="%(Antlr4.AntlrToolJar)"
                         ContinueOnError="false"
                         DOptions="%(Antlr4.DOptions)"
                         Encoding="%(Antlr4.Encoding)"
@@ -146,7 +147,6 @@
                         SourceCodeFiles="@(Antlr4 -> '%(FullPath)')"
                         TargetFrameworkVersion="$(TargetFrameworkVersion)"
                         TokensFiles="@(Antlr4Tokens)"
-                        ToolPath="@(UsingToolPath)"
                         Visitor="%(Antlr4.Visitor)"
 		  >
 			<Output ItemName="ToCompileFiles" TaskParameter="GeneratedCodeFiles" />

@@ -4,25 +4,27 @@
 // Copyright (c) Terence Parr, Sam Harwell. All Rights Reserved.
 // Licensed under the BSD License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using Directory = System.IO.Directory;
+using File = System.IO.File;
+using Path = System.IO.Path;
+using StringBuilder = System.Text.StringBuilder;
+using Antlr4.Build.Tasks.Util;
+
 namespace Antlr4.Build.Tasks
 {
-    using Microsoft.Build.Framework;
-    using Microsoft.Build.Utilities;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Reflection;
-    using System.Text.RegularExpressions;
-    using Directory = System.IO.Directory;
-    using File = System.IO.File;
-    using Path = System.IO.Path;
-    using StringBuilder = System.Text.StringBuilder;
-
     public class RunAntlrTool : Task
     {
+        private const string ToolVersion = "10.3.0";
         private const string DefaultGeneratedSourceExtension = "g4";
         private List<string> _generatedCodeFiles = new List<string>();
         private List<string> _generatedDirectories = new List<string>();
@@ -33,37 +35,13 @@ namespace Antlr4.Build.Tasks
             this.GeneratedSourceExtension = DefaultGeneratedSourceExtension;
         }
 
+        public string AntlrToolJar { get; set; }
         public string AntOutDir { get; set; }
         public List<string> AntlrProbePath
         {
             get;
             set;
-        } = new List<string>()
-        {
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.10/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.3/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.2/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9.1/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.9/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.8-1/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.8/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.7.2/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.7.1/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.7/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.6/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.3/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.2-1/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.2/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.1-1/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5.1/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.5/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.3/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.2.2/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.2.1/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.2/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.1/",
-            "https://repo1.maven.org/maven2/org/antlr/antlr4/4.0/",
-        };
+        } = new List<string>();
         public string DOptions { get; set; }
         public string Encoding { get; set; }
         public bool Error { get; set; }
@@ -107,6 +85,11 @@ namespace Antlr4.Build.Tasks
         [Output] public string GeneratedSourceExtension { get; set; }
         [Required] public string IntermediateOutputPath { get; set; }
         public string JavaExec { get; set; }
+        public List<string> JavaProbePath
+        {
+            get;
+            set;
+        } = new List<string>();
         public string LibPath { get; set; }
         public bool Listener { get; set; }
         public string Package { get; set; }
@@ -116,7 +99,6 @@ namespace Antlr4.Build.Tasks
         [Required] public ITaskItem[] SourceCodeFiles { get; set; }
         public string TargetFrameworkVersion { get; set; }
         public ITaskItem[] TokensFiles { get; set; }
-        public string ToolPath { get; set; }
         public string Version { get; set; }
         public bool Visitor { get; set; }
 
@@ -135,18 +117,19 @@ namespace Antlr4.Build.Tasks
                     AntOutDir = IntermediateOutputPath;
                 }
                 Directory.CreateDirectory(AntOutDir);
+
+                AntlrToolJar = SetupAntlrToolJar();
+                if (!File.Exists(AntlrToolJar))
+                    throw new Exception("Cannot find Antlr tool jar, currently set to " + "'" + AntlrToolJar + "'");
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("AntlrToolJar is \"" + AntlrToolJar + "\""));
+
                 JavaExec = SetupJava();
                 if (!File.Exists(JavaExec))
                     throw new Exception("Cannot find Java executable, currently set to " + "'" + JavaExec + "'");
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("JavaExec is \"" + JavaExec + "\""));
 
-                ToolPath = SetupAntlrJar();
-                if (!File.Exists(JavaExec))
-                    throw new Exception("Cannot find Antlr jar, currently set to " + "'" + ToolPath + "'");
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("ToolPath is \"" + ToolPath + "\""));
-
-                success = GetGeneratedFileNameList(JavaExec)
-                    && GenerateFiles(JavaExec, out success);
+                success = GetGeneratedFileNameList()
+                    && GenerateFiles(out success);
             }
             catch (Exception exception)
             {
@@ -168,9 +151,13 @@ namespace Antlr4.Build.Tasks
             return success;
         }
 
-        private string SetupAntlrJar()
+        private string SetupAntlrToolJar()
         {
+            if (AntlrToolJar != null && AntlrToolJar != "")
+                return AntlrToolJar;
+
             string result = null;
+
             // Make sure old crusty Tunnelvision port not being used.
             foreach (var i in PackageReference)
             {
@@ -180,6 +167,8 @@ namespace Antlr4.Build.Tasks
                         @"You are referencing Antlr4.Runtime in your .csproj file. This build tool can only reference the NET Standard library https://www.nuget.org/packages/Antlr4.Runtime.Standard/. You can only use either the 'official' Antlr4 or the 'tunnelvision' fork, but not both. You have to choose one.");
                 }
             }
+
+            // Get version
             string version = null;
             bool reference_standard_runtime = false;
             foreach (var i in PackageReference)
@@ -227,73 +216,79 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 @"Antlr4BuildTasks identified that you are looking for version "
                 + Version
                 + " of the Antlr4 tool jar."));
-            if (AntlrProbePath == null || AntlrProbePath.Count == 0)
-            {
-                throw new Exception(
-                    @"Antlr4BuildTasks requires an AntlrProbePath, which contains the list of places to find and download the Antlr .jar file. AntlrProbePath is null.");
-            }
-            var assembly = this.GetType().Assembly;
-            var dir = IntermediateOutputPath;
-            dir = dir.Replace("\\", "/");
-            if (!dir.EndsWith("/"))
-            {
-                dir = dir + "/";
-            }
-            var archive = dir + "antlr4-4.10-complete.jar";
-            _generatedFiles.Add(archive);
-            if (!File.Exists(archive))
-            {
-                System.IO.Directory.CreateDirectory(dir);
-                var names = assembly.GetManifestResourceNames();
-                var jar = @"Antlr4.Build.Tasks.antlr4-4.10-complete.jar";
-                Stream contents = this.GetType().Assembly.GetManifestResourceStream(jar);
-                var destinationFileStream = new FileStream(archive, FileMode.OpenOrCreate);
-                while (contents.Position < contents.Length)
-                {
-                    destinationFileStream.WriteByte((byte)contents.ReadByte());
-                }
-                destinationFileStream.Close();
-            }
 
-            //string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            //assemblyPath = Path.GetFullPath(assemblyPath + "/../../build/").Replace("\\", "/");
-            //string archive_path = "file:///" + assemblyPath;
+            Regex r2 = new Regex("^(?<TWOVERSION>[0-9]+[.][0-9]+)$");
+            var m2 = r2.Match(Version);
+            var v2 = m2.Success && m2.Groups["TWOVERSION"].Length > 0 ? m2.Groups["TWOVERSION"].Value : null;
 
+            Regex r3 = new Regex("^(?<THREEVERSION>[0-9]+[.][0-9]+[.][0-9]+)$");
+            var m3 = r3.Match(Version);
+            var v3 = m3.Success && m3.Groups["THREEVERSION"].Length > 0 ? m3.Groups["THREEVERSION"].Value : null;
+
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                "Version '"
+                + Version
+                + "' v2 match='"
+                + v2
+                + "', v3 match='"
+                + v3
+                + "'"));
+
+            // Set up probe path for Antlr tool jar if there isn't one.
             var paths = AntlrProbePath;
-            var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
-            paths.Insert(0, full_path);
+            string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
+            if (!user_profile_path.EndsWith("/")) user_profile_path = user_profile_path + "/";
+            string tool_path = user_profile_path
+                + ".nuget/packages/antlr4buildtasks/"
+                + ToolVersion
+                + "/";
+            var assemblyPath = tool_path + "build/";
+
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                "Location to stuff Antlr tool jar, if not found, is " + assemblyPath));
+
+            if (paths == null || paths.Count == 0)
+            {
+                string package_area = "file:///" + assemblyPath;
+                paths.Add(package_area);
+                var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
+                paths.Add(full_path);
+                paths.Add("https://repo1.maven.org/maven2/org/antlr/antlr4/");
+            }
+
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Paths to search for Antlr4 jar, in order, are: "
                 + String.Join(";", paths)));
+
             foreach (var probe in paths)
             {
-                Regex r2 = new Regex("^(?<TWOVERSION>[0-9]+[.][0-9]+)([.][0-9]*)?$");
-                var m2 = r2.Match(Version);
-                var v2 = m2.Success && m2.Groups["TWOVERSION"].Length > 0 ? m2.Groups["TWOVERSION"].Value : null;
-                Regex r3 = new Regex("^(?<THREEVERSION>[0-9]+[.][0-9]+[.][0-9]+)$");
-                var m3 = r3.Match(Version);
-                var v3 = m3.Success && m3.Groups["THREEVERSION"].Length > 0 ? m3.Groups["THREEVERSION"].Value : null;
-                if (v3 != null && TryProbe(probe, v3, out string where))
+                // Version can be "x.y.z" or "x.y".
+                // If "x.y.z", probe for "x.y.z".
+                // If "x.y.0", probe for "x.y".
+                // If "x.y", probe for "x.y".
+                if (v3 != null)
                 {
-                    if (where == null || where == "")
+                    bool t = TryProbeAntlrJar(probe, v3, assemblyPath, out string w);
+                    if (t)
                     {
-                        throw new Exception(
-                            @"Antlr4BuildTasks is going to return an empty UsingToolPath, but it should never do that.");
-                    }
-                    else
-                    {
-                        return where;
+                        result = w;
+                        break;
                     }
                 }
-                if (v2 != null && TryProbe(probe, v2, out string w2))
+                else if (v3 != null && v3.EndsWith(".0"))
                 {
-                    if (w2 == null || w2 == "")
+                    bool t = TryProbeAntlrJar(probe, v3.Substring(0, v3.Length - 2), assemblyPath, out string w);
+                    if (t)
                     {
-                        throw new Exception(
-                            @"Antlr4BuildTasks is going to return an empty UsingToolPath, but it should never do that.");
+                        result = w;
+                        break;
                     }
-                    else
+                }
+                else if (v2 != null)
+                {
+                    bool t = TryProbeAntlrJar(probe, v2, assemblyPath, out string w);
+                    if (t)
                     {
-                        result = w2;
+                        result = w;
                         break;
                     }
                 }
@@ -309,21 +304,21 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             return result;
         }
 
-        private bool TryProbe(string path, string version, out string where)
+        private bool TryProbeAntlrJar(string path, string version, string place_path, out string where)
         {
             bool result = false;
             where = null;
             path = path.Trim();
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("path is " + path));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
             if (!(path.EndsWith("/") || path.EndsWith("\\"))) path = path + "/";
-
-            var jar = path + @"antlr4-" + version + @"-complete.jar";
-            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + jar));
-            if (jar.StartsWith("file://"))
+            if (path.StartsWith("file://"))
             {
+                var f = path + @"antlr4-" + version + @"-complete.jar";
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + f));
                 try
                 {
-                    System.Uri uri = new Uri(jar);
+                    System.Uri uri = new Uri(f);
                     var local_file = uri.LocalPath;
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Local path " + local_file));
                     if (File.Exists(local_file))
@@ -337,20 +332,56 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 {
                 }
             }
-            else if (jar.StartsWith("https://"))
+            else if (path == "https://repo1.maven.org/maven2/org/antlr/antlr4/")
             {
+                var j = path + version + @"/antlr4-" + version + @"-complete.jar";
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
                 try
                 {
                     WebClient webClient = new WebClient();
-                    System.IO.Directory.CreateDirectory(IntermediateOutputPath);
-                    var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
-                                       System.IO.Path.GetFileName(jar);
-                    var jar_dir = IntermediateOutputPath;
+                    var archive_name = place_path
+                        + System.IO.Path.GetFileName(j);
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
+                    var jar_dir = place_path;
                     System.IO.Directory.CreateDirectory(jar_dir);
                     if (!File.Exists(archive_name))
                     {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + jar));
-                        webClient.DownloadFile(jar, archive_name);
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
+                        webClient.DownloadFile(j, archive_name);
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
+                    }
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
+                        + archive_name));
+                    where = archive_name;
+                    result = true;
+                }
+                catch
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                        "Problem downloading or saving probed file."));
+                }
+            }
+            else if (path.StartsWith("https://") || path.StartsWith("http://"))
+            {
+                var j = path + @"antlr4-" + version + @"-complete.jar";
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
+                try
+                {
+                    WebClient webClient = new WebClient();
+                    var archive_name = place_path
+                        + System.IO.Path.GetFileName(j);
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
+                    var jar_dir = place_path;
+                    System.IO.Directory.CreateDirectory(jar_dir);
+                    if (!File.Exists(archive_name))
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
+                        webClient.DownloadFile(j, archive_name);
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
                     }
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
                         + archive_name));
@@ -367,7 +398,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             {
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
                     @"The AntlrProbePath contains '"
-                        + jar
+                        + path
                         + "', which doesn't start with 'file://' or 'https://'. "
                         + @"Edit your .csproj file to make sure the path follows that syntax."));
             }
@@ -379,55 +410,180 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (JavaExec != null && JavaExec != "")
                 return JavaExec;
 
-            // https://download.java.net/java/GA/jdk14.0.1/664493ef4a6946b186ff29eb326336a2/7/GPL/openjdk-14.0.1_windows-x64_bin.zip
-            if (System.Environment.OSVersion.Platform == PlatformID.Win32NT
-                  || System.Environment.OSVersion.Platform == PlatformID.Win32S
-                  || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
-                 )
+            string result = null;
+
+            // Set up probe path for Java if there isn't one.
+            var paths = JavaProbePath;
+            if (paths == null || paths.Count == 0)
             {
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                    "AntOutDir is \"" + AntOutDir + "\""));
-                var assembly = this.GetType().Assembly;
-                var zip = @"Antlr4.Build.Tasks.jre.zip";
-                var java_dir = AntOutDir;
-                java_dir = java_dir.Replace("\\", "/");
-                if (!java_dir.EndsWith("/"))
+                paths.Add("PATH");
+                string assemblyPath = Path.GetDirectoryName(this.GetType().Assembly.Location);
+                assemblyPath = Path.GetFullPath(assemblyPath + "/../../build/jre.zip").Replace("\\", "/");
+                string package_area = "file:///" + assemblyPath;
+                paths.Add(package_area);
+                var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
+                paths.Add(full_path);
+                paths.Add("https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_windows-x64_bin.zip");
+            }
+
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Paths to search for Antlr4 jar, in order, are: "
+                + String.Join(";", paths)));
+
+            foreach (var probe in paths)
+            {
+                if (TryProbeJava(probe, out string where))
                 {
-                    java_dir = java_dir + "/";
-                }
-                java_dir = java_dir + "Java/";
-                _generatedDirectories.Add(java_dir);
-                var archive = java_dir + "jre.zip";
-                _generatedFiles.Add(archive);
-                if (!Directory.Exists(java_dir))
-                {
-                    System.IO.Directory.CreateDirectory(java_dir);
-                    var names = assembly.GetManifestResourceNames();
-                    Stream contents = this.GetType().Assembly.GetManifestResourceStream(zip);
-                    var destinationFileStream = new FileStream(archive, FileMode.OpenOrCreate);
-                    while (contents.Position < contents.Length)
+                    if (where == null || where == "")
                     {
-                        destinationFileStream.WriteByte((byte)contents.ReadByte());
+                        throw new Exception(
+                            @"TryProbeJava returned an empty path, should not happen.");
                     }
-                    destinationFileStream.Close();
-                    System.IO.Compression.ZipFile.ExtractToDirectory(archive, java_dir);
+                    else
+                    {
+                        return where;
+                    }
                 }
-                var result = java_dir + "jre/bin/java.exe";
-                return result;
             }
-            else if (System.Environment.OSVersion.Platform == PlatformID.Unix
-                     || System.Environment.OSVersion.Platform == PlatformID.MacOSX
-                    )
-            {
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                    "AntOutDir is \"" + AntOutDir + "\""));
-                var result = "/usr/bin/java";
-                return result;
-            }
-            else throw new Exception("Which OS??");
+            if (!File.Exists(result))
+                throw new Exception("Cannot find Java executable"
+                    + (result != null ? "'" + result + "'" : "''"));
+            return result;
         }
 
-        private bool GetGeneratedFileNameList(string java_executable)
+        private bool TryProbeJava(string path, out string where)
+        {
+            bool result = false;
+            where = null;
+            path = path.Trim();
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("path is " + path));
+            if (path == "PATH")
+            {
+                var executable_name = (System.Environment.OSVersion.Platform == PlatformID.Win32NT
+                    || System.Environment.OSVersion.Platform == PlatformID.Win32S
+                    || System.Environment.OSVersion.Platform == PlatformID.Win32Windows) ? "java.exe" : "java";
+                var w = executable_name.GetFullPath();
+
+                //if (System.Environment.OSVersion.Platform == PlatformID.Win32NT
+                //      || System.Environment.OSVersion.Platform == PlatformID.Win32S
+                //      || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
+                //     )
+                if (w != null && w != "")
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found: '" + w + "'"));
+                    where = w;
+                    return true;
+                }
+                else
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(executable_name + " not found on path"));
+                }
+
+                //    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                //        "AntOutDir is \"" + AntOutDir + "\""));
+                //    var assembly = this.GetType().Assembly;
+                //    var zip = @"Antlr4.Build.Tasks.jre.zip";
+                //    var java_dir = AntOutDir;
+                //    java_dir = java_dir.Replace("\\", "/");
+                //    if (!java_dir.EndsWith("/"))
+                //    {
+                //        java_dir = java_dir + "/";
+                //    }
+                //    java_dir = java_dir + "Java/";
+                //    _generatedDirectories.Add(java_dir);
+                //    var archive = java_dir + "jre.zip";
+                //    _generatedFiles.Add(archive);
+                //    if (!Directory.Exists(java_dir))
+                //    {
+                //        System.IO.Directory.CreateDirectory(java_dir);
+                //        var names = assembly.GetManifestResourceNames();
+                //        Stream contents = this.GetType().Assembly.GetManifestResourceStream(zip);
+                //        var destinationFileStream = new FileStream(archive, FileMode.OpenOrCreate);
+                //        while (contents.Position < contents.Length)
+                //        {
+                //            destinationFileStream.WriteByte((byte)contents.ReadByte());
+                //        }
+                //        destinationFileStream.Close();
+                //        System.IO.Compression.ZipFile.ExtractToDirectory(archive, java_dir);
+                //    }
+                //    var result = java_dir + "jre/bin/java.exe";
+                //    return result;
+                //}
+                //else if (System.Environment.OSVersion.Platform == PlatformID.Unix
+                //         || System.Environment.OSVersion.Platform == PlatformID.MacOSX
+                //        )
+                //{
+                //    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                //        "AntOutDir is \"" + AntOutDir + "\""));
+                //    var result = "/usr/bin/java";
+                //    return result;
+                //}
+                //else throw new Exception("Which OS??");
+            }
+            else if (path.StartsWith("file://"))
+            {
+                var f = path;
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + f));
+                try
+                {
+                    System.Uri uri = new Uri(f);
+                    var local_file = uri.LocalPath;
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Local path " + local_file));
+                    if (File.Exists(local_file))
+                    {
+                        // Unpack and get java executable.
+
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                        where = local_file;
+                        result = true;
+                    }
+                }
+                catch
+                {
+                }
+            }
+            else if (path.StartsWith("https://") || path.StartsWith("http://"))
+            {
+                var j = path;
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
+                try
+                {
+                    WebClient webClient = new WebClient();
+                    System.IO.Directory.CreateDirectory(IntermediateOutputPath);
+                    var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
+                                       System.IO.Path.GetFileName(j);
+                    var jar_dir = IntermediateOutputPath;
+                    System.IO.Directory.CreateDirectory(jar_dir);
+                    if (!File.Exists(archive_name))
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
+                        webClient.DownloadFile(j, archive_name);
+                    }
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
+                        + archive_name));
+
+                    // Unpack and get java executable.
+
+                    where = archive_name;
+                    result = true;
+                }
+                catch
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                        "Problem downloading or saving probed file."));
+                }
+            }
+            else
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                    @"The AntlrProbePath contains '"
+                        + path
+                        + "', which doesn't start with 'file://' or 'https://'. "
+                        + @"Edit your .csproj file to make sure the path follows that syntax."));
+            }
+            return result;
+        }
+
+        private bool GetGeneratedFileNameList()
         {
             // Because we're using the Java version of the Antlr tool,
             // we're going to execute this command twice: first with the
@@ -440,7 +596,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             // output so as to get a clean list of files generated.
             List<string> arguments = new List<string>();
             arguments.Add("-cp");
-            arguments.Add(ToolPath.Replace("\\", "/"));
+            arguments.Add(AntlrToolJar.Replace("\\", "/"));
             arguments.Add("org.antlr.v4.Tool");
             arguments.Add("-depend");
             arguments.Add("-o");
@@ -494,7 +650,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (SourceCodeFiles == null) arguments.AddRange(OtherSourceCodeFiles);
             else arguments.AddRange(SourceCodeFiles?.Select(s => s.ItemSpec));
             ProcessStartInfo startInfo = new ProcessStartInfo(
-                java_executable, JoinArguments(arguments))
+                JavaExec, JoinArguments(arguments))
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -535,12 +691,12 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             return true;
         }
 
-        private bool GenerateFiles(string java_executable, out bool success)
+        private bool GenerateFiles(out bool success)
         {
             List<string> arguments = new List<string>();
             {
                 arguments.Add("-cp");
-                arguments.Add(ToolPath.Replace("\\", "/"));
+                arguments.Add(AntlrToolJar.Replace("\\", "/"));
                 //arguments.Add("org.antlr.v4.CSharpTool");
                 arguments.Add("org.antlr.v4.Tool");
             }
@@ -591,7 +747,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (ForceAtn) arguments.Add("-Xforce-atn");
             if (SourceCodeFiles == null) arguments.AddRange(OtherSourceCodeFiles);
             else arguments.AddRange(SourceCodeFiles?.Select(s => s.ItemSpec));
-            ProcessStartInfo startInfo = new ProcessStartInfo(java_executable, JoinArguments(arguments))
+            ProcessStartInfo startInfo = new ProcessStartInfo(JavaExec, JoinArguments(arguments))
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,

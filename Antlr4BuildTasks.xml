@@ -83,10 +83,10 @@
 		   Description="This is the full path of java installed on your system. The default is blank, which means to download an install a copy of the latest Java for the build." />
 	   <StringProperty
 		   Category="ANTLR"
-		   Name="AntlrRuntime"
+		   Name="AntlrToolJar"
 		   DisplayName="Full path of the jar file that contains the Antlr tool."
-		   Default="language=CSharp"
-		   Description="This is the full path of the jar for Antlr installed on your system. The default is blank, which means to download an install a copy of the latest jar for the build." />
+		   Default=""
+		   Description="This is the full path of the jar for Antlr installed on your system. If blank, the version of the Antlr4.Runtime.Standard used." />
 
 	   <!--
 	    The rest of these properties are not ANTLR-specific, but CPS provides no way to inherit properties, so if we fail to

@@ -5,9 +5,9 @@
 		<EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
-		<AssemblyVersion>10.2.0.0</AssemblyVersion>
-		<FileVersion>10.2.0.0</FileVersion>
-		<Version>10.2</Version>
+		<AssemblyVersion>10.3.0.0</AssemblyVersion>
+		<FileVersion>10.3.0.0</FileVersion>
+		<Version>10.3</Version>
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright />
 		<Company>Domemtech</Company>
@@ -23,7 +23,7 @@
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>v10.2: Fix bug in DequeueBottom.</PackageReleaseNotes>
+		<PackageReleaseNotes>v10.3: Fix bug with AntlrToolJar.</PackageReleaseNotes>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
@@ -53,10 +53,6 @@
 		<Content Include="jre.zip">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-	</ItemGroup>
-	<ItemGroup>
-		<EmbeddedResource Include="antlr4-4.10-complete.jar" />
-		<EmbeddedResource Include="jre.zip" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Build.Framework" Version="16.4.0" />
