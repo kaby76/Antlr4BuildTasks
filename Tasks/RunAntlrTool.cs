@@ -414,16 +414,25 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
             // Set up probe path for Java if there isn't one.
             var paths = JavaProbePath;
+            string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
+            if (!user_profile_path.EndsWith("/")) user_profile_path = user_profile_path + "/";
+            string tool_path = user_profile_path
+                + ".nuget/packages/antlr4buildtasks/"
+                + ToolVersion
+                + "/";
+            var assemblyPath = tool_path + "build/";
+
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                "Location to stuff JRE, if not found, is " + assemblyPath));
+
             if (paths == null || paths.Count == 0)
             {
                 paths.Add("PATH");
-                string assemblyPath = Path.GetDirectoryName(this.GetType().Assembly.Location);
-                assemblyPath = Path.GetFullPath(assemblyPath + "/../../build/jre.zip").Replace("\\", "/");
-                string package_area = "file:///" + assemblyPath;
+                string package_area = "file:///" + assemblyPath + "jre.zip";
                 paths.Add(package_area);
-                var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
-                paths.Add(full_path);
-                paths.Add("https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_windows-x64_bin.zip");
+                //var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
+                //paths.Add(full_path);
+                //paths.Add("https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_windows-x64_bin.zip");
             }
 
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Paths to search for Antlr4 jar, in order, are: "
@@ -431,7 +440,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
             foreach (var probe in paths)
             {
-                if (TryProbeJava(probe, out string where))
+                if (TryProbeJava(probe, assemblyPath, out string where))
                 {
                     if (where == null || where == "")
                     {
@@ -450,7 +459,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             return result;
         }
 
-        private bool TryProbeJava(string path, out string where)
+        private bool TryProbeJava(string path, string place_path, out string where)
         {
             bool result = false;
             where = null;
@@ -462,11 +471,6 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     || System.Environment.OSVersion.Platform == PlatformID.Win32S
                     || System.Environment.OSVersion.Platform == PlatformID.Win32Windows) ? "java.exe" : "java";
                 var w = executable_name.GetFullPath();
-
-                //if (System.Environment.OSVersion.Platform == PlatformID.Win32NT
-                //      || System.Environment.OSVersion.Platform == PlatformID.Win32S
-                //      || System.Environment.OSVersion.Platform == PlatformID.Win32Windows
-                //     )
                 if (w != null && w != "")
                 {
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found: '" + w + "'"));
@@ -477,47 +481,6 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 {
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage(executable_name + " not found on path"));
                 }
-
-                //    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                //        "AntOutDir is \"" + AntOutDir + "\""));
-                //    var assembly = this.GetType().Assembly;
-                //    var zip = @"Antlr4.Build.Tasks.jre.zip";
-                //    var java_dir = AntOutDir;
-                //    java_dir = java_dir.Replace("\\", "/");
-                //    if (!java_dir.EndsWith("/"))
-                //    {
-                //        java_dir = java_dir + "/";
-                //    }
-                //    java_dir = java_dir + "Java/";
-                //    _generatedDirectories.Add(java_dir);
-                //    var archive = java_dir + "jre.zip";
-                //    _generatedFiles.Add(archive);
-                //    if (!Directory.Exists(java_dir))
-                //    {
-                //        System.IO.Directory.CreateDirectory(java_dir);
-                //        var names = assembly.GetManifestResourceNames();
-                //        Stream contents = this.GetType().Assembly.GetManifestResourceStream(zip);
-                //        var destinationFileStream = new FileStream(archive, FileMode.OpenOrCreate);
-                //        while (contents.Position < contents.Length)
-                //        {
-                //            destinationFileStream.WriteByte((byte)contents.ReadByte());
-                //        }
-                //        destinationFileStream.Close();
-                //        System.IO.Compression.ZipFile.ExtractToDirectory(archive, java_dir);
-                //    }
-                //    var result = java_dir + "jre/bin/java.exe";
-                //    return result;
-                //}
-                //else if (System.Environment.OSVersion.Platform == PlatformID.Unix
-                //         || System.Environment.OSVersion.Platform == PlatformID.MacOSX
-                //        )
-                //{
-                //    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                //        "AntOutDir is \"" + AntOutDir + "\""));
-                //    var result = "/usr/bin/java";
-                //    return result;
-                //}
-                //else throw new Exception("Which OS??");
             }
             else if (path.StartsWith("file://"))
             {
@@ -530,11 +493,36 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Local path " + local_file));
                     if (File.Exists(local_file))
                     {
-                        // Unpack and get java executable.
-
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
-                        where = local_file;
-                        result = true;
+                        if (Path.GetFileName(local_file) == "jre.zip" &&
+                           (System.Environment.OSVersion.Platform == PlatformID.Win32NT
+                           || System.Environment.OSVersion.Platform == PlatformID.Win32S
+                           || System.Environment.OSVersion.Platform == PlatformID.Win32Windows))
+                        {
+                            // Unpack and get java executable.
+                            var java_dir = place_path;
+                            java_dir = java_dir.Replace("\\", "/");
+                            if (!java_dir.EndsWith("/"))
+                            {
+                                java_dir = java_dir + "/";
+                            }
+                            java_dir = java_dir + "Java/";
+                            _generatedDirectories.Add(java_dir);
+                            var archive = local_file;
+                            if (!Directory.Exists(java_dir))
+                            {
+                                System.IO.Directory.CreateDirectory(java_dir);
+                                System.IO.Compression.ZipFile.ExtractToDirectory(archive, java_dir);
+                            }
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                            where = java_dir + "jre/bin/java.exe";
+                            return true;
+                        }
+                        else
+                        {
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                            where = local_file;
+                            result = true;
+                        }
                     }
                 }
                 catch
@@ -543,34 +531,34 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             }
             else if (path.StartsWith("https://") || path.StartsWith("http://"))
             {
-                var j = path;
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
-                try
-                {
-                    WebClient webClient = new WebClient();
-                    System.IO.Directory.CreateDirectory(IntermediateOutputPath);
-                    var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
-                                       System.IO.Path.GetFileName(j);
-                    var jar_dir = IntermediateOutputPath;
-                    System.IO.Directory.CreateDirectory(jar_dir);
-                    if (!File.Exists(archive_name))
-                    {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
-                        webClient.DownloadFile(j, archive_name);
-                    }
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
-                        + archive_name));
+                //var j = path;
+                //MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
+                //try
+                //{
+                //    WebClient webClient = new WebClient();
+                //    System.IO.Directory.CreateDirectory(IntermediateOutputPath);
+                //    var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
+                //                       System.IO.Path.GetFileName(j);
+                //    var jar_dir = IntermediateOutputPath;
+                //    System.IO.Directory.CreateDirectory(jar_dir);
+                //    if (!File.Exists(archive_name))
+                //    {
+                //        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
+                //        webClient.DownloadFile(j, archive_name);
+                //    }
+                //    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
+                //        + archive_name));
 
-                    // Unpack and get java executable.
+                //    // Unpack and get java executable.
 
-                    where = archive_name;
-                    result = true;
-                }
-                catch
-                {
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        "Problem downloading or saving probed file."));
-                }
+                //    where = archive_name;
+                //    result = true;
+                //}
+                //catch
+                //{
+                //    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                //        "Problem downloading or saving probed file."));
+                //}
             }
             else
             {
