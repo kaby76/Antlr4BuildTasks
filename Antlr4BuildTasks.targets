@@ -112,6 +112,7 @@
 			<Error>false</Error>
 			<ForceAtn>false</ForceAtn>
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<AllowAntlr4cs>false</AllowAntlr4cs>
 		</Antlr4>
 	</ItemDefinitionGroup>
 
@@ -129,6 +130,7 @@
 		<Message Text="Running the Java Antlr Tool over the grammar files '@(Antlr4)'."/>
 
 		<RunAntlrTool
+                        AllowAntlr4cs="%(Antlr4.AllowAntlr4cs)"
                         AntOutDir="%(Antlr4.AntOutDir)"
                         AntlrToolJar="%(Antlr4.AntlrToolJar)"
                         ContinueOnError="false"

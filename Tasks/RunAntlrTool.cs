@@ -35,6 +35,7 @@ namespace Antlr4.Build.Tasks
             this.GeneratedSourceExtension = DefaultGeneratedSourceExtension;
         }
 
+	    public bool AllowAntlr4cs { get; set; }
         public string AntlrToolJar { get; set; }
         public string AntOutDir { get; set; }
         public List<string> AntlrProbePath
@@ -159,12 +160,15 @@ namespace Antlr4.Build.Tasks
             string result = null;
 
             // Make sure old crusty Tunnelvision port not being used.
-            foreach (var i in PackageReference)
+            if (!this.AllowAntlr4cs)
             {
-                if (i.ItemSpec == "Antlr4.Runtime")
+                foreach (var i in PackageReference)
                 {
-                    throw new Exception(
-                        @"You are referencing Antlr4.Runtime in your .csproj file. This build tool can only reference the NET Standard library https://www.nuget.org/packages/Antlr4.Runtime.Standard/. You can only use either the 'official' Antlr4 or the 'tunnelvision' fork, but not both. You have to choose one.");
+                    if (i.ItemSpec == "Antlr4.Runtime")
+                    {
+                        throw new Exception(
+                            @"You are referencing Antlr4.Runtime in your .csproj file. This build tool can only reference the NET Standard library https://www.nuget.org/packages/Antlr4.Runtime.Standard/. You can only use either the 'official' Antlr4 or the 'tunnelvision' fork, but not both. You have to choose one.");
+                    }
                 }
             }
 
@@ -427,6 +431,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
             if (paths == null || paths.Count == 0)
             {
+		paths = new List<string>();
                 paths.Add("PATH");
                 string package_area = "file:///" + assemblyPath + "jre.zip";
                 paths.Add(package_area);
