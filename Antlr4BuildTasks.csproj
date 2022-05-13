@@ -5,9 +5,9 @@
 		<EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
-		<AssemblyVersion>10.4.0.0</AssemblyVersion>
-		<FileVersion>10.4.0.0</FileVersion>
-		<Version>10.4</Version>
+		<AssemblyVersion>10.5.0.0</AssemblyVersion>
+		<FileVersion>10.5.0.0</FileVersion>
+		<Version>10.5</Version>
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright />
 		<Company>Domemtech</Company>
@@ -48,9 +48,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="antlr4-4.10.1-complete.jar">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="jre.zip">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>

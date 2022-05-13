@@ -24,7 +24,7 @@ namespace Antlr4.Build.Tasks
 {
     public class RunAntlrTool : Task
     {
-        private const string ToolVersion = "10.3.0";
+        private const string ToolVersion = "10.5.0";
         private const string DefaultGeneratedSourceExtension = "g4";
         private List<string> _generatedCodeFiles = new List<string>();
         private List<string> _generatedDirectories = new List<string>();
@@ -442,10 +442,13 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
             if (paths == null || paths.Count == 0)
             {
-		paths = new List<string>();
-                paths.Add("PATH");
-                string package_area = "file:///" + assemblyPath + "jre.zip";
-                paths.Add(package_area);
+                paths = new List<string>();
+                paths.Add("DOWNLOAD");
+//                paths.Add("PATH");
+
+                //string package_area = "file:///" + assemblyPath + "jre.zip";
+                //paths.Add(package_area);
+
                 //var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
                 //paths.Add(full_path);
                 //paths.Add("https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_windows-x64_bin.zip");
@@ -545,8 +548,72 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 {
                 }
             }
-            else if (path.StartsWith("https://") || path.StartsWith("http://"))
+            else if (path == "DOWNLOAD")
             {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + path));
+                // Get OS and native type.
+                OperatingSystem os_ver = Environment.OSVersion;
+                if (os_ver.Platform == PlatformID.Win32NT)
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("OS is Windows"));
+                    var j = "openjdk-11.0.1_windows-x64_bin.zip";
+                    var p = "https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_windows-x64_bin.zip";
+                    if (IntPtr.Size == 8)
+                    {
+                        // 64 bit machine
+                        try
+                        {
+                            WebClient webClient = new WebClient();
+                            System.IO.Directory.CreateDirectory(IntermediateOutputPath);
+                            var archive_name = place_path + System.IO.Path.DirectorySeparatorChar + j;
+                            var jar_dir = IntermediateOutputPath;
+                            System.IO.Directory.CreateDirectory(jar_dir);
+                            if (!File.Exists(archive_name))
+                            {
+                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
+                                webClient.DownloadFile(p, archive_name);
+                            }
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
+                                + archive_name));
+
+                            var java_dir = place_path;
+                            java_dir = java_dir.Replace("\\", "/");
+                            if (!java_dir.EndsWith("/"))
+                            {
+                                java_dir = java_dir + "/";
+                            }
+                            java_dir = java_dir + "Java/";
+                            _generatedDirectories.Add(java_dir);
+                            if (!Directory.Exists(java_dir))
+                            {
+                                System.IO.Directory.CreateDirectory(java_dir);
+                                System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, java_dir);
+                            }
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                            where = java_dir + "jdk-11.0.1/bin/java.exe";
+                            return true;
+                        }
+                        catch
+                        { }
+                    }
+                    else if (IntPtr.Size == 4)
+                    {
+                        // 32 bit machine
+                    }
+                }
+                else if (os_ver.Platform == PlatformID.Unix)
+                {
+                    if (IntPtr.Size == 8)
+                    {
+                        // 64 bit machine
+                    }
+                    else if (IntPtr.Size == 4)
+                    {
+                        // 32 bit machine
+                    }
+                }
+
+
                 //var j = path;
                 //MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
                 //try
