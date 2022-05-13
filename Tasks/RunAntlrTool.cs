@@ -171,6 +171,17 @@ namespace Antlr4.Build.Tasks
                     }
                 }
             }
+            {
+                foreach (var i in PackageReference)
+                {
+                    if (i.ItemSpec == "Antlr4.CodeGenerator")
+                    {
+                        throw new Exception(
+                            @"You are referencing Antlr4.CodeGenerator in your .csproj file. This build tool cannot use by the old Antlr4cs tool and 'official' Antlr4 Java tool. Remove package reference Antlr4.CodeGenerator.");
+                    }
+                }
+                
+            }
 
             // Get version
             string version = null;
