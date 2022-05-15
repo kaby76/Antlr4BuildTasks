@@ -19,6 +19,12 @@ using File = System.IO.File;
 using Path = System.IO.Path;
 using StringBuilder = System.Text.StringBuilder;
 using Antlr4.Build.Tasks.Util;
+using System.IO.Compression;
+using SharpCompress.Common;
+using SharpCompress.Readers;
+using SharpCompress.Writers.Tar;
+using SharpCompress.Readers.Tar;
+
 
 namespace Antlr4.Build.Tasks
 {
@@ -35,7 +41,7 @@ namespace Antlr4.Build.Tasks
             this.GeneratedSourceExtension = DefaultGeneratedSourceExtension;
         }
 
-	    public bool AllowAntlr4cs { get; set; }
+        public bool AllowAntlr4cs { get; set; }
         public string AntlrToolJar { get; set; }
         public string AntOutDir { get; set; }
         public List<string> AntlrProbePath
@@ -164,7 +170,7 @@ namespace Antlr4.Build.Tasks
             {
                 foreach (var i in PackageReference)
                 {
-                    if (i.ItemSpec == "Antlr4.Runtime")
+                    if (i.ItemSpec.ToLower() == "Antlr4.Runtime".ToLower())
                     {
                         throw new Exception(
                             @"You are referencing Antlr4.Runtime in your .csproj file. This build tool can only reference the NET Standard library https://www.nuget.org/packages/Antlr4.Runtime.Standard/. You can only use either the 'official' Antlr4 or the 'tunnelvision' fork, but not both. You have to choose one.");
@@ -174,7 +180,7 @@ namespace Antlr4.Build.Tasks
             {
                 foreach (var i in PackageReference)
                 {
-                    if (i.ItemSpec == "Antlr4.CodeGenerator")
+                    if (i.ItemSpec.ToLower() == "Antlr4.CodeGenerator".ToLower())
                     {
                         throw new Exception(
                             @"You are referencing Antlr4.CodeGenerator in your .csproj file. This build tool cannot use by the old Antlr4cs tool and 'official' Antlr4 Java tool. Remove package reference Antlr4.CodeGenerator.");
@@ -188,7 +194,7 @@ namespace Antlr4.Build.Tasks
             bool reference_standard_runtime = false;
             foreach (var i in PackageReference)
             {
-                if (i.ItemSpec == "Antlr4.Runtime.Standard")
+                if (i.ItemSpec.ToLower() == "Antlr4.Runtime.Standard".ToLower())
                 {
                     reference_standard_runtime = true;
                     version = i.GetMetadata("Version");
@@ -196,7 +202,7 @@ namespace Antlr4.Build.Tasks
                     {
                         foreach (var j in PackageVersion)
                         {
-                            if (j.ItemSpec == "Antlr4.Runtime.Standard")
+                            if (j.ItemSpec.ToLower() == "Antlr4.Runtime.Standard".ToLower())
                             {
                                 reference_standard_runtime = true;
                                 version = j.GetMetadata("Version");
@@ -367,7 +373,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
                     }
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found "
                         + archive_name));
                     where = archive_name;
                     result = true;
@@ -478,6 +484,26 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             return result;
         }
 
+        private string DownloadFile(string place_path, string java_download_fn, string java_download_url)
+        {
+            WebClient webClient = new WebClient();
+            var archive_name = place_path + java_download_fn;
+            var jar_dir = place_path;
+            System.IO.Directory.CreateDirectory(jar_dir);
+            if (!File.Exists(archive_name))
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + java_download_fn));
+                webClient.DownloadFile(java_download_url, archive_name);
+            }
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found " + archive_name));
+            var java_dir = place_path;
+            java_dir = java_dir.Replace("\\", "/");
+            if (!java_dir.EndsWith("/")) java_dir = java_dir + "/";
+            var decompressed_area = java_dir + "Java/";
+            System.IO.Directory.CreateDirectory(decompressed_area);
+            return decompressed_area;
+        }
+
         private bool TryProbeJava(string path, string place_path, out string where)
         {
             bool result = false;
@@ -553,95 +579,99 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + path));
                 // Get OS and native type.
                 OperatingSystem os_ver = Environment.OSVersion;
-                if (os_ver.Platform == PlatformID.Win32NT)
+                System.Runtime.InteropServices.Architecture os_arch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
+                string java_download_fn = null;
+                string java_download_url = null;
+                // See https://www.oracle.com/java/technologies/downloads/
+                switch (os_ver.Platform)
                 {
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("OS is Windows"));
-                    var j = "openjdk-11.0.1_windows-x64_bin.zip";
-                    var p = "https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_windows-x64_bin.zip";
-                    if (IntPtr.Size == 8)
-                    {
-                        // 64 bit machine
-                        try
+                    case PlatformID.Win32NT:
+                        switch (os_arch)
                         {
-                            WebClient webClient = new WebClient();
-                            System.IO.Directory.CreateDirectory(IntermediateOutputPath);
-                            var archive_name = place_path + System.IO.Path.DirectorySeparatorChar + j;
-                            var jar_dir = IntermediateOutputPath;
-                            System.IO.Directory.CreateDirectory(jar_dir);
-                            if (!File.Exists(archive_name))
-                            {
-                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
-                                webClient.DownloadFile(p, archive_name);
-                            }
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
-                                + archive_name));
-
-                            var java_dir = place_path;
-                            java_dir = java_dir.Replace("\\", "/");
-                            if (!java_dir.EndsWith("/"))
-                            {
-                                java_dir = java_dir + "/";
-                            }
-                            java_dir = java_dir + "Java/";
-                            _generatedDirectories.Add(java_dir);
-                            if (!Directory.Exists(java_dir))
-                            {
-                                System.IO.Directory.CreateDirectory(java_dir);
-                                System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, java_dir);
-                            }
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
-                            where = java_dir + "jdk-11.0.1/bin/java.exe";
-                            return true;
+                            case System.Runtime.InteropServices.Architecture.X64:
+                                if (IntPtr.Size != 8) break;
+                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("OS is Windows"));
+                                java_download_fn = "jdk-18_windows-x64_bin.zip";
+                                java_download_url = "https://download.oracle.com/java/18/latest/jdk-18_windows-x64_bin.zip";
+                                try
+                                {
+                                    string uncompressed_root_dir = DownloadFile(place_path, java_download_fn, java_download_url);
+                                    where = uncompressed_root_dir + "jdk-18.0.1.1/bin/java.exe";
+                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
+                                    _generatedDirectories.Add(uncompressed_root_dir);
+                                    var archive_name = place_path + java_download_fn;
+                                    if (! File.Exists(where))
+                                    {
+                                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
+                                        System.IO.Directory.CreateDirectory(uncompressed_root_dir);
+                                        System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, uncompressed_root_dir);
+                                    }
+                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                                    return true;
+                                }
+                                catch
+                                {
+                                    where = null;
+                                }
+                                break;
                         }
-                        catch
-                        { }
-                    }
-                    else if (IntPtr.Size == 4)
-                    {
-                        // 32 bit machine
-                    }
+                        break;
+                    case PlatformID.Unix:
+                        switch (os_arch)
+                        {
+                            case System.Runtime.InteropServices.Architecture.X64:
+                                if (IntPtr.Size != 8) break;
+                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("OS is Linux"));
+                                java_download_fn = "jdk-18_linux-x64_bin.tar.gz";
+                                java_download_url = "https://download.oracle.com/java/18/latest/jdk-18_linux-x64_bin.tar.gz";
+                                try
+                                {
+                                    string uncompressed_root_dir = DownloadFile(place_path, java_download_fn, java_download_url);
+                                    where = uncompressed_root_dir + "jdk-18.0.1.1/bin/java";
+                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
+                                    _generatedDirectories.Add(uncompressed_root_dir);
+                                    var archive_name = place_path + java_download_fn;
+                                    if (!File.Exists(where))
+                                    {
+                                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
+                                        System.IO.Directory.CreateDirectory(uncompressed_root_dir);
+                                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Opening " + archive_name));
+                                        //var tar_ball = uncompressed_root_dir + "/jdk-18_linux-x64_bin.tar";
+                                        using (Stream stream = File.OpenRead(archive_name))
+                                        {
+                                            var reader = ReaderFactory.Open(stream);
+                                            while (reader.MoveToNextEntry())
+                                            {
+                                                if (!reader.Entry.IsDirectory)
+                                                {
+                                                    ExtractionOptions opt = new ExtractionOptions
+                                                    {
+                                                        ExtractFullPath = true,
+                                                        Overwrite = true
+                                                    };
+                                                    reader.WriteEntryToDirectory(uncompressed_root_dir, opt);
+                                                }
+                                            }
+                                        }
+                                        //FileStream compressedFileStream = File.Open(archive_name, FileMode.Open);
+                                        //FileStream outputFileStream = File.Create(tar_ball);
+                                        //MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing " + archive_name + " to " + tar_ball));
+                                        //var decompressor = new GZipStream(compressedFileStream, CompressionMode.Decompress);
+                                        //decompressor.CopyTo(outputFileStream);
+                                        //outputFileStream.Close();
+                                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressed!"));
+                                    }
+                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                                    return true;
+                                }
+                                catch
+                                {
+                                    where = null;
+                                }
+                                break;
+                        }
+                        break;
                 }
-                else if (os_ver.Platform == PlatformID.Unix)
-                {
-                    if (IntPtr.Size == 8)
-                    {
-                        // 64 bit machine
-                    }
-                    else if (IntPtr.Size == 4)
-                    {
-                        // 32 bit machine
-                    }
-                }
-
-
-                //var j = path;
-                //MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
-                //try
-                //{
-                //    WebClient webClient = new WebClient();
-                //    System.IO.Directory.CreateDirectory(IntermediateOutputPath);
-                //    var archive_name = IntermediateOutputPath + System.IO.Path.DirectorySeparatorChar +
-                //                       System.IO.Path.GetFileName(j);
-                //    var jar_dir = IntermediateOutputPath;
-                //    System.IO.Directory.CreateDirectory(jar_dir);
-                //    if (!File.Exists(archive_name))
-                //    {
-                //        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
-                //        webClient.DownloadFile(j, archive_name);
-                //    }
-                //    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
-                //        + archive_name));
-
-                //    // Unpack and get java executable.
-
-                //    where = archive_name;
-                //    result = true;
-                //}
-                //catch
-                //{
-                //    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                //        "Problem downloading or saving probed file."));
-                //}
             }
             else
             {
@@ -1062,5 +1092,54 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     throw;
             }
         }
+
+        private void Read(string destination, string testArchive, CompressionType expectedCompression, ReaderOptions options = null)
+        {
+            options = options ?? new ReaderOptions();
+
+            options.LeaveStreamOpen = true;
+            ReadImpl(destination, testArchive, expectedCompression, options);
+
+            options.LeaveStreamOpen = false;
+            ReadImpl(destination, testArchive, expectedCompression, options);
+        }
+
+        private void ReadImpl(string destination, string testArchive, CompressionType expectedCompression, ReaderOptions options)
+        {
+            using (var file = File.OpenRead(testArchive))
+            {
+                using (var protectedStream = new NonDisposingStream(new ForwardOnlyStream(file), throwOnDispose: true))
+                {
+                    using (var testStream = new TestStream(protectedStream))
+                    {
+                        using (var reader = ReaderFactory.Open(testStream, options))
+                        {
+                            UseReader(reader, expectedCompression);
+                            protectedStream.ThrowOnDispose = false;
+                        }
+
+                        // Boolean XOR -- If the stream should be left open (true), then the stream should not be diposed (false)
+                        // and if the stream should be closed (false), then the stream should be disposed (true)
+                        var message = $"{nameof(options.LeaveStreamOpen)} is set to '{options.LeaveStreamOpen}', so {nameof(testStream.IsDisposed)} should be set to '{!testStream.IsDisposed}', but is set to {testStream.IsDisposed}";
+                    }
+                }
+            }
+        }
+
+        public void UseReader(string destination, IReader reader, CompressionType expectedCompression)
+        {
+            while (reader.MoveToNextEntry())
+            {
+                if (!reader.Entry.IsDirectory)
+                {
+                    reader.WriteEntryToDirectory(destination, new ExtractionOptions()
+                    {
+                        ExtractFullPath = true,
+                        Overwrite = true
+                    });
+                }
+            }
+        }
     }
+}
 }
