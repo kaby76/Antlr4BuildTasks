@@ -24,8 +24,8 @@ To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packag
 to your project. csproj file as shown below, otherwise you can use the "NuGet Package Manager":
 
     <ItemGroup>
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10" />
-        <PackageReference Include="Antlr4BuildTasks" Version="10.1">
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
+        <PackageReference Include="Antlr4BuildTasks" Version="10.4">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
@@ -116,15 +116,15 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="10.1" />
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10" />
+        <PackageReference Include="Antlr4BuildTasks" Version="10.4" />
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
     </ItemGroup>
 
 
 Antlr4BuildTasks examines PropertyGroup `AntlrProbePath`, a string of URI
 separated by semicolon, to find the version
 of the Antlr JAR file that you are looking for. Antlr4BuildTasks will look for a .jar
-with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.10).
+with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.10.1).
 _I recommend that you just use the PackageReference's defined above._
 
 ### Visual Studio IDE or Visual Studio Code integration
@@ -136,6 +136,6 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v10.1 (13 Apr 2022)
+### Latest release v10.4 (13 May 2022)
 
-* Update to Antlr 4.10. Fix JavaExec option.
+* Add flag to `<Antlr4>` element to allow co-existance of package references to both Antlr4.Runtime and Antlr4.Runtime.Standard. (Dangeruous unless you know what you are doing.)
