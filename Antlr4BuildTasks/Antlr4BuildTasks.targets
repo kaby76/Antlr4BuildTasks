@@ -1,0 +1,257 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<ItemGroup>
+		<PropertyPageSchema Include="$(MSBuildThisFileDirectory)..\build\Antlr4BuildTasks.xml">
+			<Context>File;BrowseObject;Project</Context>
+		</PropertyPageSchema>
+		<AvailableItemName Include="Antlr4">
+			<Targets>Antlr4Compile</Targets>
+		</AvailableItemName>
+	</ItemGroup>
+
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+		<BuildSystem>MSBuild</BuildSystem>
+		<TaskVersion>4.0.0.0</TaskVersion>
+		<TaskKeyToken>eb42632606e9261f</TaskKeyToken>
+		<Antlr4BuildTaskAssemblyName Condition="'$(Antlr4BuildTaskAssemblyName)'==''">Antlr4BuildTasks, Version=$(TaskVersion), Culture=neutral, PublicKeyToken=$(TaskKeyToken)</Antlr4BuildTaskAssemblyName>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<LoadTimeSensitiveTargets>
+			$(LoadTimeSensitiveTargets);
+			Antlr4Compile;
+		</LoadTimeSensitiveTargets>
+		<LoadTimeSensitiveProperties>
+			$(LoadTimeSensitiveProperties);
+			Antlr4CompileDependsOn;
+		</LoadTimeSensitiveProperties>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Antlr4BuildTaskLocation Condition="'$(Antlr4BuildTaskPath)'==''">$(MSBuildBinPath)</Antlr4BuildTaskLocation>
+		<Antlr4BuildTaskLocation Condition="'$(Antlr4BuildTaskPath)'!=''">$(Antlr4BuildTaskPath)</Antlr4BuildTaskLocation>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Antlr4ToCompileListFile Condition="'$(Antlr4ToCompileListFile)'==''">$(IntermediateOutputPath)$(MSBuildProjectFile).AntlrToCompileList.txt</Antlr4ToCompileListFile>
+		<Antlr4AllListFile Condition="'$(Antlr4AllListFile)'==''">$(IntermediateOutputPath)$(MSBuildProjectFile).AntlrAllList.txt</Antlr4AllListFile>
+		<Antlr4AllDirectoriesFile Condition="'$(Antlr4AllDirectoriesFile)'==''">$(IntermediateOutputPath)$(MSBuildProjectFile).AntlrAllDirectories.txt</Antlr4AllDirectoriesFile>
+	</PropertyGroup>
+
+	<!-- Let's add in all the tasks declared in this tool used in this .targets file.
+	  -->
+	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+	           TaskName="Antlr4.Build.Tasks.MakeRelativeList"
+	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
+	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+	           TaskName="Antlr4.Build.Tasks.RemoveDups"
+	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
+	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+	           TaskName="Antlr4.Build.Tasks.RunAntlrTool"
+	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
+	<UsingTask Condition="'$(Antlr4BuildTaskPath)'!=''"
+	           TaskName="Antlr4.Build.Tasks.SubtractList"
+	           AssemblyFile="$(Antlr4BuildTaskPath)\Antlr4BuildTasks.dll" />
+
+
+    <!-- Let's add in all the hooks for the build, including the BuildDependsOn,
+	     CoreCompileDependsOn, Antlr4CompileDependsOn, CleanDependsOn.
+	  -->
+	<PropertyGroup>
+		<BuildDependsOn>
+			Antlr4Compile;
+			Antlr4CompileAddFilesGenerated;
+			$(BuildDependsOn)
+		</BuildDependsOn>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<CoreCompileDependsOn>
+			Antlr4Compile;
+			Antlr4CompileAddFilesGenerated;
+			$(CoreCompileDependsOn)
+		</CoreCompileDependsOn>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Antlr4CompileDependsOn>
+			Antlr4CompileReadGeneratedFileList
+		</Antlr4CompileDependsOn>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<CleanDependsOn>
+			CustomBeforeClean;
+			$(CleanDependsOn)
+		</CleanDependsOn>
+	</PropertyGroup>
+
+
+	<!-- These are the defaults for the XML properties of the Antlr grammar file. If it's not declared
+	     in the .csproj file for the <Antlr4> item, then these are assumed.
+      -->
+	<ItemDefinitionGroup>
+		<Antlr4>
+			<Generator>MSBuild:Compile</Generator>
+			<LibPath></LibPath>
+			<AntOutDir></AntOutDir>
+			<IntermediateOutputPath>$(IntermediateOutputPath)</IntermediateOutputPath>
+			<GAtn>false</GAtn>
+			<Encoding>UTF-8</Encoding>
+			<Listener>true</Listener>
+			<Visitor>true</Visitor>
+			<Package></Package>
+			<DOptions>language=CSharp</DOptions>
+			<Error>false</Error>
+			<ForceAtn>false</ForceAtn>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<AllowAntlr4cs>false</AllowAntlr4cs>
+		</Antlr4>
+	</ItemDefinitionGroup>
+
+	<!-- This is the main Antlr tool calling method. The result of the
+	     tool is are generated files, and from this target, two files that
+		 list out all the files generated. After this is done, the files
+		 need to be read and then added to the build.
+	  -->
+	<Target Name="Antlr4Compile"
+			DependsOnTargets="$(Antlr4CompileDependsOn)"
+			Condition="'@(Antlr4)' != ''"
+			Inputs="@(Antlr4);@(Antlr4Tokens)"
+			Outputs="$(Antlr4ToCompileListFile);$(Antlr4AllListFile);$(Antlr4AllDirectoriesFile)">
+
+		<Message Text="Running the Java Antlr Tool over the grammar files '@(Antlr4)'."/>
+
+		<RunAntlrTool
+                        AllowAntlr4cs="%(Antlr4.AllowAntlr4cs)"
+                        AntOutDir="%(Antlr4.AntOutDir)"
+                        AntlrToolJar="%(Antlr4.AntlrToolJar)"
+                        ContinueOnError="false"
+                        DOptions="%(Antlr4.DOptions)"
+                        Encoding="%(Antlr4.Encoding)"
+                        Error="%(Antlr4.Error)"
+                        ForceAtn="%(Antlr4.ForceAtn)"
+                        GAtn="%(Antlr4.GAtn)"
+                        IntermediateOutputPath="$(IntermediateOutputPath)"
+                        JavaExec="%(Antlr4.JavaExec)"
+                        LibPath="%(Antlr4.LibPath)"
+                        Listener="%(Antlr4.Listener)"
+                        Package="%(Antlr4.Package)"
+                        PackageReference="@(PackageReference)"
+                        PackageVersion="@(PackageVersion)"
+                        Reference="@(Reference)"
+                        SourceCodeFiles="@(Antlr4 -> '%(FullPath)')"
+                        TargetFrameworkVersion="$(TargetFrameworkVersion)"
+                        TokensFiles="@(Antlr4Tokens)"
+                        Visitor="%(Antlr4.Visitor)"
+		  >
+			<Output ItemName="ToCompileFiles" TaskParameter="GeneratedCodeFiles" />
+			<Output ItemName="AllFiles" TaskParameter="GeneratedFiles" />
+			<Output ItemName="AllDirectories" TaskParameter="GeneratedDirectories" />
+		</RunAntlrTool>
+
+		<Message Text="Output GeneratedCodeFiles from RunAntlrTool is '@(ToCompileFiles)'"/>
+		<Message Text="Output GeneratedFiles from RunAntlrTool is '@(AllFiles)'"/>
+		<Message Text="Writing out these lists as two txt files in $(IntermediateOutputPath)." />
+		<WriteLinesToFile File="$(Antlr4ToCompileListFile)" Lines="@(ToCompileFiles)" Overwrite="true"/>
+		<WriteLinesToFile File="$(Antlr4AllListFile)" Lines="@(AllFiles)" Overwrite="true"/>
+		<WriteLinesToFile File="$(Antlr4AllDirectoriesFile)" Lines="@(AllDirectories)" Overwrite="true"/>
+
+	</Target>
+
+	<!-- As noted in
+	     https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/february/msbuild-best-practices-for-creating-reliable-builds-part-1#id0090093
+		 a list of generated files can be added to the item list "FilesWrite", but
+		 "[f]iles to be deleted must reside under the output path, and you must 
+		 append items to that list before the clean cache is written to disk,
+		 which occurs in either the Clean or IncrementalClean target, depending 
+		 on the type of build that is executed." Therefore, we can't use this method.
+			 
+		 Instead, inject into CleanDependsOn a custom clean step. This target will
+		 read the code gen list from Antlr, and delete all files. Note that the files
+		 in the list must be exact, no wildcards.
+      -->
+	<Target Name="CustomBeforeClean">
+		<Message Text="CustomBeforeClean target executed"/>
+		<ReadLinesFromFile File="$(Antlr4AllListFile)">
+			<Output TaskParameter="Lines" ItemName="ToRemove" />
+		</ReadLinesFromFile>
+		<ReadLinesFromFile File="$(Antlr4AllDirectoriesFile)">
+			<Output TaskParameter="Lines" ItemName="ToRemoveDirs" />
+		</ReadLinesFromFile>
+		<Delete Files="@(ToRemove)" TreatErrorsAsWarnings="false" />
+		<RemoveDir Directories="@(ToRemoveDirs)" />
+		<Delete Files="$(Antlr4AllListFile)" TreatErrorsAsWarnings="false" />
+		<Delete Files="$(Antlr4ToCompileListFile)" TreatErrorsAsWarnings="false" />
+		<Delete Files="$(Antlr4AllDirectoriesFile)" TreatErrorsAsWarnings="false" />
+	</Target>
+	
+	
+	<!-- Compilation of the project depends on reading the list of .cs files
+	     generated by the Antlr Tool. This target reads the file, and sets
+		 compiles.
+		 Note, there's a little trick here. It turns out, you cannot list
+		 multiple times <Compile> for a file. So, this tasks computes whether
+		 the compile list includes files already listed
+		 in the <Compile> item list (see SubtractList step below).
+      -->
+	<Target Name="Antlr4CompileAddFilesGenerated"
+		Condition="Exists($(Antlr4ToCompileListFile))">
+		<Message Text="Reading the list of files generated from the Antlr Tool."/>
+
+		<!-- Wipe out previous value ToCompileFiles. -->
+		<ItemGroup>
+			<ToCompileFiles Remove="@(ToCompileFiles)"/>
+		</ItemGroup>
+
+		<!-- Read in new value ToCompileFiles. -->
+		<ReadLinesFromFile File="$(Antlr4ToCompileListFile)">
+			<Output
+				TaskParameter="Lines"
+				ItemName="ToCompileFiles"/>
+		</ReadLinesFromFile>
+
+		<!-- Make the list relative to project directory. -->
+		<MakeRelativeList List1="@(ToCompileFiles)">
+			<Output TaskParameter="Result" ItemName="FixedToCompileFiles"/>
+		</MakeRelativeList>
+
+		<!-- Remove duplicates. -->
+		<RemoveDups List1="@(FixedToCompileFiles)">
+			<Output TaskParameter="RemovedDupsList" ItemName="RemovedDupsList"/>
+		</RemoveDups>
+
+		<!-- Remove anything already on the Compile list. -->
+		<SubtractList List1="@(RemovedDupsList)" List2="@(Compile)">
+			<Output TaskParameter="Result" ItemName="Result"/>
+		</SubtractList>
+
+		<!-- Add in compiles for various types of builds. -->
+		<ItemGroup>
+			<Compile Include="@(Result)"/>
+			<CompileDesignTime Include="@(Result)"/>
+			<_GeneratedCodeFiles Include="@(Result)" />
+		</ItemGroup>
+	</Target>
+
+	<!-- This task just reads the file written by another task on what to compile.
+      -->
+	<Target Name="Antlr4CompileReadGeneratedFileList"
+			Condition="Exists($(Antlr4ToCompileListFile))"
+			Outputs="@(ToCompileFiles);">
+		<ReadLinesFromFile
+			File="$(Antlr4ToCompileListFile)">
+			<Output
+				TaskParameter="Lines"
+				ItemName="ToCompileFiles"/>
+		</ReadLinesFromFile>
+	</Target>
+
+</Project>
