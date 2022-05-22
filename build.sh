@@ -20,5 +20,5 @@ else
 fi
 echo "$machine"
 echo "$cwd"
-dotnet nuget add source $cwd/bin/Debug/ --name nuget-antlr4buildtasks > /dev/null 2>&1
+dotnet nuget add source $cwd/Antlr4BuildTasks/bin/Debug/ --name nuget-antlr4buildtasks > /dev/null 2>&1
 dotnet nuget list source

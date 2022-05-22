@@ -178,6 +178,20 @@ namespace Antlr4.Build.Tasks
                     }
                 }
             }
+            // Make sure Antlr4BuildTasks and Antlr4.Runtime.Standard are not Referene'd.
+            foreach (var i in Reference)
+            {
+                if (i.ItemSpec.ToLower().Contains("Antlr4.Runtime.Standard".ToLower()))
+                {
+                    throw new Exception(
+                        @"You are using <Reference> for Antlr4.Runtime.Standard in your .csproj file. You can only use <PackageReference> for the package, never a link to the dll.");
+                }
+                if (i.ItemSpec.ToLower().Contains("Antlr4BuildTasks".ToLower()))
+                {
+                    throw new Exception(
+                        @"You are using <Reference> for Antlr4BuildTasks in your .csproj file. You can only use <PackageReference> for the package, never a link to the dll.");
+                }
+            }
             {
                 foreach (var i in PackageReference)
                 {
@@ -637,14 +651,6 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
                                         System.IO.Directory.CreateDirectory(uncompressed_root_dir);
                                         Read(uncompressed_root_dir, archive_name, new CompressionType());
-                                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Opening " + archive_name));
-                                        //FileStream compressedFileStream = File.Open(archive_name, FileMode.Open);
-                                        //FileStream outputFileStream = File.Create(tar_ball);
-                                        //MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing " + archive_name + " to " + tar_ball));
-                                        //var decompressor = new GZipStream(compressedFileStream, CompressionMode.Decompress);
-                                        //decompressor.CopyTo(outputFileStream);
-                                        //outputFileStream.Close();
-                                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressed!"));
                                     }
                                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
                                     return true;
