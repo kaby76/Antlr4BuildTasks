@@ -464,8 +464,8 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (paths == null || paths.Count == 0)
             {
                 paths = new List<string>();
+                paths.Add("PATH");
                 paths.Add("DOWNLOAD");
-//                paths.Add("PATH");
 
                 //string package_area = "file:///" + assemblyPath + "jre.zip";
                 //paths.Add(package_area);
