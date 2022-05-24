@@ -12,7 +12,7 @@ which is published in NuGet as three packages:
 and [Antlr4.Runtime](https://www.nuget.org/packages/Antlr4.Runtime/).
 Although [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs) is fine,
 it is several versions behind the current
-Antlr4 tool and runtime, it is not being maintained. Further, it is not compatible
+Antlr4 tool and runtime, not maintained, and not compatible
 with Antlr4.Runtime.Standard.
 
 This package is contains the build rules for compiling .g4's into parser code
