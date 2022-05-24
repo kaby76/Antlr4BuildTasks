@@ -78,6 +78,7 @@ for the Antlr tool.
 * &lt;DOptions&gt; -- A list of &lt;option&gt;=&lt;value&gt;, passed to the Antlr tool. E.g.,
 language=Java. Multiple options can be specified using a semi-colon separating each.
 * &lt;JavaExec&gt; -- Full path name of the Java executable.
+* &lt;AllowAntlr4cs&gt; -- Allow both &lt;PackageReference&gt; to Antlr4.Runtime and Antlr4.Runtime.Standard. (NB, you will need to handle aliasing of one package. See https://github.com/kaby76/Antlr4BuildTasks/issues/32)
 
 Antlr generates files that may produce a lot of compiler warnings. To ignore those,
 add the following &lt;PropertyGroup&gt; to you .csproj file.
