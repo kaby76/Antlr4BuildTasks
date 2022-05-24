@@ -2,7 +2,8 @@
 
 [![Build](https://github.com/kaby76/Antlr4BuildTasks/workflows/.NET/badge.svg)](https://github.com/kaby76/Antlr4BuildTasks/actions?query=workflow%3A.NET)
 
-This package is a third-party set of build rules published in Nuget
+This package is a third-party set of build rules
+[published in Nuget](https://www.nuget.org/packages/Antlr4BuildTasks/) as a package
 for dotnet and msbuild for C# projects with Antlr4 grammars
 using the "official" Antl4.Runtime.Standard package.
 It is based on Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
