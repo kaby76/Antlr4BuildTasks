@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/kaby76/Antlr4BuildTasks/workflows/.NET/badge.svg)](https://github.com/kaby76/Antlr4BuildTasks/actions?query=workflow%3A.NET)
 
-This package is a third-party build tool for C# programs with Antlr4 grammars
+This package is a third-party dotnet and msbuild build rules for C# projects with Antlr4 grammars
 using the "official" Antl4.Runtime.Standard package.
 It is based on Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
 which is published in NuGet as the [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
