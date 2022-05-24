@@ -48,11 +48,6 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="antlr4-4.10.1-complete.jar">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-	<ItemGroup>
 		<PackageReference Include="Microsoft.Build.Framework" Version="17.2.0" />
 		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.2.0" />
 		<PackageReference Include="System.CodeDom" Version="6.0.0" />
