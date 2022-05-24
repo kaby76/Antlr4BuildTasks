@@ -23,8 +23,8 @@ for Antlr4 grammars using C#.
 
 Antlr4BuildTasks automatically downloads a Java Runtime Environment (JRE) and the Antlr tool
 jar file to generate the parser and lexer. You do not
-need to set up anything. And, it can be used either at the command line
-or within Visual Studio.
+need to set up anything. It can be used either at the command line
+or within Visual Studio, and on Windows, Linux or Mac.
 
 [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard/)
 is the "official", maintained runtime for C#. It completely
