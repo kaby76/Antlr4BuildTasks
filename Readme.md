@@ -144,7 +144,8 @@ then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 ### Latest release v10.5 (24 May 2022)
 
 * Fixes for
+https://github.com/kaby76/Antlr4BuildTasks/issues/34
 https://github.com/kaby76/Antlr4BuildTasks/issues/33
 https://github.com/kaby76/Antlr4BuildTasks/issues/29
 https://github.com/kaby76/Antlr4BuildTasks/issues/26 .
-Changes to not allow `<Reference>` to Antlr4.Runtime.Standard nor Antlr4BuildTasks.
+
