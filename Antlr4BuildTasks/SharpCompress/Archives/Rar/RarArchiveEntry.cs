@@ -85,5 +85,6 @@ namespace SharpCompress.Archives.Rar
                 throw new IncompleteArchiveException("ArchiveEntry is incomplete and cannot perform this operation.");
             }
         }
+        public override Nullable<long> Attrib => throw new NotImplementedException();
     }
 }

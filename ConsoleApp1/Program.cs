@@ -20,8 +20,11 @@ public class Program
                 reader.WriteEntryToDirectory(destination, new ExtractionOptions()
                 {
                     ExtractFullPath = true,
-                    Overwrite = true
+                    Overwrite = true,
+//                    PreserveAttributes = true,
+//                    PreserveFileTime = true,
                 });
+                var artime = reader.Entry.Attrib;
             }
         }
         reader.Dispose();

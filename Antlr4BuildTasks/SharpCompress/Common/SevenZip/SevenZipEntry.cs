@@ -38,7 +38,7 @@ namespace SharpCompress.Common.SevenZip
 
         public override bool IsSplitAfter => false;
 
-        public override int? Attrib => FilePart.Header.Attrib.HasValue ? (int?)FilePart.Header.Attrib.Value : null;
+        public override Nullable<long> Attrib => FilePart.Header.Attrib.HasValue ? (int?)FilePart.Header.Attrib.Value : null;
 
         internal override IEnumerable<FilePart> Parts => FilePart.AsEnumerable<FilePart>();
     }

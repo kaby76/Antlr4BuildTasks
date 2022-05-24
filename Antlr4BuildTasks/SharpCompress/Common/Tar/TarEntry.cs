@@ -69,5 +69,6 @@ namespace SharpCompress.Common.Tar
                 }
             }
         }
+        public override Nullable<long> Attrib => _filePart.Header.Mode;
     }
 }

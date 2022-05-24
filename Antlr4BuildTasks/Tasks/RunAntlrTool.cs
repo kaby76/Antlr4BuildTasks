@@ -464,7 +464,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (paths == null || paths.Count == 0)
             {
                 paths = new List<string>();
-                paths.Add("PATH");
+               // paths.Add("PATH");
                 paths.Add("DOWNLOAD");
 
                 //string package_area = "file:///" + assemblyPath + "jre.zip";
@@ -1086,22 +1086,68 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
         private void Read(string destination, string testArchive, CompressionType expectedCompression, ReaderOptions options = null)
         {
+            OperatingSystem os_ver = Environment.OSVersion;
+            System.Runtime.InteropServices.Architecture os_arch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
             Stream stream = File.OpenRead(testArchive);
             var reader = ReaderFactory.Open(stream);
             while (reader.MoveToNextEntry())
             {
                 if (!reader.Entry.IsDirectory)
                 {
-                    Console.WriteLine(reader.Entry.Key);
                     reader.WriteEntryToDirectory(destination, new ExtractionOptions()
                     {
                         ExtractFullPath = true,
                         Overwrite = true
                     });
                 }
+                if (reader.Entry.Attrib != null && os_ver.Platform == PlatformID.Unix)
+                {
+                    // execute chmod.
+                    List<string> arguments = new List<string>();
+                    arguments.Add(ToChmodArg(reader.Entry.Attrib));
+                    var full_path = destination + reader.Entry.Key;
+                    //Console.WriteLine("full path \"" + full_path + "\"");
+                    //Log.LogMessage("full path \"" + full_path + "\"");
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("full path \"" + full_path + "\""));
+                    arguments.Add(full_path);
+                    ProcessStartInfo startInfo = new ProcessStartInfo(
+                       "/usr/bin/chmod", JoinArguments(arguments))
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardInput = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                    };
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
+                    Process process = new Process();
+                    process.StartInfo = startInfo;
+                    process.ErrorDataReceived += HandleStderrDataReceived;
+                    process.OutputDataReceived += HandleStdoutDataReceived;
+                    process.Start();
+                    process.BeginErrorReadLine();
+                    process.BeginOutputReadLine();
+                    process.WaitForExit();
+                    if (process.ExitCode != 0)
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Chmod didn't work, returned " + process.ExitCode));
+                    }
+                }
             }
             reader.Dispose();
             stream.Dispose();
+        }
+
+        private string ToChmodArg(long? attrib)
+        {
+            var value = attrib.Value;
+            var c1 = (value & 0x7).ToString();
+            value = value >> 3;
+            var c2 = (value & 0x7).ToString();
+            value = value >> 3;
+            var c3 = (value & 0x7).ToString();
+            return c3 + c2 + c1;
         }
     }
 }

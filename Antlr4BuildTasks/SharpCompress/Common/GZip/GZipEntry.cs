@@ -39,6 +39,8 @@ namespace SharpCompress.Common.GZip
 
         public override bool IsSplitAfter => false;
 
+        public override Nullable<long> Attrib => throw new NotImplementedException();
+
         internal override IEnumerable<FilePart> Parts => _filePart.AsEnumerable<FilePart>();
 
         internal static IEnumerable<GZipEntry> GetEntries(Stream stream, OptionsBase options)

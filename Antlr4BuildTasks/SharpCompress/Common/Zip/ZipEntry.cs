@@ -82,5 +82,6 @@ namespace SharpCompress.Common.Zip
         public override bool IsSplitAfter => false;
 
         internal override IEnumerable<FilePart> Parts => _filePart.AsEnumerable<FilePart>();
+        public override Nullable<long> Attrib => throw new NotImplementedException();
     }
 }

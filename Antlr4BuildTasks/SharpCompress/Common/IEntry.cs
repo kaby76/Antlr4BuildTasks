@@ -18,6 +18,6 @@ namespace SharpCompress.Common
         Nullable<DateTime> LastAccessedTime { get; }
         Nullable<DateTime> LastModifiedTime { get; }
         long Size { get; }
-        int? Attrib { get; }
+        Nullable<long> Attrib { get; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SharpCompress.Common;
 using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
@@ -30,5 +31,6 @@ namespace SharpCompress.Readers.Rar
         /// The uncompressed file size
         /// </summary>
         public override long Size => Part.FileHeader.UncompressedSize;
+        public override Nullable<long> Attrib => throw new NotImplementedException();
     }
 }
