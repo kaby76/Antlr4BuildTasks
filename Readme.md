@@ -18,9 +18,7 @@ This package is contains the build rules for compiling .g4's into parser code
 for a complete, seemless build
 for Antlr4 grammars to C# at compilation time.
 It downloads a Java Runtime Environment (JRE) and the Antlr tool jar so
-you do not need to do any of that.
-It does not contain a package code generator
-that one would use to generate a parser on-the-fly when running a C# program.
+you do not need to set up anything.
 
 [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard/)
 is the "official", maintained runtime for C#. It completely
