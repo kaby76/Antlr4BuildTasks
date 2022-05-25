@@ -18,7 +18,8 @@ with Antlr4.Runtime.Standard.
 
 When added as a `<PackageReference>` to your C# project,
 everything is provided to compile .g4's into parser code
-via the Antlr4 Tool (in Java), and generated code added for a complete, seemless build
+via the Antlr4 Tool (in Java), and compiled by the C# compiler,
+for a seemless build
 for Antlr4 grammars using C#.
 
 Antlr4BuildTasks automatically downloads a Java Runtime Environment (JRE) and the Antlr tool
