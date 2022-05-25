@@ -602,6 +602,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 string java_download_fn = null;
                 string java_download_url = null;
                 // See https://www.oracle.com/java/technologies/downloads/
+                // https://adoptopenjdk.net/archive.html
                 switch (os_ver.Platform)
                 {
                     case PlatformID.Win32NT:
@@ -610,12 +611,15 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                             case System.Runtime.InteropServices.Architecture.X64:
                                 if (IntPtr.Size != 8) break;
                                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("OS is Windows"));
-                                java_download_fn = "jdk-18_windows-x64_bin.zip";
-                                java_download_url = "https://download.oracle.com/java/18/latest/jdk-18_windows-x64_bin.zip";
+                                //java_download_fn = "jdk-18_windows-x64_bin.zip";
+                                java_download_fn = "OpenJDK11U-jre_x64_windows_hotspot_11.0.15_10.zip";
+                                //java_download_url = "https://download.oracle.com/java/18/latest/jdk-18_windows-x64_bin.zip";
+                                java_download_url = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.15_10.zip";
                                 try
                                 {
                                     string uncompressed_root_dir = DownloadFile(place_path, java_download_fn, java_download_url);
-                                    where = uncompressed_root_dir + "jdk-18.0.1.1/bin/java.exe";
+                                    //where = uncompressed_root_dir + "jdk-18.0.1.1/bin/java.exe";
+                                    where = uncompressed_root_dir + "jdk-11.0.15+10-jre/bin/java.exe";
                                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
                                     _generatedDirectories.Add(uncompressed_root_dir);
                                     var archive_name = place_path + java_download_fn;
@@ -641,12 +645,15 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                             case System.Runtime.InteropServices.Architecture.X64:
                                 if (IntPtr.Size != 8) break;
                                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("OS is Linux"));
-                                java_download_fn = "jdk-18_linux-x64_bin.tar.gz";
-                                java_download_url = "https://download.oracle.com/java/18/latest/jdk-18_linux-x64_bin.tar.gz";
+                                //java_download_fn = "jdk-18_linux-x64_bin.tar.gz";
+                                java_download_fn = "OpenJDK11U-jre_x64_linux_hotspot_11.0.15_10.tar.gz";
+                                //java_download_url = "https://download.oracle.com/java/18/latest/jdk-18_linux-x64_bin.tar.gz";
+                                java_download_url = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_linux_hotspot_11.0.15_10.tar.gz";
                                 try
                                 {
                                     string uncompressed_root_dir = DownloadFile(place_path, java_download_fn, java_download_url);
-                                    where = uncompressed_root_dir + "jdk-18.0.1.1/bin/java";
+                                    //where = uncompressed_root_dir + "jdk-18.0.1.1/bin/java";
+                                    where = uncompressed_root_dir + "jdk-11.0.15+10-jre/bin/java";
                                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
                                     _generatedDirectories.Add(uncompressed_root_dir);
                                     var archive_name = place_path + java_download_fn;
