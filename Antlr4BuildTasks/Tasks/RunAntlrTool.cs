@@ -4,8 +4,11 @@
 // Copyright (c) Terence Parr, Sam Harwell. All Rights Reserved.
 // Licensed under the BSD License. See LICENSE.txt in the project root for license information.
 
+using Antlr4.Build.Tasks.Util;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using SharpCompress.Common;
+using SharpCompress.Readers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,37 +21,24 @@ using Directory = System.IO.Directory;
 using File = System.IO.File;
 using Path = System.IO.Path;
 using StringBuilder = System.Text.StringBuilder;
-using Antlr4.Build.Tasks.Util;
-using System.IO.Compression;
-using SharpCompress.Common;
-using SharpCompress.Readers;
-using SharpCompress.Writers.Tar;
-using SharpCompress.Readers.Tar;
 
 
 namespace Antlr4.Build.Tasks
 {
     public class RunAntlrTool : Task
     {
-        private const string ToolVersion = "10.5.0";
+        private const string ToolVersion = "10.6.0";
         private const string DefaultGeneratedSourceExtension = "g4";
         private List<string> _generatedCodeFiles = new List<string>();
         private List<string> _generatedDirectories = new List<string>();
         private List<string> _generatedFiles = new List<string>();
-
-        public RunAntlrTool()
-        {
-            this.GeneratedSourceExtension = DefaultGeneratedSourceExtension;
-        }
+        private bool start = false;
+        private StringBuilder sb = new StringBuilder();
 
         public bool AllowAntlr4cs { get; set; }
         public string AntlrToolJar { get; set; }
         public string AntOutDir { get; set; }
-        public List<string> AntlrProbePath
-        {
-            get;
-            set;
-        } = new List<string>();
+        public ITaskItem[] AntlrProbePath { get; set; }
         public string DOptions { get; set; }
         public string Encoding { get; set; }
         public bool Error { get; set; }
@@ -92,23 +82,24 @@ namespace Antlr4.Build.Tasks
         [Output] public string GeneratedSourceExtension { get; set; }
         [Required] public string IntermediateOutputPath { get; set; }
         public string JavaExec { get; set; }
-        public List<string> JavaProbePath
-        {
-            get;
-            set;
-        } = new List<string>();
+        public ITaskItem[] JavaProbePath { get; set; }
         public string LibPath { get; set; }
         public bool Listener { get; set; }
-        public string Package { get; set; }
         public List<string> OtherSourceCodeFiles { get; set; }
-        [Required] public ITaskItem[] PackageReference { get; set; }
-        [Required] public ITaskItem[] Reference { get; set; }
-        [Required] public ITaskItem[] PackageVersion { get; set; }
-        [Required] public ITaskItem[] SourceCodeFiles { get; set; }
+        public string Package { get; set; }
+        public ITaskItem[] PackageReference { get; set; }
+        public ITaskItem[] Reference { get; set; }
+        public ITaskItem[] PackageVersion { get; set; }
+        public ITaskItem[] SourceCodeFiles { get; set; }
         public string TargetFrameworkVersion { get; set; }
         public ITaskItem[] TokensFiles { get; set; }
         public string Version { get; set; }
         public bool Visitor { get; set; }
+
+        public RunAntlrTool()
+        {
+            this.GeneratedSourceExtension = DefaultGeneratedSourceExtension;
+        }
 
         public override bool Execute()
         {
@@ -179,20 +170,27 @@ namespace Antlr4.Build.Tasks
                 }
             }
             // Make sure Antlr4BuildTasks and Antlr4.Runtime.Standard are not Referene'd.
-            foreach (var i in Reference)
-            {
-                if (i.ItemSpec.ToLower().Contains("Antlr4.Runtime.Standard".ToLower()))
-                {
-                    throw new Exception(
-                        @"You are using <Reference> for Antlr4.Runtime.Standard in your .csproj file. You can only use <PackageReference> for the package, never a link to the dll.");
-                }
-                if (i.ItemSpec.ToLower().Contains("Antlr4BuildTasks".ToLower()))
-                {
-                    throw new Exception(
-                        @"You are using <Reference> for Antlr4BuildTasks in your .csproj file. You can only use <PackageReference> for the package, never a link to the dll.");
-                }
-            }
-            {
+	    if (Reference != null)
+	    {
+		    foreach (var i in Reference)
+		    {
+			if (i.ItemSpec.ToLower().Contains("Antlr4.Runtime.Standard".ToLower()))
+			{
+			    throw new Exception(
+				@"You are using <Reference> for Antlr4.Runtime.Standard in your .csproj file. You can only use <PackageReference> for the package, never a link to the dll.");
+			}
+			if (i.ItemSpec.ToLower().Contains("Antlr4BuildTasks".ToLower()))
+			{
+			    throw new Exception(
+				@"You are using <Reference> for Antlr4BuildTasks in your .csproj file. You can only use <PackageReference> for the package, never a link to the dll.");
+			}
+		    }
+	    }
+	    if (PackageReference == null)
+	    {
+		    throw new Exception("PackageReference null, it is required.");
+	    }
+	    {
                 foreach (var i in PackageReference)
                 {
                     if (i.ItemSpec.ToLower() == "Antlr4.CodeGenerator".ToLower())
@@ -201,7 +199,6 @@ namespace Antlr4.Build.Tasks
                             @"You are referencing Antlr4.CodeGenerator in your .csproj file. This build tool cannot use by the old Antlr4cs tool and 'official' Antlr4 Java tool. Remove package reference Antlr4.CodeGenerator.");
                     }
                 }
-                
             }
 
             // Get version
@@ -271,21 +268,25 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 + "'"));
 
             // Set up probe path for Antlr tool jar if there isn't one.
-            var paths = AntlrProbePath;
+            List<string> paths = new List<string>();
+            if (AntlrProbePath != null)
+                paths = AntlrProbePath.Select(p => p.ItemSpec).ToList();
             string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
             if (!user_profile_path.EndsWith("/")) user_profile_path = user_profile_path + "/";
             string tool_path = user_profile_path
                 + ".nuget/packages/antlr4buildtasks/"
                 + ToolVersion
                 + "/";
-            var assemblyPath = tool_path + "build/";
+
+
+            var place_path = user_profile_path + ".m2/";
 
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                "Location to stuff Antlr tool jar, if not found, is " + assemblyPath));
+                "Location to stuff Antlr tool jar, if not found, is " + place_path));
 
             if (paths == null || paths.Count == 0)
             {
-                string package_area = "file:///" + assemblyPath;
+                string package_area = "file:///" + place_path;
                 paths.Add(package_area);
                 var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
                 paths.Add(full_path);
@@ -303,7 +304,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 // If "x.y", probe for "x.y".
                 if (v3 != null)
                 {
-                    bool t = TryProbeAntlrJar(probe, v3, assemblyPath, out string w);
+                    bool t = TryProbeAntlrJar(probe, v3, place_path, out string w);
                     if (t)
                     {
                         result = w;
@@ -312,7 +313,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 }
                 else if (v3 != null && v3.EndsWith(".0"))
                 {
-                    bool t = TryProbeAntlrJar(probe, v3.Substring(0, v3.Length - 2), assemblyPath, out string w);
+                    bool t = TryProbeAntlrJar(probe, v3.Substring(0, v3.Length - 2), place_path, out string w);
                     if (t)
                     {
                         result = w;
@@ -321,7 +322,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 }
                 else if (v2 != null)
                 {
-                    bool t = TryProbeAntlrJar(probe, v2, assemblyPath, out string w);
+                    bool t = TryProbeAntlrJar(probe, v2, place_path, out string w);
                     if (t)
                     {
                         result = w;
@@ -449,17 +450,20 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             string result = null;
 
             // Set up probe path for Java if there isn't one.
-            var paths = JavaProbePath;
+            List<string> paths = new List<string>();
+            if (JavaProbePath != null)
+                paths = JavaProbePath.Select(p => p.ItemSpec).ToList();
             string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
             if (!user_profile_path.EndsWith("/")) user_profile_path = user_profile_path + "/";
             string tool_path = user_profile_path
                 + ".nuget/packages/antlr4buildtasks/"
                 + ToolVersion
                 + "/";
-            var assemblyPath = tool_path + "build/";
+
+            var place_path = user_profile_path + ".jre/";
 
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                "Location to stuff JRE, if not found, is " + assemblyPath));
+                "Location to stuff JRE, if not found, is " + place_path));
 
             if (paths == null || paths.Count == 0)
             {
@@ -480,7 +484,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
             foreach (var probe in paths)
             {
-                if (TryProbeJava(probe, assemblyPath, out string where))
+                if (TryProbeJava(probe, place_path, out string where))
                 {
                     if (where == null || where == "")
                     {
@@ -514,7 +518,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             var java_dir = place_path;
             java_dir = java_dir.Replace("\\", "/");
             if (!java_dir.EndsWith("/")) java_dir = java_dir + "/";
-            var decompressed_area = java_dir + "Java/";
+            var decompressed_area = java_dir;
             System.IO.Directory.CreateDirectory(decompressed_area);
             return decompressed_area;
         }
@@ -565,7 +569,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                             {
                                 java_dir = java_dir + "/";
                             }
-                            java_dir = java_dir + "Java/";
+                            java_dir = java_dir;
                             _generatedDirectories.Add(java_dir);
                             var archive = local_file;
                             if (!Directory.Exists(java_dir))
@@ -973,8 +977,6 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             HandleStderrDataReceived(e.Data);
         }
 
-        bool start = false;
-        StringBuilder sb = new StringBuilder();
         private void HandleStderrDataReceived(string data)
         {
             //System.Console.Error.WriteLine("XXX3 " + data);
