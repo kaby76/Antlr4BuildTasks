@@ -100,19 +100,19 @@
 	<ItemDefinitionGroup>
 		<Antlr4>
 			<AllowAntlr4cs>false</AllowAntlr4cs>
-                        <AntlrToolJar></AntlrToolJar>
+            <AntlrToolJar></AntlrToolJar>
 			<AntOutDir></AntOutDir>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<DOptions>language=CSharp</DOptions>
 			<Encoding>UTF-8</Encoding>
+			<Error>false</Error>
+			<ForceAtn>false</ForceAtn>
 			<GAtn>false</GAtn>
 			<Generator>MSBuild:Compile</Generator>
 			<IntermediateOutputPath>$(IntermediateOutputPath)</IntermediateOutputPath>
 			<LibPath></LibPath>
 			<Listener>true</Listener>
 			<Package></Package>
-			<DOptions>language=CSharp</DOptions>
-			<Error>false</Error>
-			<ForceAtn>false</ForceAtn>
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 			<Visitor>true</Visitor>
 		</Antlr4>
 	</ItemDefinitionGroup>
@@ -149,7 +149,6 @@
                         Package="%(Antlr4.Package)"
                         PackageReference="@(PackageReference)"
                         PackageVersion="@(PackageVersion)"
-                        Reference="@(Reference)"
                         SourceCodeFiles="@(Antlr4 -> '%(FullPath)')"
                         TargetFrameworkVersion="$(TargetFrameworkVersion)"
                         TokensFiles="@(Antlr4Tokens)"

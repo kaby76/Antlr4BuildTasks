@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
@@ -27,13 +28,40 @@ namespace Antlr4.Build.Tasks
 {
     public class RunAntlrTool : Task
     {
-        private const string ToolVersion = "10.6.0";
-        private const string DefaultGeneratedSourceExtension = "g4";
+        private const string _toolVersion = "10.6.0";
+        private const string _defaultGeneratedSourceExtension = "g4";
         private List<string> _generatedCodeFiles = new List<string>();
         private List<string> _generatedDirectories = new List<string>();
         private List<string> _generatedFiles = new List<string>();
-        private bool start = false;
-        private StringBuilder sb = new StringBuilder();
+        private bool _start = false;
+        private StringBuilder _sb = new StringBuilder();
+        // See https://www.oracle.com/java/technologies/downloads/
+        // https://adoptopenjdk.net/archive.html
+        class tableEntry { public string version; public string os; public string link; public string outdir; }
+        private List<tableEntry> _tableOfJava = new List<tableEntry>()
+        {
+            new tableEntry { version = "11", os = "Linux x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_linux_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
+            new tableEntry { version = "11", os = "Windows x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.15_10.zip", outdir = "jdk-11.0.15+10-jre" },
+            new tableEntry { version = "11", os = "macOS x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_mac_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
+            new tableEntry { version = "11", os = "Linux aarch64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
+            new tableEntry { version = "11", os = "Linux s390x", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_s390x_linux_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
+            new tableEntry { version = "11", os = "Windows x86", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x86-32_windows_hotspot_11.0.15_10.zip", outdir = "jdk-11.0.15+10-jre" },
+
+            new tableEntry { version = "16", os = "Linux x64", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz", outdir = "" },
+            new tableEntry { version = "16", os = "Windows x64", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_windows_hotspot_16.0.1_9.zip", outdir = "" },
+            new tableEntry { version = "16", os = "macOS x64", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_mac_hotspot_16.0.1_9.tar.gz", outdir = "" },
+            new tableEntry { version = "16", os = "Linux aarch64", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_aarch64_linux_hotspot_16.0.1_9.tar.gz", outdir = "" },
+            new tableEntry { version = "16", os = "Linux s390x", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_s390x_linux_hotspot_16.0.1_9.tar.gz", outdir = "" },
+            new tableEntry { version = "16", os = "Windows x86", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x86-32_windows_hotspot_16.0.1_9.zip", outdir = "" },
+
+            //new tableEntry { version = "11", os = "Linux x64", link = "", outdir = "" },
+            //new tableEntry { version = "11", os = "Windows x64", link = "", outdir = "" },
+            //new tableEntry { version = "11", os = "macOS x64", link = "", outdir = "" },
+            //new tableEntry { version = "11", os = "Linux aarch64", link = "", outdir = "" },
+            //new tableEntry { version = "11", os = "Linux s390x", link = "", outdir = "" },
+            //new tableEntry { version = "11", os = "Windows x86", link = "", outdir = "" },
+
+        };
 
         public bool AllowAntlr4cs { get; set; }
         public string AntlrToolJar { get; set; }
@@ -88,17 +116,17 @@ namespace Antlr4.Build.Tasks
         public List<string> OtherSourceCodeFiles { get; set; }
         public string Package { get; set; }
         public ITaskItem[] PackageReference { get; set; }
-        public ITaskItem[] Reference { get; set; }
         public ITaskItem[] PackageVersion { get; set; }
         public ITaskItem[] SourceCodeFiles { get; set; }
         public string TargetFrameworkVersion { get; set; }
         public ITaskItem[] TokensFiles { get; set; }
         public string Version { get; set; }
+        public string VersionOfJava { get; set; } = "11";
         public bool Visitor { get; set; }
 
         public RunAntlrTool()
         {
-            this.GeneratedSourceExtension = DefaultGeneratedSourceExtension;
+            this.GeneratedSourceExtension = _defaultGeneratedSourceExtension;
         }
 
         public override bool Execute()
@@ -166,37 +194,6 @@ namespace Antlr4.Build.Tasks
                     {
                         throw new Exception(
                             @"You are referencing Antlr4.Runtime in your .csproj file. This build tool can only reference the NET Standard library https://www.nuget.org/packages/Antlr4.Runtime.Standard/. You can only use either the 'official' Antlr4 or the 'tunnelvision' fork, but not both. You have to choose one.");
-                    }
-                }
-            }
-            // Make sure Antlr4BuildTasks and Antlr4.Runtime.Standard are not Referene'd.
-	    if (Reference != null)
-	    {
-		    foreach (var i in Reference)
-		    {
-			if (i.ItemSpec.ToLower().Contains("Antlr4.Runtime.Standard".ToLower()))
-			{
-			    throw new Exception(
-				@"You are using <Reference> for Antlr4.Runtime.Standard in your .csproj file. You can only use <PackageReference> for the package, never a link to the dll.");
-			}
-			if (i.ItemSpec.ToLower().Contains("Antlr4BuildTasks".ToLower()))
-			{
-			    throw new Exception(
-				@"You are using <Reference> for Antlr4BuildTasks in your .csproj file. You can only use <PackageReference> for the package, never a link to the dll.");
-			}
-		    }
-	    }
-	    if (PackageReference == null)
-	    {
-		    throw new Exception("PackageReference null, it is required.");
-	    }
-	    {
-                foreach (var i in PackageReference)
-                {
-                    if (i.ItemSpec.ToLower() == "Antlr4.CodeGenerator".ToLower())
-                    {
-                        throw new Exception(
-                            @"You are referencing Antlr4.CodeGenerator in your .csproj file. This build tool cannot use by the old Antlr4cs tool and 'official' Antlr4 Java tool. Remove package reference Antlr4.CodeGenerator.");
                     }
                 }
             }
@@ -275,7 +272,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (!user_profile_path.EndsWith("/")) user_profile_path = user_profile_path + "/";
             string tool_path = user_profile_path
                 + ".nuget/packages/antlr4buildtasks/"
-                + ToolVersion
+                + _toolVersion
                 + "/";
 
 
@@ -457,7 +454,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (!user_profile_path.EndsWith("/")) user_profile_path = user_profile_path + "/";
             string tool_path = user_profile_path
                 + ".nuget/packages/antlr4buildtasks/"
-                + ToolVersion
+                + _toolVersion
                 + "/";
 
             var place_path = user_profile_path + ".jre/";
@@ -569,7 +566,6 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                             {
                                 java_dir = java_dir + "/";
                             }
-                            java_dir = java_dir;
                             _generatedDirectories.Add(java_dir);
                             var archive = local_file;
                             if (!Directory.Exists(java_dir))
@@ -601,89 +597,93 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 System.Runtime.InteropServices.Architecture os_arch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
                 string java_download_fn = null;
                 string java_download_url = null;
-                // See https://www.oracle.com/java/technologies/downloads/
-                // https://adoptopenjdk.net/archive.html
-                switch (os_ver.Platform)
+                var which_java = _tableOfJava.Where(e => e.version == VersionOfJava
+                    && e.os == ConvertOSArch(os_ver.Platform, os_arch)).FirstOrDefault();
+
+                if (which_java == default(tableEntry))
+                    return false;
+
+                System.Console.Error.WriteLine("java " +
+					       which_java.version + " " +
+					       which_java.os + " " +
+					       which_java.link + " " +
+					       which_java.outdir);
+		
+                if (which_java.link.EndsWith(".zip"))
                 {
-                    case PlatformID.Win32NT:
-                        switch (os_arch)
+                    java_download_fn = which_java.link.Substring(which_java.link.LastIndexOf('/')+1);
+                    java_download_url = which_java.link;
+                    try
+                    {
+                        string uncompressed_root_dir = DownloadFile(place_path, java_download_fn, java_download_url);
+                        where = uncompressed_root_dir + which_java.outdir + "/bin/java.exe";
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
+                        _generatedDirectories.Add(uncompressed_root_dir);
+                        var archive_name = place_path + java_download_fn;
+                        if (!File.Exists(where))
                         {
-                            case System.Runtime.InteropServices.Architecture.X64:
-                                if (IntPtr.Size != 8) break;
-                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("OS is Windows"));
-                                //java_download_fn = "jdk-18_windows-x64_bin.zip";
-                                java_download_fn = "OpenJDK11U-jre_x64_windows_hotspot_11.0.15_10.zip";
-                                //java_download_url = "https://download.oracle.com/java/18/latest/jdk-18_windows-x64_bin.zip";
-                                java_download_url = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.15_10.zip";
-                                try
-                                {
-                                    string uncompressed_root_dir = DownloadFile(place_path, java_download_fn, java_download_url);
-                                    //where = uncompressed_root_dir + "jdk-18.0.1.1/bin/java.exe";
-                                    where = uncompressed_root_dir + "jdk-11.0.15+10-jre/bin/java.exe";
-                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
-                                    _generatedDirectories.Add(uncompressed_root_dir);
-                                    var archive_name = place_path + java_download_fn;
-                                    if (! File.Exists(where))
-                                    {
-                                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
-                                        System.IO.Directory.CreateDirectory(uncompressed_root_dir);
-                                        System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, uncompressed_root_dir);
-                                    }
-                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
-                                    return true;
-                                }
-                                catch
-                                {
-                                    where = null;
-                                }
-                                break;
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
+                            System.IO.Directory.CreateDirectory(uncompressed_root_dir);
+                            System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, uncompressed_root_dir);
                         }
-                        break;
-                    case PlatformID.Unix:
-                        switch (os_arch)
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                        return true;
+                    }
+                    catch
+                    {
+                        where = null;
+                    }
+                }
+                else if (which_java.link.EndsWith(".tar.gz"))
+                {
+                    java_download_fn = which_java.link.Substring(which_java.link.LastIndexOf('/') + 1);
+                    java_download_url = which_java.link;
+                    try
+                    {
+                        string uncompressed_root_dir = DownloadFile(place_path, java_download_fn, java_download_url);
+                        where = uncompressed_root_dir + which_java.outdir + "/bin/java";
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
+                        _generatedDirectories.Add(uncompressed_root_dir);
+                        var archive_name = place_path + java_download_fn;
+                        if (!File.Exists(where))
                         {
-                            case System.Runtime.InteropServices.Architecture.X64:
-                                if (IntPtr.Size != 8) break;
-                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("OS is Linux"));
-                                //java_download_fn = "jdk-18_linux-x64_bin.tar.gz";
-                                java_download_fn = "OpenJDK11U-jre_x64_linux_hotspot_11.0.15_10.tar.gz";
-                                //java_download_url = "https://download.oracle.com/java/18/latest/jdk-18_linux-x64_bin.tar.gz";
-                                java_download_url = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_linux_hotspot_11.0.15_10.tar.gz";
-                                try
-                                {
-                                    string uncompressed_root_dir = DownloadFile(place_path, java_download_fn, java_download_url);
-                                    //where = uncompressed_root_dir + "jdk-18.0.1.1/bin/java";
-                                    where = uncompressed_root_dir + "jdk-11.0.15+10-jre/bin/java";
-                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
-                                    _generatedDirectories.Add(uncompressed_root_dir);
-                                    var archive_name = place_path + java_download_fn;
-                                    if (!File.Exists(where))
-                                    {
-                                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
-                                        System.IO.Directory.CreateDirectory(uncompressed_root_dir);
-                                        Read(uncompressed_root_dir, archive_name, new CompressionType());
-                                    }
-                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
-                                    return true;
-                                }
-                                catch
-                                {
-                                    where = null;
-                                }
-                                break;
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
+                            System.IO.Directory.CreateDirectory(uncompressed_root_dir);
+                            Read(uncompressed_root_dir, archive_name, new CompressionType());
                         }
-                        break;
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                        return true;
+                    }
+                    catch
+                    {
+                        where = null;
+                    }
                 }
             }
-            else
-            {
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                    @"The AntlrProbePath contains '"
-                        + path
-                        + "', which doesn't start with 'file://' or 'https://'. "
-                        + @"Edit your .csproj file to make sure the path follows that syntax."));
-            }
             return result;
+        }
+
+        private string ConvertOSArch(PlatformID platform, Architecture os_arch)
+        {
+            switch (platform)
+            {
+                case PlatformID.Win32NT:
+                    switch (os_arch)
+                    {
+                        case System.Runtime.InteropServices.Architecture.X64:
+                            return "Windows x64";
+                    }
+                    break;
+                case PlatformID.Unix:
+                    switch (os_arch)
+                    {
+                        case System.Runtime.InteropServices.Architecture.X64:
+                            if (IntPtr.Size != 8) break;
+                            return "Linux x64";
+                    }
+                    break;
+            }
+            return "";
         }
 
         private bool GetGeneratedFileNameList()
@@ -993,17 +993,17 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             {
                 if (data.Contains("Exception in thread"))
                 {
-                    start = true;
-                    sb.AppendLine(data);
+                    _start = true;
+                    _sb.AppendLine(data);
                 }
-                else if (start)
+                else if (_start)
                 {
-                    sb.AppendLine(data);
+                    _sb.AppendLine(data);
                     if (data.Contains("at org.antlr.v4.Tool.main(Tool.java"))
                     {
-                        MessageQueue.EnqueueMessage(Message.BuildErrorMessage(sb.ToString()));
-                        sb = new StringBuilder();
-                        start = false;
+                        MessageQueue.EnqueueMessage(Message.BuildErrorMessage(_sb.ToString()));
+                        _sb = new StringBuilder();
+                        _start = false;
                     }
                 }
                 else
