@@ -36,7 +36,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
     <ItemGroup>
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
-        <PackageReference Include="Antlr4BuildTasks" Version="10.5">
+        <PackageReference Include="Antlr4BuildTasks" Version="10.6">
           <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
@@ -128,7 +128,7 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="10.5" />
+        <PackageReference Include="Antlr4BuildTasks" Version="10.6" />
         <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
     </ItemGroup>
 
@@ -148,11 +148,8 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v10.5 (24 May 2022)
+### Latest release v10.6 (26 May 2022)
 
-* Fixes for
-https://github.com/kaby76/Antlr4BuildTasks/issues/34
-https://github.com/kaby76/Antlr4BuildTasks/issues/33
-https://github.com/kaby76/Antlr4BuildTasks/issues/29
-https://github.com/kaby76/Antlr4BuildTasks/issues/26 .
+* Fix for
+https://github.com/kaby76/Antlr4BuildTasks/issues/36.
 
