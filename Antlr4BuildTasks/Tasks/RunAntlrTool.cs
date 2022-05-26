@@ -603,11 +603,11 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 if (which_java == default(tableEntry))
                     return false;
 
-                System.Console.Error.WriteLine("java " +
-					       which_java.version + " " +
-					       which_java.os + " " +
-					       which_java.link + " " +
-					       which_java.outdir);
+            //    System.Console.Error.WriteLine("java " +
+					       //which_java.version + " " +
+					       //which_java.os + " " +
+					       //which_java.link + " " +
+					       //which_java.outdir);
 		
                 if (which_java.link.EndsWith(".zip"))
                 {
