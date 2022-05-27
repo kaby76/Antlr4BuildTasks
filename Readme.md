@@ -17,13 +17,12 @@ Antlr4 tool and runtime, not maintained, and not compatible
 with Antlr4.Runtime.Standard.
 
 When added as a `<PackageReference>` to your C# project,
-everything is provided to compile .g4's into parser code
-via the Antlr4 Tool (in Java), and compiled by the C# compiler,
-for a seemless build
-for Antlr4 grammars using C#.
+Antlr4BuildTasks provides the rules to compile .g4's into parser code
+via the Antlr4 Tool using Java, and compiled by the C# compiler,
+for a seemless build for Antlr4 grammars using C#.
 
-Antlr4BuildTasks automatically downloads a Java Runtime Environment (JRE) and the Antlr tool
-jar file to generate the parser and lexer. You do not
+Antlr4BuildTasks automatically downloads a Java Runtime Environment (JRE)
+and the Antlr tool jar file to generate the parser and lexer. You do not
 need to set up anything. It can be used either at the command line
 or within Visual Studio, and on Windows, Linux or Mac.
 
@@ -53,6 +52,9 @@ Note: `<PrivateAssets>all</PrivateAssets>` is added to the package reference
 so that when you run `dotnet publish`, the Antlr4BuildTasks.dll is not included
 in your app; it's only used to build your application.
 Antlr4BuildTasks.dll is not currently digitally signed.
+
+Note: Antlr4BuildTasks downloads a JRE for your OS and places it in `$HOMEPATH/.jre/`.
+The package also downloads the Antlr4 tool JAR file and places it in `$HOMEPATH/.m2/`.
     
 ### Setting arguments to the Antlr tool
 
