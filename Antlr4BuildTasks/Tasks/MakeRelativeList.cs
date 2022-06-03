@@ -43,7 +43,7 @@ namespace Antlr4.Build.Tasks
                             var absolute = f;
                             absolute = absolute.Replace("\\", "/");
                             string relative_path;
-                            if (absolute.IndexOf(current) == 0)
+                            if (absolute.ToLower().IndexOf(current.ToLower()) == 0)
                                 relative_path = absolute.Substring(current.Length);
                             else
                                 relative_path = absolute;

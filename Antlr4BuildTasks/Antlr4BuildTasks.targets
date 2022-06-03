@@ -256,4 +256,8 @@
 		</ReadLinesFromFile>
 	</Target>
 
+<PropertyGroup>
+    <NoWarn>3021;1701;1702</NoWarn>
+</PropertyGroup>
+
 </Project>

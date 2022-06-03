@@ -81,57 +81,57 @@ namespace SharpCompress.Writers.Zip
             outputStream.Write(intBuf.Slice(0, 2)); // zipping method
             throw new NotImplementedException();
             //BinaryPrimitives.WriteUInt32LittleEndian(intBuf, ModificationTime.DateTimeToDosTime());
-            outputStream.Write(intBuf.Slice(0, 4));
+            //outputStream.Write(intBuf.Slice(0, 4));
 
-            // zipping date and time
-            BinaryPrimitives.WriteUInt32LittleEndian(intBuf, Crc);
-            outputStream.Write(intBuf.Slice(0, 4)); // file CRC
-            BinaryPrimitives.WriteUInt32LittleEndian(intBuf, compressedvalue);
-            outputStream.Write(intBuf.Slice(0, 4)); // compressed file size
-            BinaryPrimitives.WriteUInt32LittleEndian(intBuf, decompressedvalue);
-            outputStream.Write(intBuf.Slice(0, 4)); // uncompressed file size
-            BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)encodedFilename.Length);
-            outputStream.Write(intBuf.Slice(0, 2)); // Filename in zip
-            BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)extralength);
-            outputStream.Write(intBuf.Slice(0, 2)); // extra length
-            BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)encodedComment.Length);
-            outputStream.Write(intBuf.Slice(0, 2));
+            //// zipping date and time
+            //BinaryPrimitives.WriteUInt32LittleEndian(intBuf, Crc);
+            //outputStream.Write(intBuf.Slice(0, 4)); // file CRC
+            //BinaryPrimitives.WriteUInt32LittleEndian(intBuf, compressedvalue);
+            //outputStream.Write(intBuf.Slice(0, 4)); // compressed file size
+            //BinaryPrimitives.WriteUInt32LittleEndian(intBuf, decompressedvalue);
+            //outputStream.Write(intBuf.Slice(0, 4)); // uncompressed file size
+            //BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)encodedFilename.Length);
+            //outputStream.Write(intBuf.Slice(0, 2)); // Filename in zip
+            //BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)extralength);
+            //outputStream.Write(intBuf.Slice(0, 2)); // extra length
+            //BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)encodedComment.Length);
+            //outputStream.Write(intBuf.Slice(0, 2));
 
-            BinaryPrimitives.WriteUInt16LittleEndian(intBuf, 0);
-            outputStream.Write(intBuf.Slice(0, 2)); // disk=0
-            BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)flags);
-            outputStream.Write(intBuf.Slice(0, 2)); // file type: binary
-            BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)flags);
-            outputStream.Write(intBuf.Slice(0, 2)); // Internal file attributes
-            BinaryPrimitives.WriteUInt16LittleEndian(intBuf, 0x8100);
-            outputStream.Write(intBuf.Slice(0, 2));
+            //BinaryPrimitives.WriteUInt16LittleEndian(intBuf, 0);
+            //outputStream.Write(intBuf.Slice(0, 2)); // disk=0
+            //BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)flags);
+            //outputStream.Write(intBuf.Slice(0, 2)); // file type: binary
+            //BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)flags);
+            //outputStream.Write(intBuf.Slice(0, 2)); // Internal file attributes
+            //BinaryPrimitives.WriteUInt16LittleEndian(intBuf, 0x8100);
+            //outputStream.Write(intBuf.Slice(0, 2));
 
-            // External file attributes (normal/readable)
-            BinaryPrimitives.WriteUInt32LittleEndian(intBuf, headeroffsetvalue);
-            outputStream.Write(intBuf.Slice(0, 4)); // Offset of header
+            //// External file attributes (normal/readable)
+            //BinaryPrimitives.WriteUInt32LittleEndian(intBuf, headeroffsetvalue);
+            //outputStream.Write(intBuf.Slice(0, 4)); // Offset of header
 
-            outputStream.Write(encodedFilename, 0, encodedFilename.Length);
-            if (zip64)
-            {
-                BinaryPrimitives.WriteUInt16LittleEndian(intBuf, 0x0001);
-                outputStream.Write(intBuf.Slice(0, 2));
-                BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)(extralength - 4));
-                outputStream.Write(intBuf.Slice(0, 2));
+            //outputStream.Write(encodedFilename, 0, encodedFilename.Length);
+            //if (zip64)
+            //{
+            //    BinaryPrimitives.WriteUInt16LittleEndian(intBuf, 0x0001);
+            //    outputStream.Write(intBuf.Slice(0, 2));
+            //    BinaryPrimitives.WriteUInt16LittleEndian(intBuf, (ushort)(extralength - 4));
+            //    outputStream.Write(intBuf.Slice(0, 2));
 
-                BinaryPrimitives.WriteUInt64LittleEndian(intBuf, Decompressed);
-                outputStream.Write(intBuf);
-                BinaryPrimitives.WriteUInt64LittleEndian(intBuf, Compressed);
-                outputStream.Write(intBuf);
-                BinaryPrimitives.WriteUInt64LittleEndian(intBuf, HeaderOffset);
-                outputStream.Write(intBuf);
-                BinaryPrimitives.WriteUInt32LittleEndian(intBuf, 0);
-                outputStream.Write(intBuf.Slice(0, 4)); // VolumeNumber = 0
-            }
+            //    BinaryPrimitives.WriteUInt64LittleEndian(intBuf, Decompressed);
+            //    outputStream.Write(intBuf);
+            //    BinaryPrimitives.WriteUInt64LittleEndian(intBuf, Compressed);
+            //    outputStream.Write(intBuf);
+            //    BinaryPrimitives.WriteUInt64LittleEndian(intBuf, HeaderOffset);
+            //    outputStream.Write(intBuf);
+            //    BinaryPrimitives.WriteUInt32LittleEndian(intBuf, 0);
+            //    outputStream.Write(intBuf.Slice(0, 4)); // VolumeNumber = 0
+            //}
 
-            outputStream.Write(encodedComment, 0, encodedComment.Length);
+            //outputStream.Write(encodedComment, 0, encodedComment.Length);
 
-            return (uint)(8 + 2 + 2 + 4 + 4 + 4 + 4 + 2 + 2 + 2
-                                    + 2 + 2 + 2 + 2 + 4 + encodedFilename.Length + extralength + encodedComment.Length);
+            //return (uint)(8 + 2 + 2 + 4 + 4 + 4 + 4 + 2 + 2 + 2
+            //                        + 2 + 2 + 2 + 2 + 4 + encodedFilename.Length + extralength + encodedComment.Length);
         }
     }
 }

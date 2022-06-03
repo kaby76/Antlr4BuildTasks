@@ -94,12 +94,9 @@ language=Java. Multiple options can be specified using a semi-colon separating e
 * &lt;JavaExec&gt; -- Full path name of the Java executable.
 * &lt;AllowAntlr4cs&gt; -- Allow both &lt;PackageReference&gt; to Antlr4.Runtime and Antlr4.Runtime.Standard. (NB, you will need to handle aliasing of one package. See https://github.com/kaby76/Antlr4BuildTasks/issues/32)
 
-Antlr generates files that may produce a lot of compiler warnings. To ignore those,
-add the following &lt;PropertyGroup&gt; to you .csproj file.
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <NoWarn>3021;1701;1702</NoWarn>
-    </PropertyGroup>
+The Antlr4 tool generates files that produce a lot of compiler warnings for code
+set with `CLSCompliant=false`. This package adds in code to ignore these warnings
+so you don't need to modify your .csproj file.
 
 ### Conversion from Antlr4.CodeGenerator/Antlr4.Runtime to Antlr4BuildTasks/Antlr4.Runtime.Standard
 
@@ -151,8 +148,9 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v10.6 (26 May 2022)
+### Latest release v10.7 (3 Jun 2022)
 
-* Fix for
-https://github.com/kaby76/Antlr4BuildTasks/issues/36.
+* Fixes for
+https://github.com/kaby76/Antlr4BuildTasks/issues/38,
+https://github.com/kaby76/Antlr4BuildTasks/issues/39.
 

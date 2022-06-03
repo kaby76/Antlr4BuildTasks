@@ -5,10 +5,10 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        Read(@"c:\temp\", @"c:\temp\jdk-18_linux-x64_bin.tar.gz", new CompressionType(), null);
+        Read(@"c:\temp\", @"c:\temp\jdk-18_linux-x64_bin.tar.gz", new CompressionType());
     }
 
-    private static void Read(string destination, string testArchive, CompressionType expectedCompression, ReaderOptions options = null)
+    private static void Read(string destination, string testArchive, CompressionType expectedCompression, ReaderOptions? options = null)
     {
         Stream stream = File.OpenRead(testArchive);
         var reader = ReaderFactory.Open(stream);
