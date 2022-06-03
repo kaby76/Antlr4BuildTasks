@@ -28,15 +28,15 @@ namespace Antlr4.Build.Tasks
                     if (v1 == null)
                         continue;
                     bool found = false;
-                    var v1_name = v1.ToString();
+                    var v1_name = v1.ToString().Replace("\\", "/");
                     if (List2 != null)
                     {
                         foreach (var v2 in List2)
                         {
                             if (v2 == null)
                                 continue;
-                            var v2_name = v2.ToString();
-                            if (v2_name == v1_name)
+                            var v2_name = v2.ToString().Replace("\\", "/");
+                            if (v2_name.ToLower() == v1_name.ToLower())
                             {
                                 found = true;
                                 break;
