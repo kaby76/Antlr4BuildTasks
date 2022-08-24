@@ -534,6 +534,32 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 var w = executable_name.GetFullPath();
                 if (w != null && w != "")
                 {
+                    // Try java.exe.
+                    ProcessStartInfo startInfo = new ProcessStartInfo(
+                        w, "--version")
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                    };
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
+                    Process process = new Process();
+                    process.StartInfo = startInfo;
+                    process.ErrorDataReceived += TestStderrDataReceived;
+                    process.OutputDataReceived += TestStdoutDataReceived;
+                    process.Start();
+                    process.BeginErrorReadLine();
+                    process.BeginOutputReadLine();
+                    process.StandardInput.Dispose();
+                    process.WaitForExit();
+                    if (process.ExitCode != 0)
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found at '" + w + "', but it doesn't work."));
+                        return false;
+                    }
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found: '" + w + "'"));
                     where = w;
                     return true;
@@ -978,6 +1004,51 @@ PackageVersion = '" + PackageVersion.ToString() + @"
         }
 
         private static readonly Regex GeneratedFileMessageFormat = new Regex(@"^Generating file '(?<OUTPUT>.*?)' for grammar '(?<GRAMMAR>.*?)'$", RegexOptions.Compiled);
+
+        bool your_fucked = false;
+        bool good_version = false;
+        private void TestStderrDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            TestDataReceived(e.Data);
+        }
+        private void TestStdoutDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            TestDataReceived(e.Data);
+        }
+        private void TestDataReceived(string data)
+        {
+            if (string.IsNullOrEmpty(data))
+                return;
+            try
+            {
+                if (data.Contains("Exception in thread"))
+                {
+                    your_fucked = true;
+                }
+                else if (_start)
+                {
+                    if (data.Contains("openjdk 11")
+                        || data.Contains("openjdk 12")
+                        || data.Contains("openjdk 13")
+                        || data.Contains("openjdk 14")
+                        || data.Contains("openjdk 15")
+                        || data.Contains("openjdk 16")
+                        || data.Contains("openjdk 17")
+                        || data.Contains("openjdk 18")
+                        || data.Contains("openjdk 19"))
+                    {
+                        good_version = true;
+                        your_fucked = false;
+                    }
+                }
+                else
+                    MessageQueue.EnqueueMessage(Message.BuildDefaultMessage(data));
+            }
+            catch (Exception ex)
+            {
+                your_fucked = true;
+            }
+        }
 
         private void HandleStderrDataReceived(object sender, DataReceivedEventArgs e)
         {
