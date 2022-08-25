@@ -5,62 +5,39 @@ namespace Antlr4.Build.Tasks
 {
     public class StackQueue<T> : IEnumerable<T>
     {
-        private int _size;
-        private int _top;
         private readonly List<T> _items;
 
         public StackQueue()
         {
-            _size = 10;
-            _top = 0;
-            _items = new List<T>(_size);
-            for (int i = 0; i < _size; ++i)
-            {
-                _items.Add(default);
-            }
+            _items = new List<T>();
         }
 
         public StackQueue(T value)
         {
-            _size = 10;
-            _top = 0;
-            _items = new List<T>(_size);
-            for (int i = 0; i < _size; ++i) _items.Add(default);
-            _items[_top++] = value;
+            _items = new List<T>();
+            _items.Add(value);
         }
 
         public StackQueue(StackQueue<T> other)
         {
-            _size = other._size;
-            _top = other._top;
-            _items = new List<T>(_size);
-            for (int i = 0; i < _size; ++i) _items.Add(default);
+            _items = new List<T>();
             _items.AddRange(other._items);
         }
 
         public virtual int Size()
         {
-            return _top;
+            return _items.Count;
         }
 
-        public virtual int Count => _top;
+        public virtual int Count => _items.Count;
 
         public virtual T Pop()
         {
-            if (_top >= _size)
+            if (_items.Count > 0)
             {
-                int old = _size;
-                _size *= 2;
-                _items.Capacity = _size;
-                for (int i = old; i < _size; ++i) _items.Add(default);
-            }
-            if (_top > 0)
-            {
-                int index = _top - 1;
-                T cur = _items[index];
-                _items[index] = default;
-                _top -= 1;
-                return cur;
+                var result = _items[_items.Count - 1];
+                _items.RemoveAt(_items.Count - 1);
+                return result;
             }
             else
                 return default;
@@ -79,23 +56,16 @@ namespace Antlr4.Build.Tasks
 
         public bool Any()
         {
-            return _top > 0;
+            return _items.Count > 0;
         }
 
         public virtual T PeekTop(int n = 0)
         {
-            if (_top >= _size)
+            if (_items.Count - n > 0)
             {
-                int old = _size;
-                _size *= 2;
-                _items.Capacity = _size;
-                for (int i = old; i < _size; ++i) _items.Add(default);
-            }
-            if (_top > 0)
-            {
-                int index = _top - 1;
-                T cur = _items[index - n];
-                return cur;
+                int index = _items.Count - n - 1;
+                var result = _items[index];
+                return result;
             }
             else
                 return default;
@@ -103,50 +73,31 @@ namespace Antlr4.Build.Tasks
 
         public virtual T PeekBottom(int n)
         {
-            if (_top >= _size)
+            if (n >= 0 && n < _items.Count - 1)
             {
-                int old = _size;
-                _size *= 2;
-                _items.Capacity = _size;
-                for (int i = old; i < _size; ++i) _items.Add(default);
+                var result = _items[n];
+                return result;
             }
-            if (n >= _top)
-                return default;
-            T cur = _items[n];
-            return cur;
+            else return default;
         }
 
         public virtual void Push(T value)
         {
-            if (_top >= _size)
-            {
-                int old = _size;
-                _size *= 2;
-                _items.Capacity = _size;
-                for (int i = old; i < _size; ++i) _items.Add(default);
-            }
-            _items[_top++] = value;
+            _items.Add(value);
         }
 
         public virtual void Push(IEnumerable<T> collection)
         {
             foreach (T t in collection)
             {
-                if (_top >= _size)
-                {
-                    int old = _size;
-                    _size *= 2;
-                    _items.Capacity = _size;
-                    for (int i = old; i < _size; ++i) _items.Add(default);
-                }
-                _items[_top++] = t;
+                _items.Add(t);
             }
         }
 
         public virtual void PushMultiple(params T[] values)
         {
             int count = values.Length;
-            for (int i = 0; i < count; i++) Push(values[i]);
+            for (int i = 0; i < count; i++) _items.Add(values[i]);
         }
 
         public virtual void EnqueueTop(T value)
@@ -156,15 +107,7 @@ namespace Antlr4.Build.Tasks
 
         public virtual void EnqueueBottom(T value)
         {
-            if (_top >= _size)
-            {
-                _size *= 2;
-                _items.Capacity = _size;
-            }
-            for (int i = _top - 1; i >= 0; --i)
-                _items[i + 1] = _items[i];
-            _items[0] = value;
-            ++_top;
+            _items.Insert(0, value);
         }
 
         public virtual T DequeueTop()
@@ -174,18 +117,11 @@ namespace Antlr4.Build.Tasks
 
         public virtual T DequeueBottom()
         {
-            if (_top >= _size)
+            if (_items.Count > 0)
             {
-                _size *= 2;
-                _items.Capacity = _size;
-            }
-            if (_top > 0)
-            {
-                T cur = _items[0];
-                for (int i = 1; i < _top; ++i)
-                    _items[i - 1] = _items[i];
-                _top--;
-                return cur;
+                var result = _items[0];
+                _items.RemoveAt(0);
+                return result;
             }
             else
                 return default;
@@ -198,7 +134,7 @@ namespace Antlr4.Build.Tasks
 
         public virtual System.Collections.Generic.IEnumerator<T> GetEnumerator()
         {
-            for (int i = _top - 1; i >= 0; i--)
+            for (int i = _items.Count - 1; i >= 0; i--)
                 yield return _items[i];
         }
 
@@ -210,13 +146,13 @@ namespace Antlr4.Build.Tasks
 
         public virtual ListSection<T> Section(int length)
         {
-            var result = new ListSection<T>(_items, _top, length);
+            var result = new ListSection<T>(_items, _items.Count - 1, length);
             return result;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            for (int i = _top - 1; i >= 0; i--)
+            for (int i = _items.Count - 1; i >= 0; i--)
                 yield return _items[i];
         }
     }
