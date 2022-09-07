@@ -35,10 +35,8 @@ To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packag
 to your project. csproj file as shown below, otherwise you can use the "NuGet Package Manager":
 
     <ItemGroup>
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
-        <PackageReference Include="Antlr4BuildTasks" Version="10.6">
-          <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
+        <PackageReference Include="Antlr4BuildTasks" Version="11.1" PrivateAssets="all" />
     </ItemGroup>
     
 Then, you will need to tag each Antlr4 grammar file you want the Antlr tool to process. You can change the
@@ -128,8 +126,8 @@ Change package references from
 to
 
     <ItemGroup>
-        <PackageReference Include="Antlr4BuildTasks" Version="10.6" />
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.10.1" />
+        <PackageReference Include="Antlr4BuildTasks" Version="11.1" PrivateAssets="all" />
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
     </ItemGroup>
 
 
@@ -148,9 +146,6 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v10.7 (3 Jun 2022)
+### Latest release v11.1 (25 Aug 2022)
 
-* Fixes for
-https://github.com/kaby76/Antlr4BuildTasks/issues/38,
-https://github.com/kaby76/Antlr4BuildTasks/issues/39.
-
+* Fix StackQueue data structure used in error reporting.
