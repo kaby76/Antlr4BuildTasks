@@ -134,7 +134,7 @@ to
 Antlr4BuildTasks examines PropertyGroup `AntlrProbePath`, a string of URI
 separated by semicolon, to find the version
 of the Antlr JAR file that you are looking for. Antlr4BuildTasks will look for a .jar
-with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.10.1).
+with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.11.1).
 _I recommend that you just use the PackageReference's defined above._
 
 ### Visual Studio IDE or Visual Studio Code integration
