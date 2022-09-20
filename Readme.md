@@ -8,7 +8,8 @@ for dotnet and msbuild for C# projects with Antlr4 grammars
 using the "official" Antl4.Runtime.Standard package.
 It is based on Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
 which is published in NuGet as three packages:
-[Antlr4](https://www.nuget.org/packages/Antlr4/),
+[Antlr4](https://www.nuget.org/packages/Antlr4/) (which is a thin package
+that smiply requires the two following packages),
 [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
 and [Antlr4.Runtime](https://www.nuget.org/packages/Antlr4.Runtime/).
 Although [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs) is fine,
