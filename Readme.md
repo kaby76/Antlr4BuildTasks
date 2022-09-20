@@ -13,7 +13,7 @@ that smiply requires the two following packages),
 [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
 and [Antlr4.Runtime](https://www.nuget.org/packages/Antlr4.Runtime/).
 Although [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs) is fine,
-it is several versions behind the current
+it is several major releases behind the current
 Antlr4 tool and runtime, not maintained, and not compatible
 with Antlr4.Runtime.Standard.
 
