@@ -586,21 +586,23 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                            || System.Environment.OSVersion.Platform == PlatformID.Win32Windows))
                         {
                             // Unpack and get java executable.
-                            var java_dir = place_path;
-                            java_dir = java_dir.Replace("\\", "/");
-                            if (!java_dir.EndsWith("/"))
+                            place_path = place_path.Replace("\\", "/");
+                            if (!place_path.EndsWith("/"))
                             {
-                                java_dir = java_dir + "/";
+                                place_path = place_path + "/";
                             }
-                            _generatedDirectories.Add(java_dir);
+                            _generatedDirectories.Add(place_path);
                             var archive = local_file;
-                            if (!Directory.Exists(java_dir))
+                            if (!Directory.Exists(place_path))
                             {
-                                System.IO.Directory.CreateDirectory(java_dir);
-                                System.IO.Compression.ZipFile.ExtractToDirectory(archive, java_dir);
+                                lock ("")
+                                {
+                                    System.IO.Directory.CreateDirectory(place_path);
+                                    System.IO.Compression.ZipFile.ExtractToDirectory(archive, place_path);
+                                }
                             }
                             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
-                            where = java_dir + "jre/bin/java.exe";
+                            where = place_path + "jre/bin/java.exe";
                             return true;
                         }
                         else
@@ -648,9 +650,12 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         var archive_name = place_path + java_download_fn;
                         if (!File.Exists(where))
                         {
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
-                            System.IO.Directory.CreateDirectory(uncompressed_root_dir);
-                            System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, uncompressed_root_dir);
+                            lock ("")
+                            {
+                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
+                                System.IO.Directory.CreateDirectory(uncompressed_root_dir);
+                                System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, uncompressed_root_dir);
+                            }
                         }
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
                         return true;
@@ -673,9 +678,12 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         var archive_name = place_path + java_download_fn;
                         if (!File.Exists(where))
                         {
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
-                            System.IO.Directory.CreateDirectory(uncompressed_root_dir);
-                            Read(uncompressed_root_dir, archive_name, new CompressionType());
+                            lock ("")
+                            {
+                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
+                                System.IO.Directory.CreateDirectory(uncompressed_root_dir);
+                                Read(uncompressed_root_dir, archive_name, new CompressionType());
+                            }
                         }
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
                         return true;
