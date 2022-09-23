@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Antlr4BuildTasks\Antlr4BuildTasks.csproj" />
+    <ProjectReference Include="..\..\Antlr4BuildTasks\Antlr4BuildTasks.csproj" />
   </ItemGroup>
 
 </Project>
