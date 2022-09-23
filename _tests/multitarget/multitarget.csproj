@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Antlr4 Include="abbLexer.g4" Package="multitarget" />
+    <Antlr4 Include="abbParser.g4" Package="multitarget" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
+    <PackageReference Include="Antlr4BuildTasks" Version="11.4" />
+  </ItemGroup>
+
+</Project>

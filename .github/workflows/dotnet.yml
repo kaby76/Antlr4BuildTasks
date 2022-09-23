@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
       fail-fast: false
     steps:
     - uses: actions/checkout@v2
@@ -21,6 +21,9 @@ jobs:
         dotnet-version: '6.0.x'
     - name: Build
       run: make
+    - name: Test
+      shell: bash
+      run: make test
     - name: Upload Antlr4BuildTasks artifacts
       uses: actions/upload-artifact@v2
       with:
