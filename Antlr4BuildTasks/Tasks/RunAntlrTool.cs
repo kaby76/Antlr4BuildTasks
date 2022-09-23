@@ -653,8 +653,24 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                             lock ("")
                             {
                                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
-                                System.IO.Directory.CreateDirectory(uncompressed_root_dir);
-                                System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, uncompressed_root_dir);
+                                try
+                                {
+                                    System.IO.Directory.CreateDirectory(uncompressed_root_dir);
+                                }
+                                catch (Exception e)
+                                {
+                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Caught throw in directory creation code."));
+                                    throw e;
+                                }
+                                try
+                                {
+                                    System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, uncompressed_root_dir);
+                                }
+                                catch (Exception e)
+                                {
+                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Caught throw in extraction code."));
+                                    throw e;
+                                }
                             }
                         }
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
