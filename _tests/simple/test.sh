@@ -6,7 +6,6 @@ case "${unameOut}" in
 	machine=Linux
 	;;
     Darwin*)
-	rm -rf ~/.rje
 	machine=Mac
 	;;
     CYGWIN*)
