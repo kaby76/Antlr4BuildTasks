@@ -25,7 +25,8 @@ esac
 cd "$where/../.."
 if [[ "$machine" == "MinGw" || "$machine" == "Msys" ]]
 then
-    cwd=`pwd | sed 's%/c%c:%' | sed 's%/%\\\\%g'`
+    cwd=`pwd`
+    cwd=`cygpath -w $cwd`
     location="$cwd\\Antlr4BuildTasks\\bin\\Debug\\"
 else
     cwd=`pwd`
