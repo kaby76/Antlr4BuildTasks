@@ -7,35 +7,14 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build-ubuntu:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
+        java: [11]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '6.0.x'
-    - name: Build
-      run: make
-    - name: Test
-      shell: bash
-      run: make test
-    - name: Upload Antlr4BuildTasks artifacts
-      uses: actions/upload-artifact@v2
-      with:
-         name: build-output
-         path: /home/runner/work/Antlr4BuildTasks/bin/Debug/*.*nupkg
-         retention-days: 3
-  build-just-windows:
-    runs-on: windows-latest
-    strategy:
-      fail-fast: false
-    steps:
-    - uses: msys2/setup-msys2@v2
     - uses: actions/checkout@v2
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -53,11 +32,37 @@ jobs:
          path: /home/runner/work/Antlr4BuildTasks/bin/Debug/*.*nupkg
          retention-days: 3
 
-  build-alone:
+  build-windows:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [windows-latest]
+        java: [11]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v2
+    - uses: msys2/setup-msys2@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+    - name: Build
+      run: make
+    - name: Test
+      shell: bash
+      run: make test
+    - name: Upload Antlr4BuildTasks artifacts
+      uses: actions/upload-artifact@v2
+      with:
+         name: build-output
+         path: /home/runner/work/Antlr4BuildTasks/bin/Debug/*.*nupkg
+         retention-days: 3
+
+  build-ubuntu-multitarget:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ubuntu-latest
       fail-fast: false
     steps:
     - uses: actions/checkout@v2
@@ -70,9 +75,13 @@ jobs:
     - name: Test
       shell: bash
       run: make test-alone
-  build-just-windows-alone:
-    runs-on: windows-latest
+
+
+  build-windows-multitarget:
+    runs-on: ${{ matrix.os }}
     strategy:
+      matrix:
+        os: windows-latest
       fail-fast: false
     steps:
     - uses: msys2/setup-msys2@v2

@@ -476,7 +476,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 //paths.Add("https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_windows-x64_bin.zip");
             }
 
-            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Paths to search for Antlr4 jar, in order, are: "
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Paths to search for the java executable, in order, are: "
                 + String.Join(";", paths)));
 
             foreach (var probe in paths)

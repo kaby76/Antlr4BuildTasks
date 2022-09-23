@@ -25,8 +25,8 @@ else
     cwd=`pwd`
     location="$cwd/Antlr4BuildTasks/bin/Debug/"
 fi
-echo "$machine"
-echo $cwd
+echo machine is "$machine"
+echo cwd is $cwd
 echo dotnet nuget add source $location --name nuget-a4bt
 dotnet nuget add source $location --name nuget-a4bt > /dev/null 2>&1
 cd "$where"
