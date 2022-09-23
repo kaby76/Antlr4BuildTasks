@@ -30,3 +30,25 @@ jobs:
          name: build-output
          path: /home/runner/work/Antlr4BuildTasks/bin/Debug/*.*nupkg
          retention-days: 3
+  build-just-windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: msys2/setup-msys2@v2
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+    - name: Build
+      run: make
+    - name: Test
+      shell: bash
+      run: make test
+    - name: Upload Antlr4BuildTasks artifacts
+      uses: actions/upload-artifact@v2
+      with:
+         name: build-output
+         path: /home/runner/work/Antlr4BuildTasks/bin/Debug/*.*nupkg
+         retention-days: 3
