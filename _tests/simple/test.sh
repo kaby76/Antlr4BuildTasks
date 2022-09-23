@@ -25,7 +25,7 @@ else
 fi
 echo "$machine"
 echo $cwd
-dotnet nuget remove source nuget-antlr4buildtasks
-dotnet nuget add source $cwd/Antlr4BuildTasks/bin/Debug/ --name nuget-antlr4buildtasks
+echo dotnet nuget add source "$cwd/Antlr4BuildTasks/bin/Debug/" --name nuget-antlr4buildtasks
+dotnet nuget add source "$cwd/Antlr4BuildTasks/bin/Debug/" --name nuget-antlr4buildtasks
 cd "$where"
 dotnet build
