@@ -3,15 +3,21 @@ where=`dirname -- "$0"`
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)
+	rm -rf ~/.rje
 	machine=Linux
 	;;
     Darwin*)
+	rm -rf ~/.rje
 	machine=Mac
 	;;
     CYGWIN*)
+	rm -rf $USERPROFILE/.rje
+	rm -rf $USERPROFILE/.m2
 	machine=Cygwin
 	;;
     MINGW*)
+	rm -rf $USERPROFILE/.rje
+	rm -rf $USERPROFILE/.m2
 	machine=MinGw
 	;;
     *)          machine="UNKNOWN:${unameOut}"

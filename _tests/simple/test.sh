@@ -26,6 +26,6 @@ fi
 echo "$machine"
 echo $cwd
 echo dotnet nuget add source "$cwd/Antlr4BuildTasks/bin/Debug/" --name nuget-antlr4buildtasks
-dotnet nuget add source "$cwd/Antlr4BuildTasks/bin/Debug/" --name nuget-antlr4buildtasks
+dotnet nuget add source "$cwd/Antlr4BuildTasks/bin/Debug/" --name nuget-antlr4buildtasks > /dev/null 2>&1
 cd "$where"
 dotnet build
