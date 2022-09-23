@@ -534,7 +534,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 var w = executable_name.GetFullPath();
                 if (w != null && w != "")
                 {
-                    // Try java.exe.
+                    // Try java.
                     ProcessStartInfo startInfo = new ProcessStartInfo(
                         w, "--version")
                     {
