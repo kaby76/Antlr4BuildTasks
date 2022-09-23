@@ -30,4 +30,4 @@ echo $cwd
 echo dotnet nuget add source $location --name nuget-a4bt
 dotnet nuget add source $location --name nuget-a4bt > /dev/null 2>&1
 cd "$where"
-dotnet build
+dotnet build -v diag
