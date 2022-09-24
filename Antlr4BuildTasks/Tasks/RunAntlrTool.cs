@@ -680,30 +680,41 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 }
                 else if (which_java.link.EndsWith(".tar.gz"))
                 {
-                    java_download_fn = which_java.link.Substring(which_java.link.LastIndexOf('/') + 1);
-                    java_download_url = which_java.link;
+                    var ok = Locker.Grab();
+                    if (!ok) return false;
                     try
                     {
-                        string uncompressed_root_dir = JavaDownloadFile(place_path, java_download_fn, java_download_url);
-                        where = uncompressed_root_dir + which_java.outdir + "/bin/java";
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
-                        _generatedDirectories.Add(uncompressed_root_dir);
-                        var archive_name = place_path + java_download_fn;
-                        if (!File.Exists(where))
+                        java_download_fn = which_java.link.Substring(which_java.link.LastIndexOf('/') + 1);
+                        java_download_url = which_java.link;
+                        try
                         {
-                            lock ("")
+                            string uncompressed_root_dir = JavaDownloadFile(place_path, java_download_fn, java_download_url);
+                            where = uncompressed_root_dir + which_java.outdir + "/bin/java";
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
+                            _generatedDirectories.Add(uncompressed_root_dir);
+                            var archive_name = place_path + java_download_fn;
+                            if (!File.Exists(where))
                             {
-                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
-                                System.IO.Directory.CreateDirectory(uncompressed_root_dir);
-                                Read(uncompressed_root_dir, archive_name, new CompressionType());
+                                lock ("")
+                                {
+                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
+                                    System.IO.Directory.CreateDirectory(uncompressed_root_dir);
+                                    Read(uncompressed_root_dir, archive_name, new CompressionType());
+                                }
                             }
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                            return true;
                         }
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
-                        return true;
+                        catch
+                        {
+                            where = null;
+                        }
                     }
-                    catch
+                    catch (Exception e2)
+                    { }
+                    finally
                     {
-                        where = null;
+                        Locker.Release();
                     }
                 }
             }
