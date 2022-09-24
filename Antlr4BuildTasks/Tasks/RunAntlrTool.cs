@@ -545,8 +545,10 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 catch (Exception e)
                 {
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Caught throw in directory creation code."));
+                    MessageQueue.EnqueueMessage(Message.BuildErrorMessage(e.Message + e.StackTrace));
                     return false;
                 }
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Create directory apparently worked."));
                 try
                 {
                     System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, uncompressed_root_dir);
@@ -554,6 +556,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 catch (Exception e)
                 {
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Caught throw in extraction code."));
+                    MessageQueue.EnqueueMessage(Message.BuildErrorMessage(e.Message + e.StackTrace));
                     return false;
                 }
             }
