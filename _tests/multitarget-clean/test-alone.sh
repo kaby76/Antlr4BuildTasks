@@ -5,19 +5,23 @@ case "${unameOut}" in
     Linux*)
 	rm -rf ~/.rje
 	machine=Linux
+	rm -rf ~/.nuget/packages/antlr4buildtasks	
 	;;
     Darwin*)
 	rm -rf ~/.rje
 	machine=Mac
+	rm -rf ~/.nuget/packages/antlr4buildtasks	
 	;;
     CYGWIN*)
 	rm -rf $USERPROFILE/.rje
 	rm -rf $USERPROFILE/.m2
+	rm -rf $USERPROFILE/.nuget/packages/antlr4buildtasks	
 	machine=Cygwin
 	;;
     MINGW*)
 	rm -rf $USERPROFILE/.rje
 	rm -rf $USERPROFILE/.m2
+	rm -rf $USERPROFILE/.nuget/packages/antlr4buildtasks	
 	machine=MinGw
 	;;
     *)          machine="UNKNOWN:${unameOut}"
