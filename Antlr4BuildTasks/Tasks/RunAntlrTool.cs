@@ -502,8 +502,6 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
         private string JavaDownloadFile(string place_path, string java_download_fn, string java_download_url)
         {
-            var ok = Locker.Grab();
-            if (!ok) return null;
             try
             {
                 WebClient webClient = new WebClient();
@@ -531,45 +529,35 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             }
             finally
             {
-                Locker.Release();
             }
             return null;
         }
 
         private bool DecompressJava(string uncompressed_root_dir, string archive_name)
         {
-            var ok = Locker.Grab();
-            if (!ok) return false;
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
             try
             {
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
-                try
-                {
-                    System.IO.Directory.CreateDirectory(uncompressed_root_dir);
-                }
-                catch (Exception e)
-                {
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Caught throw in directory creation code."));
-                    MessageQueue.EnqueueMessage(Message.BuildErrorMessage(e.Message + e.StackTrace));
-                    return false;
-                }
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Create directory apparently worked."));
-                try
-                {
-                    System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, uncompressed_root_dir);
-                }
-                catch (Exception e)
-                {
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Caught throw in extraction code."));
-                    MessageQueue.EnqueueMessage(Message.BuildErrorMessage(e.Message + e.StackTrace));
-                    return false;
-                }
-                return true;
+                System.IO.Directory.CreateDirectory(uncompressed_root_dir);
             }
-            finally
+            catch (Exception e)
             {
-                Locker.Release();
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Caught throw in directory creation code."));
+                MessageQueue.EnqueueMessage(Message.BuildErrorMessage(e.Message + e.StackTrace));
+                return false;
             }
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Create directory apparently worked."));
+            try
+            {
+                System.IO.Compression.ZipFile.ExtractToDirectory(archive_name, uncompressed_root_dir);
+            }
+            catch (Exception e)
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Caught throw in extraction code."));
+                MessageQueue.EnqueueMessage(Message.BuildErrorMessage(e.Message + e.StackTrace));
+                return false;
+            }
+            return true;
         }
 
         private bool TryProbeJava(string path, string place_path, out string where)
@@ -643,39 +631,51 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 		
                 if (which_java.link.EndsWith(".zip"))
                 {
-                    java_download_fn = which_java.link.Substring(which_java.link.LastIndexOf('/')+1);
-                    java_download_url = which_java.link;
-                    string uncompressed_root_dir = JavaDownloadFile(place_path, java_download_fn, java_download_url);
-                    if (uncompressed_root_dir == null || uncompressed_root_dir == "")
+                    var ok = Locker.Grab();
+                    if (!ok) return false;
+                    try
                     {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Problem in downloading JRE"));
-                        where = null;
-                        return false;
-                    }
-                    where = uncompressed_root_dir + which_java.outdir + "/bin/java.exe";
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloaded JRE. Testing for java executable at " + where));
-                    System.Console.Error.WriteLine("cccccc");
-                    _generatedDirectories.Add(uncompressed_root_dir);
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("xxxxx"));
-                    var archive_name = place_path + java_download_fn;
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("yyyyy"));
-                    if (!File.Exists(where))
-                    {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage(where + " does not seem to exist. Decompressing."));
-                        var r = DecompressJava(uncompressed_root_dir, archive_name);
-                        if (!r)
+                        java_download_fn = which_java.link.Substring(which_java.link.LastIndexOf('/') + 1);
+                        java_download_url = which_java.link;
+                        string uncompressed_root_dir = JavaDownloadFile(place_path, java_download_fn, java_download_url);
+                        if (uncompressed_root_dir == null || uncompressed_root_dir == "")
                         {
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Problem in decompressing JRE"));
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Problem in downloading JRE"));
                             where = null;
                             return false;
                         }
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found java at " + where));
-                        return true;
+                        where = uncompressed_root_dir + which_java.outdir + "/bin/java.exe";
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloaded JRE. Testing for java executable at " + where));
+                        System.Console.Error.WriteLine("cccccc");
+                        _generatedDirectories.Add(uncompressed_root_dir);
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("xxxxx"));
+                        var archive_name = place_path + java_download_fn;
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("yyyyy"));
+                        if (!File.Exists(where))
+                        {
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(where + " does not seem to exist. Decompressing."));
+                            var r = DecompressJava(uncompressed_root_dir, archive_name);
+                            if (!r)
+                            {
+                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Problem in decompressing JRE"));
+                                where = null;
+                                return false;
+                            }
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found java at " + where));
+                            return true;
+                        }
+                        else
+                        {
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found java at " + where));
+                            return true;
+                        }
                     }
-                    else
+                    catch (Exception e2)
                     {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found java at " + where));
-                        return true;
+                    }
+                    finally
+                    {
+                        Locker.Release();
                     }
                 }
                 else if (which_java.link.EndsWith(".tar.gz"))
