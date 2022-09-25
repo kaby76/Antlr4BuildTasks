@@ -623,12 +623,6 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 if (which_java == default(tableEntry))
                     return false;
 
-            //    System.Console.Error.WriteLine("java " +
-					       //which_java.version + " " +
-					       //which_java.os + " " +
-					       //which_java.link + " " +
-					       //which_java.outdir);
-		
                 if (which_java.link.EndsWith(".zip"))
                 {
                     var ok = Locker.Grab();
@@ -646,11 +640,8 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         }
                         where = uncompressed_root_dir + which_java.outdir + "/bin/java.exe";
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloaded JRE. Testing for java executable at " + where));
-                        System.Console.Error.WriteLine("cccccc");
                         _generatedDirectories.Add(uncompressed_root_dir);
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("xxxxx"));
                         var archive_name = place_path + java_download_fn;
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("yyyyy"));
                         if (!File.Exists(where))
                         {
                             MessageQueue.EnqueueMessage(Message.BuildInfoMessage(where + " does not seem to exist. Decompressing."));
