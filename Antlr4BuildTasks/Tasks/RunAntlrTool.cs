@@ -119,6 +119,7 @@ namespace Antlr4.Build.Tasks
         public ITaskItem[] PackageVersion { get; set; }
         public ITaskItem[] SourceCodeFiles { get; set; }
         public string TargetFrameworkVersion { get; set; }
+        public ITaskItem[] TargetFrameworks { get; set; }
         public ITaskItem[] TokensFiles { get; set; }
         public string Version { get; set; }
         public string VersionOfJava { get; set; } = "11";
@@ -481,6 +482,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
             foreach (var probe in paths)
             {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("probing java executable at " + probe));
                 if (TryProbeJava(probe, place_path, out string where))
                 {
                     if (where == null || where == "")
@@ -560,20 +562,37 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             return true;
         }
 
+        private string SearchEnvPathForProgram(string filename)
+        {
+            var delimiter = (System.Environment.OSVersion.Platform == PlatformID.Win32NT
+                || System.Environment.OSVersion.Platform == PlatformID.Win32S
+                || System.Environment.OSVersion.Platform == PlatformID.Win32Windows)
+                ? ';' : ':';
+            return Environment.GetEnvironmentVariable("PATH").Split(delimiter)
+                    .Select(dir => Path.Combine(dir, filename))
+                    .FirstOrDefault(path => File.Exists(path));
+        }
+
         private bool TryProbeJava(string path, string place_path, out string where)
         {
             bool result = false;
             where = null;
             path = path.Trim();
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("path is " + path));
+            System.Console.Error.WriteLine("path is " + path);
             if (path == "PATH")
             {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + path));
                 var executable_name = (System.Environment.OSVersion.Platform == PlatformID.Win32NT
                     || System.Environment.OSVersion.Platform == PlatformID.Win32S
                     || System.Environment.OSVersion.Platform == PlatformID.Win32Windows) ? "java.exe" : "java";
-                var w = executable_name.GetFullPath();
-                if (w != null && w != "")
+                var location_on_path = SearchEnvPathForProgram(executable_name);
+                if (location_on_path != null && location_on_path != "")
                 {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("found a java executable at " + location_on_path));
+                    string w = (!Path.IsPathRooted(location_on_path)) ? Path.GetFullPath(location_on_path)
+                        : location_on_path;
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("w = " + w));
                     // Try java.
                     ProcessStartInfo startInfo = new ProcessStartInfo(
                         w, "--version")
@@ -625,6 +644,17 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
                 if (which_java.link.EndsWith(".zip"))
                 {
+                    // Make sure multiple targets are not being used.
+                    if (true)
+                    {
+                        var count = TargetFrameworks.Count();
+                        if (count > 1)
+                        {
+                            throw new Exception(
+                                @"Multiple TargetFrameworks is not supported with auto downloading of JRE, Issue #48. Install Java, and set up PATH to include a it.");
+                        }
+                    }
+
                     var ok = Locker.Grab();
                     if (!ok) return false;
                     try
@@ -671,6 +701,17 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 }
                 else if (which_java.link.EndsWith(".tar.gz"))
                 {
+                    // Make sure multiple targets are not being used.
+                    if (true)
+                    {
+                        var count = TargetFrameworks.Count();
+                        if (count > 1)
+                        {
+                            throw new Exception(
+                                @"Multiple TargetFrameworks is not supported with auto downloading of JRE, Issue #48. Install Java, and set up PATH to include b it.");
+                        }
+                    }
+
                     var ok = Locker.Grab();
                     if (!ok) return false;
                     try
