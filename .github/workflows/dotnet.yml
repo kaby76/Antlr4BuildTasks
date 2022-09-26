@@ -69,6 +69,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+        java: [8]
       fail-fast: false
     steps:
     - uses: actions/checkout@v2
@@ -95,6 +96,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
+        java: [8]
       fail-fast: false
     steps:
     - uses: actions/checkout@v2
