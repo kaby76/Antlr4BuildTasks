@@ -562,15 +562,17 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             return true;
         }
 
-        private string SearchEnvPathForProgram(string filename)
+        private List<string> SearchEnvPathForProgram(string filename)
         {
             var delimiter = (System.Environment.OSVersion.Platform == PlatformID.Win32NT
                 || System.Environment.OSVersion.Platform == PlatformID.Win32S
                 || System.Environment.OSVersion.Platform == PlatformID.Win32Windows)
                 ? ';' : ':';
-            return Environment.GetEnvironmentVariable("PATH").Split(delimiter)
+            List<string> p = Environment.GetEnvironmentVariable("PATH").Split(delimiter)
                     .Select(dir => Path.Combine(dir, filename))
-                    .FirstOrDefault(path => File.Exists(path));
+                    .Where(path => File.Exists(path))
+                    .ToList();
+            return p;
         }
 
         private bool TryProbeJava(string path, string place_path, out string where)
@@ -586,8 +588,8 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 var executable_name = (System.Environment.OSVersion.Platform == PlatformID.Win32NT
                     || System.Environment.OSVersion.Platform == PlatformID.Win32S
                     || System.Environment.OSVersion.Platform == PlatformID.Win32Windows) ? "java.exe" : "java";
-                var location_on_path = SearchEnvPathForProgram(executable_name);
-                if (location_on_path != null && location_on_path != "")
+                var locations_on_path = SearchEnvPathForProgram(executable_name);
+                foreach (var location_on_path in locations_on_path)
                 {
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("found a java executable at " + location_on_path));
                     string w = (!Path.IsPathRooted(location_on_path)) ? Path.GetFullPath(location_on_path)
@@ -617,16 +619,17 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     if (process.ExitCode != 0)
                     {
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found at '" + w + "', but it doesn't work."));
-                        return false;
+                        continue;
                     }
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found: '" + w + "'"));
-                    where = w;
-                    return true;
+                    else
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found: '" + w + "'"));
+                        where = w;
+                        return true;
+                    }
                 }
-                else
-                {
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(executable_name + " not found on path"));
-                }
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(executable_name + " not found on path"));
+                return false;
             }
             else if (path == "DOWNLOAD")
             {
