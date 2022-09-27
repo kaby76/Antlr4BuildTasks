@@ -69,7 +69,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        java: [8]
       fail-fast: false
     steps:
     - uses: actions/checkout@v2
@@ -77,6 +76,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
+    - name: Remove Java
+      run: sudo apt-get purge openjdk-\* icedtea-\* icedtea6-\*
     - name: Clean
       run: make clean
     - name: Build
