@@ -152,7 +152,7 @@
                         PackageVersion="@(PackageVersion)"
                         SourceCodeFiles="@(Antlr4 -> '%(FullPath)')"
                         TargetFrameworkVersion="$(TargetFrameworkVersion)"
-                        TargetFrameworks="%(TargetFrameworks)"
+                        TargetFrameworks="@(TargetFrameworks)"
                         TokensFiles="@(Antlr4Tokens)"
                         Visitor="%(Antlr4.Visitor)"
           >

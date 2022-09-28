@@ -5,8 +5,12 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Antlr4 Include="abbLexer.g4" Package="multitarget" />
-    <Antlr4 Include="abbParser.g4" Package="multitarget" />
+    <Antlr4 Include="abbLexer.g4" Package="multitarget">
+      <JavaExec>PATH</JavaExec>
+    </Antlr4>
+    <Antlr4 Include="abbParser.g4" Package="multitarget">
+      <JavaExec>PATH</JavaExec>
+    </Antlr4>
   </ItemGroup>
 
   <ItemGroup>

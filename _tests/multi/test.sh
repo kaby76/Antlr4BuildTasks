@@ -74,9 +74,9 @@ dotnet nuget remove source nuget-a4bt > /dev/null 2>&1
 dotnet nuget list source | grep nuget-a4bt
 if [ "$result" = "0" ]
 then
-	echo Test passed.
-	exit 0
-else
 	echo Test failed.
 	exit 1
+else
+	echo Test passed.
+	exit 0
 fi
