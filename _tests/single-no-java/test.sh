@@ -6,23 +6,29 @@ where=`pwd`
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)
+	echo Linux
 	machine=Linux
 	rm -rf ~/.jre
 	rm -rf ~/.nuget/packages/antlr4buildtasks	
 	;;
     Darwin*)
+	echo Mac
 	machine=Mac
 	rm -rf ~/.jre
 	rm -rf ~/.nuget/packages/antlr4buildtasks	
 	;;
     CYGWIN*)
+	echo Cygwin
 	machine=Cygwin
+	echo USERPROFILE = $USERPROFILE
 	rm -rf $USERPROFILE/.jre
 	rm -rf $USERPROFILE/.m2
 	rm -rf $USERPROFILE/.nuget/packages/antlr4buildtasks	
 	;;
     MINGW*)
+	echo Mingw
 	machine=MinGw
+	echo USERPROFILE = $USERPROFILE
 	rm -rf $USERPROFILE/.jre
 	rm -rf $USERPROFILE/.m2
 	rm -rf $USERPROFILE/.nuget/packages/antlr4buildtasks	
@@ -55,28 +61,19 @@ fi
 echo dotnet nuget add source $location --name nuget-a4bt
 dotnet nuget add source $location --name nuget-a4bt > /dev/null 2>&1
 rm -rf bin obj
-dotnet restore multitarget.csproj -v normal
+dotnet restore single.csproj -v normal
 result="$?"
-dotnet nuget remove source nuget-a4bt > /dev/null 2>&1
-dotnet nuget list source | grep nuget-a4bt
-if [ "$?" = "0" ]
-then
-	echo Found antlr4buildtasks.
-	exit 1
-fi
 if [ "$result" != "0" ]
 then
 	exit $result
 fi
-dotnet build multitarget.csproj -v diag
+dotnet build single.csproj -v normal
 result="$?"
-dotnet nuget remove source nuget-a4bt > /dev/null 2>&1
-dotnet nuget list source | grep nuget-a4bt
-if [ "$result" = "0" ]
+if [ "$result" != "0" ]
 then
-	echo Test passed.
-	exit 0
-else
 	echo Test failed.
 	exit 1
+else
+	echo Test passed.
+	exit 0
 fi
