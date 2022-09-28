@@ -7,5 +7,7 @@ rm -rf c:/Users/Kenne/.nuget/packages/antlr4buildtasks/
 rm -rf Antlr4BuildTasks/bin
 rm -rf Antlr4BuildTasks/obj
 rm -f antlr4-*-complete.jar
+rm -rf c:/Users/Kenne/.m2
+rm -rf c:/Users/Kenne/.jre
 dotnet nuget remove source nuget-antlr4buildtasks 2>&1 > /dev/null
 exit 0

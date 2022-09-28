@@ -53,14 +53,6 @@ namespace Antlr4.Build.Tasks
             new tableEntry { version = "16", os = "Linux aarch64", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_aarch64_linux_hotspot_16.0.1_9.tar.gz", outdir = "" },
             new tableEntry { version = "16", os = "Linux s390x", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_s390x_linux_hotspot_16.0.1_9.tar.gz", outdir = "" },
             new tableEntry { version = "16", os = "Windows x86", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x86-32_windows_hotspot_16.0.1_9.zip", outdir = "" },
-
-            //new tableEntry { version = "11", os = "Linux x64", link = "", outdir = "" },
-            //new tableEntry { version = "11", os = "Windows x64", link = "", outdir = "" },
-            //new tableEntry { version = "11", os = "macOS x64", link = "", outdir = "" },
-            //new tableEntry { version = "11", os = "Linux aarch64", link = "", outdir = "" },
-            //new tableEntry { version = "11", os = "Linux s390x", link = "", outdir = "" },
-            //new tableEntry { version = "11", os = "Windows x86", link = "", outdir = "" },
-
         };
 
         public bool AllowAntlr4cs { get; set; }
@@ -109,8 +101,8 @@ namespace Antlr4.Build.Tasks
         }
         [Output] public string GeneratedSourceExtension { get; set; }
         [Required] public string IntermediateOutputPath { get; set; }
+        public string JavaDownloadDirectory { get; set; }
         public string JavaExec { get; set; }
-        public ITaskItem[] JavaProbePath { get; set; }
         public string LibPath { get; set; }
         public bool Listener { get; set; }
         public List<string> OtherSourceCodeFiles { get; set; }
@@ -442,48 +434,26 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
         public string SetupJava()
         {
-            if (JavaExec != null && JavaExec != "")
-                return JavaExec;
-
             string result = null;
-
-            // Set up probe path for Java if there isn't one.
-            List<string> paths = new List<string>();
-            if (JavaProbePath != null)
-                paths = JavaProbePath.Select(p => p.ItemSpec).ToList();
             string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
-            if (!user_profile_path.EndsWith("/")) user_profile_path = user_profile_path + "/";
-            string tool_path = user_profile_path
-                + ".nuget/packages/antlr4buildtasks/"
-                + _toolVersion
-                + "/";
+            if (user_profile_path.EndsWith("/")) user_profile_path = user_profile_path.Substring(1, user_profile_path.Length - 1);
 
-            var place_path = user_profile_path + ".jre/";
+            // Replace USERPROFILE in various input to tool.
+            var java_download_directory = JavaDownloadDirectory.Replace("USERPROFILE", user_profile_path);
+            var java_exec = JavaExec.Replace("USERPROFILE", user_profile_path);
 
-            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                "Location to stuff JRE, if not found, is " + place_path));
+            // Split up probe path, which is a combination of different paths.
+            List<string> paths = new List<string>();
+            paths = java_exec.Split(';').ToList();
 
-            if (paths == null || paths.Count == 0)
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Search path for java (JavaExec): " + java_exec));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Download area for JRE (JavaDownloadDirectory): " + java_download_directory));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Paths to search for the java executable, in order, are: " + String.Join(";", paths)));
+
+            foreach (var try_path in paths)
             {
-                paths = new List<string>();
-                paths.Add("PATH");
-                paths.Add("DOWNLOAD");
-
-                //string package_area = "file:///" + assemblyPath + "jre.zip";
-                //paths.Add(package_area);
-
-                //var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
-                //paths.Add(full_path);
-                //paths.Add("https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_windows-x64_bin.zip");
-            }
-
-            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Paths to search for the java executable, in order, are: "
-                + String.Join(";", paths)));
-
-            foreach (var probe in paths)
-            {
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("probing java executable at " + probe));
-                if (TryProbeJava(probe, place_path, out string where))
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("probing java executable at " + try_path));
+                if (TryJava(try_path, java_download_directory, out string where))
                 {
                     if (where == null || where == "")
                     {
@@ -499,6 +469,307 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (!File.Exists(result))
                 throw new Exception("Cannot find Java executable"
                     + (result != null ? "'" + result + "'" : "''"));
+            return result;
+        }
+
+        private bool TryJava(string try_path, string place_path, out string where)
+        {
+            bool result = false;
+            where = null;
+            try_path = try_path.Trim();
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Path to try is " + try_path));
+            if (try_path == "PATH")
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Trying " + try_path));
+                var executable_name = (System.Environment.OSVersion.Platform == PlatformID.Win32NT
+                    || System.Environment.OSVersion.Platform == PlatformID.Win32S
+                    || System.Environment.OSVersion.Platform == PlatformID.Win32Windows) ? "java.exe" : "java";
+                var locations_on_path = SearchEnvPathForProgram(executable_name);
+                foreach (var location_on_path in locations_on_path)
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("found a java executable at " + location_on_path));
+                    string w = (!Path.IsPathRooted(location_on_path)) ? Path.GetFullPath(location_on_path)
+                        : location_on_path;
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("w = " + w));
+                    // Try java.
+                    ProcessStartInfo startInfo = new ProcessStartInfo(
+                        w, "--version")
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                    };
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
+                    Process process = new Process();
+                    process.StartInfo = startInfo;
+                    process.ErrorDataReceived += TestStderrDataReceived;
+                    process.OutputDataReceived += TestStdoutDataReceived;
+                    process.Start();
+                    process.BeginErrorReadLine();
+                    process.BeginOutputReadLine();
+                    process.StandardInput.Dispose();
+                    process.WaitForExit();
+                    if (process.ExitCode != 0)
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found at '" + w + "', but it doesn't work."));
+                        continue;
+                    }
+                    else
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found: '" + w + "'"));
+                        where = w;
+                        return true;
+                    }
+                }
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(executable_name + " not found on path"));
+                return false;
+            }
+            else if (try_path == "DOWNLOAD")
+            {
+                try
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + try_path));
+
+                    // First look at the downloads directory
+                    JavaDownloadDirectory = JavaDownloadDirectory.Replace('\\', '/');
+                    if (!JavaDownloadDirectory.EndsWith("/")) JavaDownloadDirectory = JavaDownloadDirectory + "/";
+                    var executable_name = (System.Environment.OSVersion.Platform == PlatformID.Win32NT
+                                   || System.Environment.OSVersion.Platform == PlatformID.Win32S
+                                   || System.Environment.OSVersion.Platform == PlatformID.Win32Windows) ? "java.exe" : "java";
+                    try_path = JavaDownloadDirectory + ".*/" + executable_name;
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Trying pattern " + try_path));
+                    var locations_on_path = new Domemtech.Globbing.Glob(JavaDownloadDirectory)
+                                .RegexContents()
+                                .Where(f => f is FileInfo)
+                                .Select(f => f.FullName)
+                                .Select(f => f.Replace("\\", "/"))
+                                .ToList();
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Got a list of " + locations_on_path.Count() + " items."));
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List = " + String.Join(" ", locations_on_path)));
+                    locations_on_path = locations_on_path
+                                .Where(f => new Regex(try_path).Match(f).Success)
+                                .ToList();
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Got a list of " + locations_on_path.Count() + " items."));
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("List = " + String.Join(" ", locations_on_path)));
+                    foreach (var loc in locations_on_path)
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Trying " + loc));
+                        try
+                        {
+                            ProcessStartInfo startInfo = new ProcessStartInfo(
+                                loc, "--version")
+                            {
+                                UseShellExecute = false,
+                                CreateNoWindow = true,
+                                RedirectStandardInput = true,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+                            };
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                                "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
+                            Process process = new Process();
+                            process.StartInfo = startInfo;
+                            process.ErrorDataReceived += TestStderrDataReceived;
+                            process.OutputDataReceived += TestStdoutDataReceived;
+                            process.Start();
+                            process.BeginErrorReadLine();
+                            process.BeginOutputReadLine();
+                            process.StandardInput.Dispose();
+                            process.WaitForExit();
+                            if (process.ExitCode != 0)
+                            {
+                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found at '" + loc + "', but it doesn't work."));
+                                return false;
+                            }
+                            else
+                            {
+                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found: '" + loc + "'"));
+                                where = loc;
+                                return true;
+                            }
+                        }
+                        catch (Exception ee)
+                        {
+                        }
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("doesn't work."));
+                    }
+                }
+                catch (Exception xxx)
+                {
+                }
+
+                // Get OS and native type.
+                OperatingSystem os_ver = Environment.OSVersion;
+                System.Runtime.InteropServices.Architecture os_arch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
+                string java_download_fn = null;
+                string java_download_url = null;
+                var which_java = _tableOfJava.Where(e => e.version == VersionOfJava
+                    && e.os == ConvertOSArch(os_ver.Platform, os_arch)).FirstOrDefault();
+
+                if (which_java == default(tableEntry))
+                    return false;
+
+                if (which_java.link.EndsWith(".zip"))
+                {
+                    // Make sure multiple targets are not being used.
+                    if (true)
+                    {
+                        if (TargetFrameworks != null)
+                        {
+                            var count = TargetFrameworks.Count();
+                            if (count > 1)
+                            {
+                                throw new Exception(
+                                    @"Multiple TargetFrameworks is not supported with auto downloading of JRE, Issue #48. Install Java, and set up PATH to include a it.");
+                            }
+                        }
+                    }
+
+                    var ok = Locker.Grab();
+                    if (!ok) return false;
+                    try
+                    {
+                        java_download_fn = which_java.link.Substring(which_java.link.LastIndexOf('/') + 1);
+                        java_download_url = which_java.link;
+                        string uncompressed_root_dir = JavaDownloadFile(place_path, java_download_fn, java_download_url);
+                        if (uncompressed_root_dir == null || uncompressed_root_dir == "")
+                        {
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Problem in downloading JRE"));
+                            where = null;
+                            return false;
+                        }
+                        where = uncompressed_root_dir + which_java.outdir + "/bin/java.exe";
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloaded JRE. Testing for java executable at " + where));
+                        _generatedDirectories.Add(uncompressed_root_dir);
+                        var archive_name = place_path + java_download_fn;
+                        if (!File.Exists(where))
+                        {
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(where + " does not seem to exist. Decompressing."));
+                            var r = DecompressJava(uncompressed_root_dir, archive_name);
+                            if (!r)
+                            {
+                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Problem in decompressing JRE"));
+                                where = null;
+                                return false;
+                            }
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found java at " + where));
+                            return true;
+                        }
+                        else
+                        {
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found java at " + where));
+                            return true;
+                        }
+                    }
+                    catch (Exception e2)
+                    {
+                    }
+                    finally
+                    {
+                        Locker.Release();
+                    }
+                }
+                else if (which_java.link.EndsWith(".tar.gz"))
+                {
+                    // Make sure multiple targets are not being used.
+                    if (true)
+                    {
+                        if (TargetFrameworks != null)
+                        {
+                            var count = TargetFrameworks.Count();
+                            if (count > 1)
+                            {
+                                throw new Exception(
+                                    @"Multiple TargetFrameworks is not supported with auto downloading of JRE, Issue #48. Install Java, and set up PATH to include a it.");
+                            }
+                        }
+                    }
+
+                    var ok = Locker.Grab();
+                    if (!ok) return false;
+                    try
+                    {
+                        java_download_fn = which_java.link.Substring(which_java.link.LastIndexOf('/') + 1);
+                        java_download_url = which_java.link;
+                        try
+                        {
+                            string uncompressed_root_dir = JavaDownloadFile(place_path, java_download_fn, java_download_url);
+                            where = uncompressed_root_dir + which_java.outdir + "/bin/java";
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
+                            _generatedDirectories.Add(uncompressed_root_dir);
+                            var archive_name = place_path + java_download_fn;
+                            if (!File.Exists(where))
+                            {
+                                lock ("")
+                                {
+                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
+                                    System.IO.Directory.CreateDirectory(uncompressed_root_dir);
+                                    Read(uncompressed_root_dir, archive_name, new CompressionType());
+                                }
+                            }
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
+                            return true;
+                        }
+                        catch
+                        {
+                            where = null;
+                        }
+                    }
+                    catch (Exception e2)
+                    { }
+                    finally
+                    {
+                        Locker.Release();
+                    }
+                }
+            }
+            else
+            {
+                try
+                {
+
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Trying " + try_path));
+                    ProcessStartInfo startInfo = new ProcessStartInfo(
+                        try_path, "--version")
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                    };
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
+                    Process process = new Process();
+                    process.StartInfo = startInfo;
+                    process.ErrorDataReceived += TestStderrDataReceived;
+                    process.OutputDataReceived += TestStdoutDataReceived;
+                    process.Start();
+                    process.BeginErrorReadLine();
+                    process.BeginOutputReadLine();
+                    process.StandardInput.Dispose();
+                    process.WaitForExit();
+                    if (process.ExitCode != 0)
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found at '" + try_path + "', but it doesn't work."));
+                        return false;
+                    }
+                    else
+                    {
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found: '" + try_path + "'"));
+                        where = try_path;
+                        return true;
+                    }
+                }
+                catch (Exception ee)
+                {
+                }
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("doesn't work."));
+                return false;
+            }
             return result;
         }
 
@@ -573,187 +844,6 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     .Where(path => File.Exists(path))
                     .ToList();
             return p;
-        }
-
-        private bool TryProbeJava(string path, string place_path, out string where)
-        {
-            bool result = false;
-            where = null;
-            path = path.Trim();
-            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("path is " + path));
-            System.Console.Error.WriteLine("path is " + path);
-            if (path == "PATH")
-            {
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + path));
-                var executable_name = (System.Environment.OSVersion.Platform == PlatformID.Win32NT
-                    || System.Environment.OSVersion.Platform == PlatformID.Win32S
-                    || System.Environment.OSVersion.Platform == PlatformID.Win32Windows) ? "java.exe" : "java";
-                var locations_on_path = SearchEnvPathForProgram(executable_name);
-                foreach (var location_on_path in locations_on_path)
-                {
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("found a java executable at " + location_on_path));
-                    string w = (!Path.IsPathRooted(location_on_path)) ? Path.GetFullPath(location_on_path)
-                        : location_on_path;
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("w = " + w));
-                    // Try java.
-                    ProcessStartInfo startInfo = new ProcessStartInfo(
-                        w, "--version")
-                    {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        RedirectStandardInput = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                    };
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        "Executing command: \"" + startInfo.FileName + "\" " + startInfo.Arguments));
-                    Process process = new Process();
-                    process.StartInfo = startInfo;
-                    process.ErrorDataReceived += TestStderrDataReceived;
-                    process.OutputDataReceived += TestStdoutDataReceived;
-                    process.Start();
-                    process.BeginErrorReadLine();
-                    process.BeginOutputReadLine();
-                    process.StandardInput.Dispose();
-                    process.WaitForExit();
-                    if (process.ExitCode != 0)
-                    {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found at '" + w + "', but it doesn't work."));
-                        continue;
-                    }
-                    else
-                    {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("java found: '" + w + "'"));
-                        where = w;
-                        return true;
-                    }
-                }
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(executable_name + " not found on path"));
-                return false;
-            }
-            else if (path == "DOWNLOAD")
-            {
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + path));
-                // Get OS and native type.
-                OperatingSystem os_ver = Environment.OSVersion;
-                System.Runtime.InteropServices.Architecture os_arch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
-                string java_download_fn = null;
-                string java_download_url = null;
-                var which_java = _tableOfJava.Where(e => e.version == VersionOfJava
-                    && e.os == ConvertOSArch(os_ver.Platform, os_arch)).FirstOrDefault();
-
-                if (which_java == default(tableEntry))
-                    return false;
-
-                if (which_java.link.EndsWith(".zip"))
-                {
-                    // Make sure multiple targets are not being used.
-                    if (true)
-                    {
-                        var count = TargetFrameworks.Count();
-                        if (count > 1)
-                        {
-                            throw new Exception(
-                                @"Multiple TargetFrameworks is not supported with auto downloading of JRE, Issue #48. Install Java, and set up PATH to include a it.");
-                        }
-                    }
-
-                    var ok = Locker.Grab();
-                    if (!ok) return false;
-                    try
-                    {
-                        java_download_fn = which_java.link.Substring(which_java.link.LastIndexOf('/') + 1);
-                        java_download_url = which_java.link;
-                        string uncompressed_root_dir = JavaDownloadFile(place_path, java_download_fn, java_download_url);
-                        if (uncompressed_root_dir == null || uncompressed_root_dir == "")
-                        {
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Problem in downloading JRE"));
-                            where = null;
-                            return false;
-                        }
-                        where = uncompressed_root_dir + which_java.outdir + "/bin/java.exe";
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloaded JRE. Testing for java executable at " + where));
-                        _generatedDirectories.Add(uncompressed_root_dir);
-                        var archive_name = place_path + java_download_fn;
-                        if (!File.Exists(where))
-                        {
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(where + " does not seem to exist. Decompressing."));
-                            var r = DecompressJava(uncompressed_root_dir, archive_name);
-                            if (!r)
-                            {
-                                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Problem in decompressing JRE"));
-                                where = null;
-                                return false;
-                            }
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found java at " + where));
-                            return true;
-                        }
-                        else
-                        {
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found java at " + where));
-                            return true;
-                        }
-                    }
-                    catch (Exception e2)
-                    {
-                    }
-                    finally
-                    {
-                        Locker.Release();
-                    }
-                }
-                else if (which_java.link.EndsWith(".tar.gz"))
-                {
-                    // Make sure multiple targets are not being used.
-                    if (true)
-                    {
-                        var count = TargetFrameworks.Count();
-                        if (count > 1)
-                        {
-                            throw new Exception(
-                                @"Multiple TargetFrameworks is not supported with auto downloading of JRE, Issue #48. Install Java, and set up PATH to include b it.");
-                        }
-                    }
-
-                    var ok = Locker.Grab();
-                    if (!ok) return false;
-                    try
-                    {
-                        java_download_fn = which_java.link.Substring(which_java.link.LastIndexOf('/') + 1);
-                        java_download_url = which_java.link;
-                        try
-                        {
-                            string uncompressed_root_dir = JavaDownloadFile(place_path, java_download_fn, java_download_url);
-                            where = uncompressed_root_dir + which_java.outdir + "/bin/java";
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
-                            _generatedDirectories.Add(uncompressed_root_dir);
-                            var archive_name = place_path + java_download_fn;
-                            if (!File.Exists(where))
-                            {
-                                lock ("")
-                                {
-                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
-                                    System.IO.Directory.CreateDirectory(uncompressed_root_dir);
-                                    Read(uncompressed_root_dir, archive_name, new CompressionType());
-                                }
-                            }
-                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
-                            return true;
-                        }
-                        catch
-                        {
-                            where = null;
-                        }
-                    }
-                    catch (Exception e2)
-                    { }
-                    finally
-                    {
-                        Locker.Release();
-                    }
-                }
-            }
-            return result;
         }
 
         private string ConvertOSArch(PlatformID platform, Architecture os_arch)
