@@ -4,7 +4,7 @@
 
 Antlr4BuildTasks is a third-party set of build rules
 [published in Nuget](https://www.nuget.org/packages/Antlr4BuildTasks/) as a package
-for dotnet and msbuild for C# projects with Antlr4 grammars
+for builds of C# projects containing Antlr4 grammars,
 using the "official" Antl4.Runtime.Standard package.
 It is based on Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
 which is published in NuGet as three packages:
