@@ -61,13 +61,13 @@ fi
 echo dotnet nuget add source $location --name nuget-a4bt
 dotnet nuget add source $location --name nuget-a4bt > /dev/null 2>&1
 rm -rf bin obj
-dotnet restore single.csproj -v normal
+dotnet restore single-no-java.csproj -v normal
 result="$?"
 if [ "$result" != "0" ]
 then
 	exit $result
 fi
-dotnet build single.csproj -v normal
+dotnet build single-no-java.csproj -v normal
 result="$?"
 if [ "$result" != "0" ]
 then
