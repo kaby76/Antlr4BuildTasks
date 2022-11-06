@@ -493,7 +493,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("w = " + w));
                     // Try java.
                     ProcessStartInfo startInfo = new ProcessStartInfo(
-                        w, "--version")
+                        w, "-version")
                     {
                         UseShellExecute = false,
                         CreateNoWindow = true,
