@@ -609,6 +609,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 // Get OS and native type.
                 OperatingSystem os_ver = Environment.OSVersion;
                 System.Runtime.InteropServices.Architecture os_arch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_arch is " + ConvertOSArch(os_ver.Platform, os_arch) ));
                 string java_download_fn = null;
                 string java_download_url = null;
                 var which_java = _tableOfJava.Where(e => e.version == VersionOfJava
