@@ -14,6 +14,8 @@ case "${unameOut}" in
     Darwin*)
 	echo Mac
 	machine=Mac
+	-which chmod
+	-export
 	rm -rf ~/.jre
 	rm -rf ~/.nuget/packages/antlr4buildtasks	
 	;;
