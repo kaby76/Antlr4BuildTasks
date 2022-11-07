@@ -1381,7 +1381,8 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("full path \"" + full_path + "\""));
                         arguments.Add(full_path);
                         ProcessStartInfo startInfo = new ProcessStartInfo(
-                           "/usr/bin/chmod", JoinArguments(arguments))
+                           (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "/bin/chmod" : "/usr/bin/chmod"),
+                           JoinArguments(arguments))
                         {
                             UseShellExecute = false,
                             CreateNoWindow = true,
