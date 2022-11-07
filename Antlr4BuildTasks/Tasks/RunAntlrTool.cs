@@ -713,7 +713,9 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                                 {
                                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Decompressing"));
                                     System.IO.Directory.CreateDirectory(uncompressed_root_dir);
+                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("created " + uncompressed_root_dir));
                                     Read(uncompressed_root_dir, archive_name, new CompressionType());
+                                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Finished Decompressing"));
                                 }
                             }
                             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
@@ -722,6 +724,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         catch
                         {
                             where = null;
+                            return false;
                         }
                     }
                     catch (Exception e2)
