@@ -701,7 +701,9 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         try
                         {
                             string uncompressed_root_dir = JavaDownloadFile(place_path, java_download_fn, java_download_url);
-                            where = uncompressed_root_dir + which_java.outdir + "/bin/java";
+                            where = uncompressed_root_dir + which_java.outdir
+                                + (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "/bin/java"
+                                : System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "/Contents/Home/bin/java" : "java");
                             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Java should be here " + where));
                             _generatedDirectories.Add(uncompressed_root_dir);
                             var archive_name = place_path + java_download_fn;
@@ -1363,7 +1365,9 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         Overwrite = true
                     });
                 }
-                if (reader.Entry.Attrib != null && os_ver.Platform == PlatformID.Unix)
+                if (reader.Entry.Attrib != null &&
+                    (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                    || System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX)))
                 {
                     // execute chmod.
                     List<string> arguments = new List<string>();
