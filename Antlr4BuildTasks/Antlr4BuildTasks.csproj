@@ -23,7 +23,7 @@
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>v12.0: (to be decided)</PackageReleaseNotes>
+		<PackageReleaseNotes>v12.0: Get Mac build using downloading of JRE working.</PackageReleaseNotes>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
