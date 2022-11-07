@@ -7,11 +7,11 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest macos-latest]
+        os: [ubuntu-latest]
         java: [11]
       fail-fast: false
     steps:
@@ -64,3 +64,29 @@ jobs:
          path: /home/runner/work/Antlr4BuildTasks/bin/Debug/*.*nupkg
          retention-days: 3
 
+  build-macos:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        java: [11]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+    - name: Clean
+      run: make clean
+    - name: Build
+      run: make build
+    - name: Test
+      shell: bash
+      run: make test-java
+    - name: Upload Antlr4BuildTasks artifacts
+      uses: actions/upload-artifact@v2
+      with:
+         name: build-output
+         path: /home/runner/work/Antlr4BuildTasks/bin/Debug/*.*nupkg
+         retention-days: 3
