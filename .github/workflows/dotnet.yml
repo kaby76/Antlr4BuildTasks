@@ -12,7 +12,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        java: [11]
       fail-fast: false
     steps:
     - uses: actions/checkout@v2
@@ -26,7 +25,7 @@ jobs:
       run: make build
     - name: Test
       shell: bash
-      run: make test-java
+      run: make test-no-java
     - name: Upload Antlr4BuildTasks artifacts
       uses: actions/upload-artifact@v2
       with:
