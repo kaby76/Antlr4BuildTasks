@@ -607,14 +607,11 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 }
 
                 // Get OS and native type.
-                OperatingSystem os_ver = Environment.OSVersion;
-                System.Runtime.InteropServices.Architecture os_arch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_arch is " + os_ver));
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_arch str is " + ConvertOSArch(os_ver.Platform, os_arch)));
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_arch str is " + ConvertOSArch()));
                 string java_download_fn = null;
                 string java_download_url = null;
                 var which_java = _tableOfJava.Where(e => e.version == VersionOfJava
-                    && e.os == ConvertOSArch(os_ver.Platform, os_arch)).FirstOrDefault();
+                    && e.os == ConvertOSArch()).FirstOrDefault();
 
                 if (which_java == default(tableEntry))
                     return false;
@@ -853,33 +850,39 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             return p;
         }
 
-        private string ConvertOSArch(PlatformID platform, Architecture os_arch)
+        private string ConvertOSArch()
         {
-            switch (platform)
+            OperatingSystem os_ver = Environment.OSVersion;
+            var isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            var isOSX = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+            var isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+            System.Runtime.InteropServices.Architecture os_arch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_arch is " + os_ver));
+            if (isWindows)
             {
-                case PlatformID.Win32NT:
-                    switch (os_arch)
-                    {
-                        case System.Runtime.InteropServices.Architecture.X64:
-                            return "Windows x64";
-                    }
-                    break;
-                case PlatformID.Unix:
-                    switch (os_arch)
-                    {
-                        case System.Runtime.InteropServices.Architecture.X64:
-                            if (IntPtr.Size != 8) break;
-                            return "Linux x64";
-                    }
-                    break;
-		        case PlatformID.MacOSX:
-			        switch (os_arch)
-			        {
-				        case System.Runtime.InteropServices.Architecture.X64:
-					        if (IntPtr.Size != 8) break;
-					        return "MacOSX x64";
-			        }
-			        break;
+                switch (os_arch)
+                {
+                    case System.Runtime.InteropServices.Architecture.X64:
+                        return "Windows x64";
+                }
+            }
+            if (isLinux)
+            {
+                switch (os_arch)
+                {
+                    case System.Runtime.InteropServices.Architecture.X64:
+                        if (IntPtr.Size != 8) break;
+                        return "Linux x64";
+                }
+            }
+            if (isOSX)
+            {
+			    switch (os_arch)
+			    {
+				    case System.Runtime.InteropServices.Architecture.X64:
+					    if (IntPtr.Size != 8) break;
+					    return "MacOSX x64";
+			    }
             }
             return "";
         }
