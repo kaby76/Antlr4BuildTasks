@@ -42,7 +42,7 @@ namespace Antlr4.Build.Tasks
         {
             new tableEntry { version = "11", os = "Linux x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_linux_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
             new tableEntry { version = "11", os = "Windows x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.15_10.zip", outdir = "jdk-11.0.15+10-jre" },
-            new tableEntry { version = "11", os = "macOS x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_mac_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
+            new tableEntry { version = "11", os = "MacOSX x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x64_mac_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
             new tableEntry { version = "11", os = "Linux aarch64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
             new tableEntry { version = "11", os = "Linux s390x", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_s390x_linux_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
             new tableEntry { version = "11", os = "Windows x86", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x86-32_windows_hotspot_11.0.15_10.zip", outdir = "jdk-11.0.15+10-jre" },
@@ -870,6 +870,14 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                             return "Linux x64";
                     }
                     break;
+		        case PlatformID.MacOSX:
+			        switch (os_arch)
+			        {
+				        case System.Runtime.InteropServices.Architecture.X64:
+					        if (IntPtr.Size != 8) break;
+					        return "MacOSX x64";
+			        }
+			        break;
             }
             return "";
         }
