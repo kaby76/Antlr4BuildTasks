@@ -52,15 +52,16 @@ to your .csproj file for your "MyGrammar.g4" file:
 </ItemGroup>
 ````
 
-Note: `<PrivateAssets>all</PrivateAssets>` is added to the package reference
+Notes:
+* `<PrivateAssets>all</PrivateAssets>` is added to the package reference
 so that when you run `dotnet publish`, the Antlr4BuildTasks.dll is not included
 in your app; it's only used to build your application.
 Antlr4BuildTasks.dll is not currently digitally signed.
-
-Note: Antlr4BuildTasks downloads a JRE for your OS and places it in `$USERPROFILE/.jre/`
+* Antlr4BuildTasks downloads a JRE for your OS and places it in `$USERPROFILE/.jre/`
 on Windows and `$HOME/.jre/` on Linux.
 The package also downloads the Antlr4 tool JAR file and places it in `$USERPROFILE/.m2/`
 on Windows and `$HOME/.m2/` on Linux.
+* You can use a pattern for the `Include` attribute, e.g., `<Antlr4 Include="*.g4"/>`.
 
 ### Setting arguments to the Antlr tool
 
