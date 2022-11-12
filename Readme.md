@@ -163,6 +163,6 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v12.0 (xx Oct 2022)
+### Latest release v12.0 (8 Nov 2022)
 
-* (To be decided.)
+* Add JRE .tar.gz download and decompression for Mac.
