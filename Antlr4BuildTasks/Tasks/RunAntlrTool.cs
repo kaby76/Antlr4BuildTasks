@@ -105,6 +105,8 @@ namespace Antlr4.Build.Tasks
         public string JavaExec { get; set; }
         public string LibPath { get; set; }
         public bool Listener { get; set; }
+        public bool Log_ { get; set; }
+        public bool LongMessages { get; set; }
         public List<string> OtherSourceCodeFiles { get; set; }
         public string Package { get; set; }
         public ITaskItem[] PackageReference { get; set; }
@@ -882,12 +884,12 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             }
             if (isOSX)
             {
-			    switch (os_arch)
-			    {
-				    case System.Runtime.InteropServices.Architecture.X64:
-					    if (IntPtr.Size != 8) break;
-					    return "MacOSX x64";
-			    }
+                switch (os_arch)
+                {
+                    case System.Runtime.InteropServices.Architecture.X64:
+                        if (IntPtr.Size != 8) break;
+                        return "MacOSX x64";
+                }
             }
             return "";
         }
@@ -924,6 +926,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 }
             }
             if (GAtn) arguments.Add("-atn");
+            if (LongMessages) arguments.Add("-long-messages");
             if (!string.IsNullOrEmpty(Encoding))
             {
                 arguments.Add("-encoding");
@@ -1025,6 +1028,8 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 }
             }
             if (GAtn) arguments.Add("-atn");
+            if (Log_) arguments.Add("-Xlog");
+            if (LongMessages) arguments.Add("-long-messages");
             if (!string.IsNullOrEmpty(Encoding))
             {
                 arguments.Add("-encoding");
@@ -1184,6 +1189,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
         }
 
         private static readonly Regex GeneratedFileMessageFormat = new Regex(@"^Generating file '(?<OUTPUT>.*?)' for grammar '(?<GRAMMAR>.*?)'$", RegexOptions.Compiled);
+        private static readonly Regex CheckroteMessage = new Regex(".*wrote.*", RegexOptions.Compiled);
 
         bool good_version = false;
         private void TestStderrDataReceived(object sender, DataReceivedEventArgs e)
@@ -1332,15 +1338,15 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
             try
             {
-                Match match = GeneratedFileMessageFormat.Match(data);
+                Match match = CheckroteMessage.Match(data);
                 if (!match.Success)
                 {
                     MessageQueue.EnqueueMessage(Message.BuildErrorMessage(data));
                     return;
                 }
 
-                string fileName = match.Groups["OUTPUT"].Value;
-                _generatedCodeFiles.Add(match.Groups["OUTPUT"].Value);
+//                string fileName = match.Groups["OUTPUT"].Value;
+//                _generatedCodeFiles.Add(match.Groups["OUTPUT"].Value);
             }
             catch (Exception ex)
             {

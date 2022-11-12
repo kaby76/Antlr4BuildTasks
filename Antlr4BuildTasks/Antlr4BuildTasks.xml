@@ -31,25 +31,25 @@
         <BoolProperty
             Category="ANTLR"
             Name="GAtn"
-			Default="false"
+            Default="false"
             DisplayName="Generate rule ATN diagrams (-atn)"
             Description="Generate DOT graph files that represent the internal ATN (augmented transition network) data structures that ANTLR uses to represent grammars. The files come out as Grammar.rule .dot. If the grammar is a combined grammar, the lexer rules are named Grammar Lexer.rule .dot." />
         <StringProperty
             Category="ANTLR"
             Name="Encoding"
-			Default="UTF-8"
+            Default="UTF-8"
             DisplayName="Grammar file encoding; e.g., euc-jp (-encoding ...)"
             Description="By default ANTLR loads grammar files using the UTF-8 encoding, which is a very common character file encoding that degenerates to ASCII for characters that fit in one byte. There are many character file encodings from around the world. If that grammar file is not the default encoding for your locale, you need this option so that ANTLR can properly interpret grammar files. This does not affect the input to the generated parsers, just the encoding of the grammars themselves." />
         <BoolProperty
             Category="ANTLR"
             Name="Listener"
-			Default="true"
+            Default="true"
             DisplayName="Generate Listener (-listener)"
             Description="This option tells ANTLR to generate a parse tree listener and is the default." />
         <BoolProperty
             Category="ANTLR"
             Name="Visitor"
-			Default="true"
+            Default="true"
             DisplayName="Generate Visitor (-visitor)"
             Description="ANTLR does not generate parse tree visitors by default. This option turns that feature on. ANTLR can generate both parse tree listeners and visitors; this option and -listener aren’t mutually exclusive." />
         <StringProperty
@@ -60,45 +60,57 @@
         <StringProperty
             Category="ANTLR"
             Name="DOptions"
-			Default="language=CSharp"
+            Default="language=CSharp"
             DisplayName="Grammar-level option (-Doption=...)"
             Description="Explicitly specifies the grammar's target language. If set, this property overrides any value specified within the grammar itself. Note, other options are superClass, contextSuperClass, TokenLableType, tokenVocab, accessLevel, exportMacro. Use ';' as separation character between options." />
         <BoolProperty
             Category="ANTLR"
             Name="Error"
-			Default="false"
+            Default="false"
             DisplayName="Set build warnings as errors (-Werror)"
             Description="As part of a large build, ANTLR warning messages could go unnoticed. Turn on this option to have warnings treated as errors, causing the ANTLR tool to report failure back to the invoking commandline shell." />
         <BoolProperty
             Category="ANTLR"
             Name="ForceAtn"
-			Default="false"
+            Default="false"
             DisplayName="Force ATN (-Xforce-atn)"
             Description="ANTLR normally builds traditional “switch on token type” decisions where possible (one token of lookahead is sufficient to distinguish between all alternatives in a decision). To force even these simple decisions into the adaptive LL(*) mechanism, use this option." />
-		<StringProperty
+        <StringProperty
             Category="ANTLR"
             Name="JavaDownloadDirectory"
-			Default="USERPROFILE/\.jre/.*/"
+            Default="USERPROFILE/\.jre/.*/"
             DisplayName="Full path of folder contained decompressed JRE."
             Description="This is the full path of the location to store decompressed JREs. The default is USERPROFILE/.jre, which gets expanded to a path in the user's home directory for the OS." />
-		<StringProperty
+        <StringProperty
             Category="ANTLR"
             Name="JavaExec"
-			Default="PATH;DOWNLOAD"
+            Default="PATH;DOWNLOAD"
             DisplayName="Full path of Java executable"
             Description="This is a search path or full path of java installed on your system. The default is blank, which means to download an install a copy of the latest Java for the build." />
-		<StringProperty
+        <StringProperty
             Category="ANTLR"
             Name="AntlrToolJar"
-			Default=""
+            Default=""
             DisplayName="Full path of the jar file that contains the Antlr tool."
             Description="This is the full path of the jar for Antlr installed on your system. If blank, the version of the Antlr4.Runtime.Standard used." />
         <BoolProperty
             Category="ANTLR"
             Name="AllowAntlr4cs"
-			Default="false"
+            Default="false"
             DisplayName="Disable Antlr4 Runtime conflict check."
             Description="Allow both Antlr4.Runtime and Antlr4.Runtime.Standard packages to be referenced." />
+        <BoolProperty
+            Category="ANTLR"
+            Name="Log"
+            Default="false"
+            DisplayName="Log (-Xlog)"
+            Description="Turn on logging for Antlr tool. With this option, a .log file is created." />
+        <BoolProperty
+            Category="ANTLR"
+            Name="LongMessages"
+            Default="false"
+            DisplayName="long messages (-long-messages)"
+            Description="Turn on long messages for Antlr tool." />
 
         <!--
             The rest of these properties are not ANTLR-specific, but CPS provides no way to inherit properties, so if we fail to

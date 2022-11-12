@@ -114,6 +114,8 @@
             <JavaExec>PATH;DOWNLOAD</JavaExec>
             <LibPath></LibPath>
             <Listener>true</Listener>
+            <Log>false</Log>
+            <LongMessages>false</LongMessages>
             <Package></Package>
             <Visitor>true</Visitor>
         </Antlr4>
@@ -147,6 +149,8 @@
                         JavaExec="%(Antlr4.JavaExec)"
                         LibPath="%(Antlr4.LibPath)"
                         Listener="%(Antlr4.Listener)"
+                        Log_="%(Antlr4.Log)"
+                        LongMessages="%(Antlr4.LongMessages)"
                         Package="%(Antlr4.Package)"
                         PackageReference="@(PackageReference)"
                         PackageVersion="@(PackageVersion)"
