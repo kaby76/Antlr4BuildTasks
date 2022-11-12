@@ -11,7 +11,7 @@ case "${unameOut}" in
 esac
 if [[ "$machine" == "MinGw" || "$machine" == "Msys" ]]
 then
-    cwd=`pwd | sed 's%/c%c:%' | sed 's%/%\\\\%g'`
+    cwd=`pwd | sed 's%/c%c:%' | sed 's%/d%d:%' | sed 's%/%\\\\%g'`
 else
     cwd=`pwd`
 fi
