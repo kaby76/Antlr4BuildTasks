@@ -1,4 +1,5 @@
 #!/bin/bash
+set +x
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     machine=Linux;;
@@ -14,6 +15,8 @@ then
 else
     cwd=`pwd`
 fi
+echo $cwd
+echo $machine
 cd Antlr4BuildTasks
 dotnet restore Antlr4BuildTasks.csproj
 dotnet build Antlr4BuildTasks.csproj
