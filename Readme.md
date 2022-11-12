@@ -102,6 +102,8 @@ language=Java. Multiple options can be specified using a semi-colon separating e
 to search PATH for an executable, or DOWNLOAD to download and use the `<JavaDownloadDirectory>`.
 * `<AllowAntlr4cs>` -- Allow both `<PackageReference>` to Antlr4.Runtime and Antlr4.Runtime.Standard. (NB, you will need to handle aliasing of one package. See https://github.com/kaby76/Antlr4BuildTasks/issues/32)
 * `<JavaDownloadDirectory>` -- Full path of directory for downloaded JRE compressed and uncompressed files.
+* `<Log>` -- Adds'-Xlog' to Antlr4 Tool call, which turns on logging.
+* `<LongMessages>` -- Add '-long-messages' to Antlr4 Tool call, which turns on long messages.
 
 The Antlr4 tool generates files that produce a lot of compiler warnings for code
 set with `CLSCompliant=false`. This package adds in code to ignore these warnings
