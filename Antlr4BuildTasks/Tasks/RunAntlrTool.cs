@@ -649,7 +649,12 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         }
                         where = uncompressed_root_dir + which_java.outdir + "/bin/java.exe";
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloaded JRE. Testing for java executable at " + where));
-                        _generatedDirectories.Add(uncompressed_root_dir);
+                        // https://github.com/kaby76/Antlr4BuildTasks/issues/51
+                        // Do not delete the uncompressed root directory for JRE.
+                        // For mullti-targets, the directory is listed in each target.
+                        // Can't delete multiple times. Besides, it's intended to be
+                        // shared with antlr4.py https://github.com/antlr/antlr4-tools
+                        // _generatedDirectories.Add(uncompressed_root_dir);
                         var archive_name = place_path + java_download_fn;
                         if (!File.Exists(where))
                         {

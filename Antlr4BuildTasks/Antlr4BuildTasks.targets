@@ -198,7 +198,8 @@
         <RemoveDir Directories="@(ToRemoveDirs)" />
         <Delete Files="$(Antlr4AllListFile)" TreatErrorsAsWarnings="false" />
         <Delete Files="$(Antlr4ToCompileListFile)" TreatErrorsAsWarnings="false" />
-        <Delete Files="$(Antlr4AllDirectoriesFile)" TreatErrorsAsWarnings="false" />
+        <!-- In the following task, if directories cannot be deleted, treat as warning, not catastrophe. -->
+		<Delete Files="$(Antlr4AllDirectoriesFile)" TreatErrorsAsWarnings="true" />
     </Target>
     
     
