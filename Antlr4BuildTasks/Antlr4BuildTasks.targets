@@ -101,6 +101,7 @@
         <Antlr4>
             <AllowAntlr4cs>false</AllowAntlr4cs>
             <AntlrToolJar></AntlrToolJar>
+			<AntlrToolJarDownloadDir>USERPROFILE/.m2/</AntlrToolJarDownloadDir>
             <AntOutDir></AntOutDir>
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
             <DOptions>language=CSharp</DOptions>
@@ -137,6 +138,7 @@
         <RunAntlrTool
                         AllowAntlr4cs="%(Antlr4.AllowAntlr4cs)"
                         AntlrToolJar="%(Antlr4.AntlrToolJar)"
+						AntlrToolJarDownloadDir="%(Antlr4.AntlrToolJarDownloadDir)"
                         AntOutDir="%(Antlr4.AntOutDir)"
                         ContinueOnError="false"
                         DOptions="%(Antlr4.DOptions)"

@@ -57,6 +57,7 @@ namespace Antlr4.Build.Tasks
 
         public bool AllowAntlr4cs { get; set; }
         public string AntlrToolJar { get; set; }
+        public string AntlrToolJarDownloadDir { get; set; }
         public string AntOutDir { get; set; }
         public ITaskItem[] AntlrProbePath { get; set; }
         public string DOptions { get; set; }
@@ -259,26 +260,32 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 + v3
                 + "'"));
 
-            // Set up probe path for Antlr tool jar if there isn't one.
             List<string> paths = new List<string>();
             if (AntlrProbePath != null)
-                paths = AntlrProbePath.Select(p => p.ItemSpec).ToList();
-            string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
-            if (!user_profile_path.EndsWith("/")) user_profile_path = user_profile_path + "/";
-            string tool_path = user_profile_path
-                + ".nuget/packages/antlr4buildtasks/"
-                + _toolVersion
-                + "/";
+                    paths = AntlrProbePath.Select(p => p.ItemSpec).ToList();
 
-
-            var place_path = user_profile_path + ".m2/";
+            var path = "";
+            // Set up probe path for Antlr tool jar if there isn't one.
+            if (AntlrToolJarDownloadDir.Contains("USERPROFILE"))
+	        {
+                string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
+                if (user_profile_path.EndsWith("/")) user_profile_path = user_profile_path.Substring(1, user_profile_path.Length - 1);
+                path = AntlrToolJarDownloadDir.Replace("USERPROFILE", user_profile_path).Replace("\\", "/");
+	        }else
+                path = AntlrToolJarDownloadDir.Replace("\\", "/");
+            
+            
+            if (!path.EndsWith("/")) path = path + "/";
+            
+            
+            string tool_path = path + ".nuget/packages/antlr4buildtasks/" + _toolVersion + "/";
 
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                "Location to stuff Antlr tool jar, if not found, is " + place_path));
+                "Location to stuff Antlr tool jar, if not found, is " + path));
 
             if (paths == null || paths.Count == 0)
             {
-                string package_area = "file:///" + place_path;
+                string package_area = "file:///" + path;
                 paths.Add(package_area);
                 var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
                 paths.Add(full_path);
@@ -296,7 +303,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 // If "x.y", probe for "x.y".
                 if (v3 != null)
                 {
-                    bool t = TryProbeAntlrJar(probe, v3, place_path, out string w);
+                    bool t = TryProbeAntlrJar(probe, v3, path, out string w);
                     if (t)
                     {
                         result = w;
@@ -305,7 +312,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 }
                 else if (v3 != null && v3.EndsWith(".0"))
                 {
-                    bool t = TryProbeAntlrJar(probe, v3.Substring(0, v3.Length - 2), place_path, out string w);
+                    bool t = TryProbeAntlrJar(probe, v3.Substring(0, v3.Length - 2), path, out string w);
                     if (t)
                     {
                         result = w;
@@ -314,7 +321,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 }
                 else if (v2 != null)
                 {
-                    bool t = TryProbeAntlrJar(probe, v2, place_path, out string w);
+                    bool t = TryProbeAntlrJar(probe, v2, path, out string w);
                     if (t)
                     {
                         result = w;
