@@ -266,7 +266,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
             var path = "";
             // Set up probe path for Antlr tool jar if there isn't one.
-            if (AntlrToolJarDownloadDir.Constains("USERPROFILE"))
+            if (AntlrToolJarDownloadDir.Contains("USERPROFILE"))
 	        {
                 string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
                 if (user_profile_path.EndsWith("/")) user_profile_path = user_profile_path.Substring(1, user_profile_path.Length - 1);
@@ -278,7 +278,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (!path.EndsWith("/")) path = path + "/";
             
             
-            string tool_path = user_profile_path + ".nuget/packages/antlr4buildtasks/" + _toolVersion + "/";
+            string tool_path = path + ".nuget/packages/antlr4buildtasks/" + _toolVersion + "/";
 
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
                 "Location to stuff Antlr tool jar, if not found, is " + path));
