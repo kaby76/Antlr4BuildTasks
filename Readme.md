@@ -38,7 +38,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 ````xml
 <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="12.0" PrivateAssets="all" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.2.0" PrivateAssets="all" />
 </ItemGroup>
 ````
     
@@ -102,6 +102,7 @@ language=Java. Multiple options can be specified using a semi-colon separating e
 to search PATH for an executable, or DOWNLOAD to download and use the `<JavaDownloadDirectory>`.
 * `<AllowAntlr4cs>` -- Allow both `<PackageReference>` to Antlr4.Runtime and Antlr4.Runtime.Standard. (NB, you will need to handle aliasing of one package. See https://github.com/kaby76/Antlr4BuildTasks/issues/32)
 * `<JavaDownloadDirectory>` -- Full path of directory for downloaded JRE compressed and uncompressed files.
+* `<AntlrToolJarDownloadDir>` -- Full path of the directory for download and use Antlr4 tool jar. If not set the default value is `$USERPROFILE/.m2/` and `$HOME/.m2/` to Windows and Linux respectively.
 * `<Log>` -- Adds'-Xlog' to Antlr4 Tool call, which turns on logging.
 * `<LongMessages>` -- Add '-long-messages' to Antlr4 Tool call, which turns on long messages.
 
@@ -145,7 +146,7 @@ to
 
 ````xml
 <ItemGroup>
-    <PackageReference Include="Antlr4BuildTasks" Version="12.0" PrivateAssets="all" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.2.0" PrivateAssets="all" />
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
 </ItemGroup>
 ````
@@ -165,6 +166,6 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v12.0 (8 Nov 2022)
+### Latest release v12.2 (22 Dec 2022)
 
-* Add JRE .tar.gz download and decompression for Mac.
+* Added new parameter `<AntlrToolJarDownloadDir>` to set the location to download the Antlr4 tool jar.
