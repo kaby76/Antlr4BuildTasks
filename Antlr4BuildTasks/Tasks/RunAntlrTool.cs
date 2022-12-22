@@ -57,7 +57,7 @@ namespace Antlr4.Build.Tasks
 
         public bool AllowAntlr4cs { get; set; }
         public string AntlrToolJar { get; set; }
-        public string AntlrToolJarDownload { get; set; }
+        public string AntlrToolJarDownloadDir { get; set; }
         public string AntOutDir { get; set; }
         public ITaskItem[] AntlrProbePath { get; set; }
         public string DOptions { get; set; }
