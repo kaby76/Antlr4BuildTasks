@@ -37,9 +37,9 @@ case "${unameOut}" in
 	;;
     *)          machine="UNKNOWN:${unameOut}"
 esac
-ls -ld $USERPROFILE/.nuget/packages/antlr4buildtasks
-ls -ld $USERPROFILE/.jre
-ls -ld $USERPROFILE/.m2
+#ls -ld $USERPROFILE/.nuget/packages/antlr4buildtasks
+#ls -ld $USERPROFILE/.jre
+#ls -ld $USERPROFILE/.m2
 cd "$where/../.."
 if [[ "$machine" == "MinGw" || "$machine" == "Msys" ]]
 then
