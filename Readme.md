@@ -2,20 +2,28 @@
 
 [![Build](https://github.com/kaby76/Antlr4BuildTasks/workflows/.NET/badge.svg)](https://github.com/kaby76/Antlr4BuildTasks/actions?query=workflow%3A.NET)
 
+### History
+Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
+was published in NuGet as three packages:
+
+* [Antlr4](https://www.nuget.org/packages/Antlr4/) (which is a thin package
+that simply requires the two following packages)
+* [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
+* [Antlr4.Runtime](https://www.nuget.org/packages/Antlr4.Runtime/).
+
+They were the official items to use till [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard/)
+became the new official runtime for C#, which completely
+replaces Antlr4.Runtime since ANTLR 4.7.
+
+> More details can be found in [this file](https://github.com/antlr/antlr4/blob/4.7.1/runtime/CSharp/README.md).
+
+**You shouldn't use Harwell's packages any more if you want to use ANTLR 4.7 and above.**
+
+### New Approach
 Antlr4BuildTasks is a third-party set of build rules
 [published in Nuget](https://www.nuget.org/packages/Antlr4BuildTasks/) as a package
 for builds of C# projects containing Antlr4 grammars,
-using the "official" Antl4.Runtime.Standard package.
-It is based on Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
-which is published in NuGet as three packages:
-[Antlr4](https://www.nuget.org/packages/Antlr4/) (which is a thin package
-that smiply requires the two following packages),
-[Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
-and [Antlr4.Runtime](https://www.nuget.org/packages/Antlr4.Runtime/).
-Although [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs) is fine,
-it is several major releases behind the current
-Antlr4 tool and runtime, not maintained, and not compatible
-with Antlr4.Runtime.Standard.
+using the official Antl4.Runtime.Standard package.
 
 When added as a `<PackageReference>` to your C# project,
 Antlr4BuildTasks provides the rules to compile .g4's into parser code
@@ -27,10 +35,6 @@ and the Antlr tool jar file to generate the parser and lexer. You do not
 need to set up anything. It can be used either at the command line
 or within Visual Studio, and on Windows, Linux or Mac. The JRE is only required
 to build your project, and never required or used after the build.
-
-[Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard/)
-is the "official", maintained runtime for C#. It completely
-replaces [Antlr4.Runtime](https://www.nuget.org/packages/Antlr4.Runtime/).
 
 To use this package, add the Antlr4BuildTasks and Antlr4.Runtime.Standard packages
 to your project. csproj file as shown below, otherwise you can use the "NuGet Package Manager":
