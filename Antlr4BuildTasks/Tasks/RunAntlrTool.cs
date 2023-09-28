@@ -1390,6 +1390,20 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
                         || System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX)))
                     {
+                        // find chmod path
+                        Process processWhich = new Process();
+                        processWhich.StartInfo.FileName = "/bin/sh";
+                        processWhich.StartInfo.Arguments = $"-c \"which chmod\"";
+                        processWhich.StartInfo.UseShellExecute = false;
+                        processWhich.StartInfo.CreateNoWindow = true;
+                        processWhich.StartInfo.RedirectStandardInput = false;
+                        processWhich.StartInfo.RedirectStandardOutput = true;
+                        processWhich.StartInfo.RedirectStandardError = true;
+
+                        processWhich.Start();
+                        var fullChmodPath = processWhich.StandardOutput.ReadToEnd().Trim();
+                        processWhich.WaitForExit();
+
                         // execute chmod.
                         List<string> arguments = new List<string>();
                         arguments.Add(ToChmodArg(reader.Entry.Attrib));
@@ -1399,7 +1413,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("full path \"" + full_path + "\""));
                         arguments.Add(full_path);
                         ProcessStartInfo startInfo = new ProcessStartInfo(
-                           (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "/bin/chmod" : "/usr/bin/chmod"),
+                           fullChmodPath,
                            JoinArguments(arguments))
                         {
                             UseShellExecute = false,
