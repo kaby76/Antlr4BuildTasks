@@ -41,8 +41,8 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
 ````xml
 <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="12.2.0" PrivateAssets="all" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.3.0" PrivateAssets="all" />
 </ItemGroup>
 ````
     
@@ -150,15 +150,15 @@ to
 
 ````xml
 <ItemGroup>
-    <PackageReference Include="Antlr4BuildTasks" Version="12.2.0" PrivateAssets="all" />
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.11.1" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.3.0" PrivateAssets="all" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
 </ItemGroup>
 ````
 
 Antlr4BuildTasks examines PropertyGroup `AntlrProbePath`, a string of URI
 separated by semicolon, to find the version
 of the Antlr JAR file that you are looking for. Antlr4BuildTasks will look for a .jar
-with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.11.1).
+with version as specified in the Antlr4.Runtime.Standard PackageReference (e.g., 4.13.1).
 _I recommend that you just use the PackageReference's defined above._
 
 ### Visual Studio IDE or Visual Studio Code integration
@@ -170,6 +170,8 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release v12.2 (22 Dec 2022)
+### Latest release, v12.3
+
+### Release v12.2 (22 Dec 2022)
 
 * Added new parameter `<AntlrToolJarDownloadDir>` to set the location to download the Antlr4 tool jar.
