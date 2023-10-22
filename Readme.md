@@ -3,17 +3,34 @@
 [![Build](https://github.com/kaby76/Antlr4BuildTasks/workflows/.NET/badge.svg)](https://github.com/kaby76/Antlr4BuildTasks/actions?query=workflow%3A.NET)
 
 ### History
+Building Antlr4 programs is a laborious task. To build a program, you must:
+* Install Java. You need to use Java version 11 or newer because the
+tool requires it.
+* Download the Antlr4 Tool .jar from the download area.
+* Run the tool on you grammar. Many manually run the tool, but there
+are plenty of questions how to do that because it is different over the OS
+you are running. If you modify the grammar, but forget to regenerate the parser
+and lexer, you end up with a version skew.
+* For C#, you need to set up a `<PackageReference>` for the runtime Antlr4.Runtime.Standard.
+If you are not careful, you may generate the parser and lexer with a different
+version of the tool from the runtime.
+
 Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
-was published in NuGet as three packages:
+was published in NuGet to simplify the build of C# Antlr programs. It was
+publiched as three packages:
 
 * [Antlr4](https://www.nuget.org/packages/Antlr4/) (which is a thin package
 that simply requires the two following packages)
 * [Antlr4.CodeGenerator](https://www.nuget.org/packages/Antlr4.CodeGenerator/)
 * [Antlr4.Runtime](https://www.nuget.org/packages/Antlr4.Runtime/).
 
-They were the official items to use till [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard/)
+They were the official items for C# Antlr programs until [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard/)
 became the new official runtime for C#, which completely
 replaces Antlr4.Runtime since ANTLR 4.7.
+
+Unfortunately, since then, there is no "official" build package for C# Antlr programs.
+Antlr4BuildTasks replaces the old Antlr4cs support with an updated and cleaned up
+build tool.
 
 > More details can be found in [this file](https://github.com/antlr/antlr4/blob/4.7.1/runtime/CSharp/README.md).
 
