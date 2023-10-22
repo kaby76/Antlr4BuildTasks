@@ -25,7 +25,7 @@ that simply requires the two following packages)
 * [Antlr4.Runtime](https://www.nuget.org/packages/Antlr4.Runtime/).
 
 They were the official items for C# Antlr programs until [Antlr4.Runtime.Standard](https://www.nuget.org/packages/Antlr4.Runtime.Standard/)
-became the new official runtime for C#, which completely
+became the official runtime for C#, which completely
 replaces Antlr4.Runtime since ANTLR 4.7.
 
 Unfortunately, since then, there is no "official" build package for C# Antlr programs.
