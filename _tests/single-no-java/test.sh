@@ -44,10 +44,10 @@ cd "$where/../.."
 if [[ "$machine" == "MinGw" || "$machine" == "Msys" ]]
 then
     cwd=`pwd -W | sed 's%/%\\\\%g'`
-    location="$cwd\\Antlr4BuildTasks\\bin\\Debug\\"
+    location="$cwd\\Antlr4BuildTasks\\bin\\Release\\"
 else
     cwd=`pwd`
-    location="$cwd/Antlr4BuildTasks/bin/Debug/"
+    location="$cwd/Antlr4BuildTasks/bin/Release/"
 fi
 echo machine is "$machine"
 echo cwd is $cwd
