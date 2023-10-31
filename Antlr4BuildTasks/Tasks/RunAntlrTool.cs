@@ -605,13 +605,13 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                                 return true;
                             }
                         }
-                        catch (Exception ee)
+                        catch (Exception)
                         {
                         }
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("doesn't work."));
                     }
                 }
-                catch (Exception xxx)
+                catch (Exception)
                 {
                 }
 
@@ -682,7 +682,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                             return true;
                         }
                     }
-                    catch (Exception e2)
+                    catch (Exception)
                     {
                     }
                     finally
@@ -741,7 +741,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                             return false;
                         }
                     }
-                    catch (Exception e2)
+                    catch (Exception)
                     { }
                     finally
                     {
@@ -787,7 +787,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         return true;
                     }
                 }
-                catch (Exception ee)
+                catch (Exception)
                 {
                 }
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("doesn't work."));
@@ -826,7 +826,6 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             finally
             {
             }
-            return null;
         }
 
         private bool DecompressJava(string uncompressed_root_dir, string archive_name)
@@ -1250,7 +1249,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     good_version = true;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 good_version = false;
             }

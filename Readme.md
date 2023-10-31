@@ -59,7 +59,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 ````xml
 <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="12.3.0" PrivateAssets="all" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.4.0" PrivateAssets="all" />
 </ItemGroup>
 ````
     
@@ -167,7 +167,7 @@ to
 
 ````xml
 <ItemGroup>
-    <PackageReference Include="Antlr4BuildTasks" Version="12.3.0" PrivateAssets="all" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.4.0" PrivateAssets="all" />
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
 </ItemGroup>
 ````
@@ -187,7 +187,11 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release, v12.3
+### Latest release, v12.4
+
+### Release v12.4 (31 Oct 2023)
+
+* Security update. Clean up builds. Published now in Release configuration.
 
 ### Release v12.2 (22 Dec 2022)
 

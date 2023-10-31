@@ -5,15 +5,15 @@
 		<EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
-		<AssemblyVersion>12.3</AssemblyVersion>
-		<FileVersion>12.3</FileVersion>
-		<Version>12.3</Version>
+		<AssemblyVersion>12.4</AssemblyVersion>
+		<FileVersion>12.4</FileVersion>
+		<Version>12.4</Version>
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright />
 		<Company>Domemtech</Company>
 		<AssemblyTitle>Antlr4BuildTasks</AssemblyTitle>
 		<ContentTargetFolders>build/</ContentTargetFolders>
-		<IncludeSymbols>true</IncludeSymbols>
+		<IncludeSymbols>false</IncludeSymbols>
 		<!-- <SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat> -->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -23,15 +23,11 @@
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>12.3</PackageReleaseNotes>
+		<PackageReleaseNotes>12.4</PackageReleaseNotes>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
-		<DebugSymbols>true</DebugSymbols>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DebugType>pdbonly</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 	</PropertyGroup>
 	<ItemGroup>

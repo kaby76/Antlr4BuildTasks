@@ -18,7 +18,8 @@ fi
 echo $cwd
 echo $machine
 cd Antlr4BuildTasks
-dotnet nuget remove source nuget-antlr4buildtasks
+dotnet nuget remove source nuget-antlr4buildtasks > /dev/null 2>&1
 dotnet restore Antlr4BuildTasks.csproj
-dotnet build Antlr4BuildTasks.csproj
-dotnet nuget add source "$cwd/Antlr4BuildTasks/bin/Debug/" --name nuget-antlr4buildtasks 2>&1 > /dev/null
+dotnet build Antlr4BuildTasks.csproj -c Release
+dotnet nuget add source "$cwd/Antlr4BuildTasks/bin/Release/" --name nuget-antlr4buildtasks > /dev/null 2>&1
+dotnet nuget list source | grep nuget-antlr4buildtasks

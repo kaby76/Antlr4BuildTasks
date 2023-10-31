@@ -1,6 +1,8 @@
 #!/usr/bin/bash
 rm -rf obj bin
+rm -rf _tests/*/bin _tests/*/obj
 rm -rf .vs
+rm -rf Antlr4BuildTasks/.vs
 rm -rf packages
 rm -rf "$LOCALAPPDATA/Microsoft/VisualStudio/16.0"*"Exp/Extensions"
 rm -rf c:/Users/Kenne/.nuget/packages/antlr4buildtasks/
