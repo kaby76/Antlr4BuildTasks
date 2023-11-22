@@ -5,9 +5,9 @@
 		<EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
-		<AssemblyVersion>12.4</AssemblyVersion>
-		<FileVersion>12.4</FileVersion>
-		<Version>12.4</Version>
+		<AssemblyVersion>12.5</AssemblyVersion>
+		<FileVersion>12.5</FileVersion>
+		<Version>12.5</Version>
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright />
 		<Company>Domemtech</Company>
@@ -23,7 +23,7 @@
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>12.4</PackageReleaseNotes>
+		<PackageReleaseNotes>12.5</PackageReleaseNotes>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -46,9 +46,6 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Build.Framework" Version="17.7.2" />
 		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.7.2" />
-		<PackageReference Include="System.CodeDom" Version="7.0.0" />
-		<PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
-		<PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
 		<PackageReference Include="System.Threading" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup>

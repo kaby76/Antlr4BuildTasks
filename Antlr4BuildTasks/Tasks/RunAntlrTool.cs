@@ -46,13 +46,6 @@ namespace Antlr4.Build.Tasks
             new tableEntry { version = "11", os = "Linux aarch64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
             new tableEntry { version = "11", os = "Linux s390x", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_s390x_linux_hotspot_11.0.15_10.tar.gz", outdir = "jdk-11.0.15+10-jre" },
             new tableEntry { version = "11", os = "Windows x86", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.15%2B10/OpenJDK11U-jre_x86-32_windows_hotspot_11.0.15_10.zip", outdir = "jdk-11.0.15+10-jre" },
-
-            new tableEntry { version = "16", os = "Linux x64", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz", outdir = "" },
-            new tableEntry { version = "16", os = "Windows x64", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_windows_hotspot_16.0.1_9.zip", outdir = "" },
-            new tableEntry { version = "16", os = "macOS x64", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_mac_hotspot_16.0.1_9.tar.gz", outdir = "" },
-            new tableEntry { version = "16", os = "Linux aarch64", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_aarch64_linux_hotspot_16.0.1_9.tar.gz", outdir = "" },
-            new tableEntry { version = "16", os = "Linux s390x", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_s390x_linux_hotspot_16.0.1_9.tar.gz", outdir = "" },
-            new tableEntry { version = "16", os = "Windows x86", link = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x86-32_windows_hotspot_16.0.1_9.zip", outdir = "" },
         };
 
         public bool AllowAntlr4cs { get; set; }
@@ -267,13 +260,15 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             var path = "";
             // Set up probe path for Antlr tool jar if there isn't one.
             if (AntlrToolJarDownloadDir.Contains("USERPROFILE"))
-	        {
+            {
                 string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
                 if (user_profile_path.EndsWith("/")) user_profile_path = user_profile_path.Substring(1, user_profile_path.Length - 1);
                 path = AntlrToolJarDownloadDir.Replace("USERPROFILE", user_profile_path).Replace("\\", "/");
-	        }else
+            }
+            else
+            {
                 path = AntlrToolJarDownloadDir.Replace("\\", "/");
-            
+            }
             
             if (!path.EndsWith("/")) path = path + "/";
             
@@ -619,8 +614,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_arch str is " + ConvertOSArch()));
                 string java_download_fn = null;
                 string java_download_url = null;
-                var which_java = _tableOfJava.Where(e => e.version == VersionOfJava
-                    && e.os == ConvertOSArch()).FirstOrDefault();
+                var which_java = _tableOfJava.Where(e => e.os == ConvertOSArch()).FirstOrDefault();
 
                 if (which_java == default(tableEntry))
                     return false;
@@ -1220,32 +1214,17 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             }
             try
             {
+                Regex valid_version_pattern = new Regex("(OpenJDK Runtime Environment [(]build (1[1-9]|[2-9][0-9]))|(Java[(]TM[)] SE Runtime Environment [(]build (1[1-9]|[2-9][0-9]))");
+                var matches = valid_version_pattern.Matches(data);
+                var found = matches.Count > 0;
+		MessageQueue.EnqueueMessage(Message.BuildDefaultMessage("got matches " + matches.Count + " for '" + data + "'"));
                 if (data.Contains("Exception in thread"))
                 {
                     good_version = false;
                 }
-                else if (data.Contains("openjdk 11")
-                        || data.Contains("openjdk 12")
-                        || data.Contains("openjdk 13")
-                        || data.Contains("openjdk 14")
-                        || data.Contains("openjdk 15")
-                        || data.Contains("openjdk 16")
-                        || data.Contains("openjdk 17")
-                        || data.Contains("openjdk 18")
-                        || data.Contains("openjdk 19")
-                        || data.Contains("openjdk version \"11")
-                        || data.Contains("openjdk version \"12")
-                        || data.Contains("openjdk version \"13")
-                        || data.Contains("openjdk version \"14")
-                        || data.Contains("openjdk version \"15")
-                        || data.Contains("openjdk version \"16")
-                        || data.Contains("openjdk version \"17")
-                        || data.Contains("openjdk version \"18")
-                        || data.Contains("openjdk version \"19")
-                        )
-
+                else if (found)
                 {
-                    MessageQueue.EnqueueMessage(Message.BuildDefaultMessage("contains a 'good' version."));
+			MessageQueue.EnqueueMessage(Message.BuildDefaultMessage("contains a 'good' version."));
                     good_version = true;
                 }
             }
