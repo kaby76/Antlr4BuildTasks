@@ -113,6 +113,14 @@ namespace Antlr4.Build.Tasks
         public string VersionOfJava { get; set; } = "11";
         public bool Visitor { get; set; }
 
+        public async System.Threading.Tasks.Task DownloadFileAsync(string uri, string outputPath)
+        {
+            var client = new System.Net.Http.HttpClient();
+            var response = await client.GetAsync(uri);
+            var fs = new FileStream(outputPath, FileMode.CreateNew);
+            await response.Content.CopyToAsync(fs);
+        }
+        
         public RunAntlrTool()
         {
             this.GeneratedSourceExtension = _defaultGeneratedSourceExtension;
@@ -369,9 +377,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
                 try
                 {
-                    WebClient webClient = new WebClient();
-                    var archive_name = place_path
-                        + System.IO.Path.GetFileName(j);
+                    var archive_name = place_path + System.IO.Path.GetFileName(j);
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
                     var jar_dir = place_path;
@@ -379,7 +385,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     if (!File.Exists(archive_name))
                     {
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
-                        webClient.DownloadFile(j, archive_name);
+                        DownloadFileAsync(j, archive_name).Wait(new TimeSpan(0, 3, 0));
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
                     }
@@ -400,7 +406,6 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
                 try
                 {
-                    WebClient webClient = new WebClient();
                     var archive_name = place_path
                         + System.IO.Path.GetFileName(j);
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
@@ -410,7 +415,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     if (!File.Exists(archive_name))
                     {
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
-                        webClient.DownloadFile(j, archive_name);
+                        DownloadFileAsync(j, archive_name).Wait(new TimeSpan(0, 3, 0));
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
                     }
@@ -794,14 +799,13 @@ PackageVersion = '" + PackageVersion.ToString() + @"
         {
             try
             {
-                WebClient webClient = new WebClient();
                 var archive_name = place_path + java_download_fn;
                 var jar_dir = place_path;
                 System.IO.Directory.CreateDirectory(jar_dir);
                 if (!File.Exists(archive_name))
                 {
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + java_download_fn));
-                    webClient.DownloadFile(java_download_url, archive_name);
+                    DownloadFileAsync(java_download_url, archive_name).Wait(new TimeSpan(0, 3, 0));
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Completed downloading of " + java_download_fn));
                 }
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found " + archive_name));
@@ -1217,14 +1221,14 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 Regex valid_version_pattern = new Regex("(OpenJDK Runtime Environment [(]build (1[1-9]|[2-9][0-9]))|(Java[(]TM[)] SE Runtime Environment [(]build (1[1-9]|[2-9][0-9]))");
                 var matches = valid_version_pattern.Matches(data);
                 var found = matches.Count > 0;
-		MessageQueue.EnqueueMessage(Message.BuildDefaultMessage("got matches " + matches.Count + " for '" + data + "'"));
+                MessageQueue.EnqueueMessage(Message.BuildDefaultMessage("got matches " + matches.Count + " for '" + data + "'"));
                 if (data.Contains("Exception in thread"))
                 {
                     good_version = false;
                 }
                 else if (found)
                 {
-			MessageQueue.EnqueueMessage(Message.BuildDefaultMessage("contains a 'good' version."));
+                    MessageQueue.EnqueueMessage(Message.BuildDefaultMessage("contains a 'good' version."));
                     good_version = true;
                 }
             }
