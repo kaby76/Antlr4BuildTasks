@@ -1218,7 +1218,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             }
             try
             {
-                Regex valid_version_pattern = new Regex("(OpenJDK Runtime Environment [(]build (1[1-9]|[2-9][0-9]))|(Java[(]TM[)] SE Runtime Environment [(]build (1[1-9]|[2-9][0-9]))");
+                Regex valid_version_pattern = new Regex("(OpenJDK Runtime Environment [^()]*[(]build (1[1-9]|[2-9][0-9]))|(Java[(]TM[)] SE Runtime Environment [(]build (1[1-9]|[2-9][0-9]))");
                 var matches = valid_version_pattern.Matches(data);
                 var found = matches.Count > 0;
                 MessageQueue.EnqueueMessage(Message.BuildDefaultMessage("got matches " + matches.Count + " for '" + data + "'"));
