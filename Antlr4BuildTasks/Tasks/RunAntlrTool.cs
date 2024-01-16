@@ -15,9 +15,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Directory = System.IO.Directory;
 using File = System.IO.File;
 using Path = System.IO.Path;
@@ -26,7 +28,7 @@ using StringBuilder = System.Text.StringBuilder;
 
 namespace Antlr4.Build.Tasks
 {
-    public class RunAntlrTool : Task
+    public class RunAntlrTool : Microsoft.Build.Utilities.Task
     {
         private const string _toolVersion = "10.6.0";
         private const string _defaultGeneratedSourceExtension = "g4";
@@ -115,11 +117,47 @@ namespace Antlr4.Build.Tasks
 
         public async System.Threading.Tasks.Task DownloadFileAsync(string uri, string outputPath)
         {
-            var client = new System.Net.Http.HttpClient();
-            var response = await client.GetAsync(uri);
-            var fs = new FileStream(outputPath, FileMode.CreateNew);
-            await response.Content.CopyToAsync(fs);
+            using (var client = new HttpClient())
+            {
+                client.Timeout = TimeSpan.FromMinutes(3); // Set the timeout
+
+                try
+                {
+                    using (var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead))
+                    {
+                        response.EnsureSuccessStatusCode();
+
+                        using (var fs = new FileStream(outputPath, FileMode.CreateNew))
+                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        {
+                            await stream.CopyToAsync(fs);
+                        }
+                    }
+                }
+                catch (TaskCanceledException ex)
+                {
+                    if (!ex.CancellationToken.IsCancellationRequested)
+                    {
+                        throw new TimeoutException("The download operation timed out.", ex);
+                    }
+                    throw;
+                }
+            }
         }
+        /* public async System.Threading.Tasks.Task DownloadFileAsync(string uri, string outputPath)
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(uri);
+                response.EnsureSuccessStatusCode(); // Throws an exception if the HTTP request was not successful
+
+                using (var fs = new FileStream(outputPath, FileMode.CreateNew))
+                {
+                    await response.Content.CopyToAsync(fs);
+                }
+            }
+        }
+        */
         
         public RunAntlrTool()
         {
@@ -129,7 +167,7 @@ namespace Antlr4.Build.Tasks
         public override bool Execute()
         {
             bool success = false;
-            //System.Threading.Thread.Sleep(20000);
+            System.Threading.Thread.Sleep(60000);
             try
             {
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Starting Antlr4 Build Tasks."));
@@ -385,7 +423,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     if (!File.Exists(archive_name))
                     {
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
-                        DownloadFileAsync(j, archive_name).Wait(new TimeSpan(0, 3, 0));
+                        DownloadFileAsync(j, archive_name).GetAwaiter().GetResult();
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
                     }
@@ -415,7 +453,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     if (!File.Exists(archive_name))
                     {
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
-                        DownloadFileAsync(j, archive_name).Wait(new TimeSpan(0, 3, 0));
+                        DownloadFileAsync(j, archive_name).GetAwaiter().GetResult();
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
                     }
@@ -490,9 +528,12 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             if (try_path == "PATH")
             {
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Trying " + try_path));
+                string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
+                if (user_profile_path.EndsWith("/")) user_profile_path = user_profile_path.Substring(1, user_profile_path.Length - 1);
+                try_path = try_path.Replace("USERPROFILE", user_profile_path).Replace("\\", "/");
                 var executable_name = (System.Environment.OSVersion.Platform == PlatformID.Win32NT
-                    || System.Environment.OSVersion.Platform == PlatformID.Win32S
-                    || System.Environment.OSVersion.Platform == PlatformID.Win32Windows) ? "java.exe" : "java";
+                                       || System.Environment.OSVersion.Platform == PlatformID.Win32S
+                                       || System.Environment.OSVersion.Platform == PlatformID.Win32Windows) ? "java.exe" : "java";
                 var locations_on_path = SearchEnvPathForProgram(executable_name);
                 foreach (var location_on_path in locations_on_path)
                 {
@@ -546,15 +587,17 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 try
                 {
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + try_path));
-
+                    string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
+                    if (user_profile_path.EndsWith("/")) user_profile_path = user_profile_path.Substring(1, user_profile_path.Length - 1);
                     // First look at the downloads directory
                     JavaDownloadDirectory = JavaDownloadDirectory.Replace('\\', '/');
                     if (!JavaDownloadDirectory.EndsWith("/")) JavaDownloadDirectory = JavaDownloadDirectory + "/";
                     var executable_name = (System.Environment.OSVersion.Platform == PlatformID.Win32NT
                                    || System.Environment.OSVersion.Platform == PlatformID.Win32S
                                    || System.Environment.OSVersion.Platform == PlatformID.Win32Windows) ? "java.exe" : "java";
-                    try_path = JavaDownloadDirectory + ".*/" + executable_name;
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Trying pattern " + try_path));
+                    JavaDownloadDirectory = JavaDownloadDirectory + ".*/" + executable_name;
+                    JavaDownloadDirectory = JavaDownloadDirectory.Replace("USERPROFILE", user_profile_path).Replace("\\", "/");
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Trying pattern " + JavaDownloadDirectory));
                     var locations_on_path = new Domemtech.Globbing.Glob(JavaDownloadDirectory)
                                 .RegexContents()
                                 .Where(f => f is FileInfo)
@@ -805,7 +848,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 if (!File.Exists(archive_name))
                 {
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + java_download_fn));
-                    DownloadFileAsync(java_download_url, archive_name).Wait(new TimeSpan(0, 3, 0));
+                    DownloadFileAsync(java_download_url, archive_name).GetAwaiter().GetResult();
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Completed downloading of " + java_download_fn));
                 }
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found " + archive_name));
