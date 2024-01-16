@@ -167,7 +167,7 @@ namespace Antlr4.Build.Tasks
         public override bool Execute()
         {
             bool success = false;
-            System.Threading.Thread.Sleep(60000);
+            //System.Threading.Thread.Sleep(60000);
             try
             {
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Starting Antlr4 Build Tasks."));
