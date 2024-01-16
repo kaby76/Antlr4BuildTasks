@@ -7,4 +7,4 @@ test-java:
 test-no-java:
 	bash test-no-java.sh
 publish:
-	dotnet nuget push Antlr4BuildTasks/bin/Release/Antlr4BuildTasks.12.7.0.nupkg --api-key ${trashkey} --source https://api.nuget.org/v3/index.json
+	dotnet nuget push Antlr4BuildTasks/bin/Release/Antlr4BuildTasks.12.8.0.nupkg --api-key ${trashkey} --source https://api.nuget.org/v3/index.json
