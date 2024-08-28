@@ -58,8 +58,8 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 
 ````xml
 <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="12.8" PrivateAssets="all" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.2" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.8" PrivateAssets="all" IncludeAssets="build" />
 </ItemGroup>
 ````
     
