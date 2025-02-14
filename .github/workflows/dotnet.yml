@@ -24,7 +24,7 @@ jobs:
       shell: bash
       run: make test-java
     - name: Upload Antlr4BuildTasks artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4.6.0
       with:
          name: build-output
          path: /home/runner/work/Antlr4BuildTasks/bin/Debug/*.*nupkg
@@ -54,7 +54,7 @@ jobs:
       shell: bash
       run: make test-java
     - name: Upload Antlr4BuildTasks artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4.6.0
       with:
          name: build-output
          path: /home/runner/work/Antlr4BuildTasks/bin/Debug/*.*nupkg
@@ -80,7 +80,7 @@ jobs:
       shell: bash
       run: make test-no-java
     - name: Upload Antlr4BuildTasks artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4.6.0
       with:
          name: build-output
          path: /home/runner/work/Antlr4BuildTasks/bin/Debug/*.*nupkg
