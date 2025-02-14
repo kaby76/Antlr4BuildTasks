@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 where=`dirname -- "$0"`
 echo $where
 cd $where

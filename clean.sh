@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 rm -rf obj bin
 rm -rf _tests/*/bin _tests/*/obj
 rm -rf .vs
