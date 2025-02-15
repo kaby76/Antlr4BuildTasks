@@ -934,8 +934,12 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 switch (os_arch)
                 {
                     case System.Runtime.InteropServices.Architecture.X64:
-                        if (IntPtr.Size != 8) break;
-			MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning Linux x64"));
+						if (IntPtr.Size != 8)
+						{
+							MessageQueue.EnqueueMessage(Message.BuildInfoMessage("The pointer size is not 8-bytes, that is a problem. It is " + IntPtr.Size));
+							break;
+						}
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning Linux x64"));
                         return "Linux x64";
                 }
             }
@@ -944,12 +948,16 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 switch (os_arch)
                 {
                     case System.Runtime.InteropServices.Architecture.X64:
-                        if (IntPtr.Size != 8) break;
-			MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning MacOS x64"));
+                        if (IntPtr.Size != 8)
+                        {
+                            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("The pointer size is not 8-bytes, that is a problem. It is " + IntPtr.Size));
+                            break;
+                        }
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning MacOS x64"));
                         return "MacOSX x64";
                 }
             }
-	    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning '', which is an unhandled OS."));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning '', which is an unhandled OS."));
             return "";
         }
 
