@@ -44,7 +44,7 @@ namespace Antlr4.Build.Tasks
         {
             new tableEntry { version = "11", os = "Linux x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Windows x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_windows_hotspot_11.0.26_4.zip", outdir = "jdk-11.0.26+4-jre" },
-            new tableEntry { version = "11", os = "MacOSX x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_mac_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
+	    new tableEntry { version = "11", os = "MacOSX x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_mac_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Linux aarch64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Linux s390x", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_s390x_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Windows x86", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x86-32_windows_hotspot_11.0.26_4.zip", outdir = "jdk-11.0.26+4-jre" },
@@ -916,7 +916,10 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             var isOSX = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
             var isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
             System.Runtime.InteropServices.Architecture os_arch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
-            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_arch is " + os_ver));
+	    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_arch is " + os_ver));
+	    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Is Windows? " + isWindows));
+	    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Is Mac? " + isOSX));
+	    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Is Linux? " + isLinux));
             if (isWindows)
             {
                 switch (os_arch)
