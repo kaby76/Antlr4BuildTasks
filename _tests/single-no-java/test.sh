@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 where=`dirname -- "$0"`
 echo $where
 cd $where
