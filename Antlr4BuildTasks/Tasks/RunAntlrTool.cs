@@ -42,9 +42,10 @@ namespace Antlr4.Build.Tasks
         class tableEntry { public string version; public string os; public string link; public string outdir; }
         private List<tableEntry> _tableOfJava = new List<tableEntry>()
         {
-            new tableEntry { version = "11", os = "Linux x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
+            new tableEntry { version = "11", os = "Linux x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11ar.0.26%2B4/OpenJDK11U-jre_x64_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Windows x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_windows_hotspot_11.0.26_4.zip", outdir = "jdk-11.0.26+4-jre" },
-            new tableEntry { version = "11", os = "MacOSX x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_mac_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
+			new tableEntry { version = "11", os = "MacOS x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_mac_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
+			new tableEntry { version = "11", os = "MacOS aarch64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_aarch64_mac_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Linux aarch64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Linux s390x", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_s390x_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Windows x86", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x86-32_windows_hotspot_11.0.26_4.zip", outdir = "jdk-11.0.26+4-jre" },
@@ -942,6 +943,14 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 						}
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning Linux x64"));
                         return "Linux x64";
+					case System.Runtime.InteropServices.Architecture.Arm64:
+						if (IntPtr.Size != 8)
+						{
+							MessageQueue.EnqueueMessage(Message.BuildInfoMessage("The pointer size is not 8-bytes, that is a problem. It is " + IntPtr.Size));
+							break;
+						}
+						MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning Linux aarch64"));
+						return "Linux aarch64";
                 }
             }
             if (isOSX)
@@ -955,7 +964,15 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                             break;
                         }
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning MacOS x64"));
-                        return "MacOSX x64";
+                        return "MacOS x64";
+					case System.Runtime.InteropServices.Architecture.Arm64:
+						if (IntPtr.Size != 8)
+						{
+							MessageQueue.EnqueueMessage(Message.BuildInfoMessage("The pointer size is not 8-bytes, that is a problem. It is " + IntPtr.Size));
+							break;
+						}
+						MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning MacOS aarch64"));
+						return "MacOS aarch64";
                 }
             }
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning '', which is an unhandled OS."));
