@@ -916,7 +916,8 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             var isOSX = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
             var isLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
             System.Runtime.InteropServices.Architecture os_arch = System.Runtime.InteropServices.RuntimeInformation.OSArchitecture;
-            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_arch is " + os_ver));
+			MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_ver is " + os_ver));
+			MessageQueue.EnqueueMessage(Message.BuildInfoMessage("os_arch is " + os_arch));
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Is Windows? " + isWindows));
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Is Mac? " + isOSX));
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Is Linux? " + isLinux));
