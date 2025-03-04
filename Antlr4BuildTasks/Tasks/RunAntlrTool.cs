@@ -42,10 +42,10 @@ namespace Antlr4.Build.Tasks
         class tableEntry { public string version; public string os; public string link; public string outdir; }
         private List<tableEntry> _tableOfJava = new List<tableEntry>()
         {
-            new tableEntry { version = "11", os = "Linux x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11ar.0.26%2B4/OpenJDK11U-jre_x64_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
+            new tableEntry { version = "11", os = "Linux x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Windows x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_windows_hotspot_11.0.26_4.zip", outdir = "jdk-11.0.26+4-jre" },
-			new tableEntry { version = "11", os = "MacOS x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_mac_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
-			new tableEntry { version = "11", os = "MacOS aarch64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_aarch64_mac_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
+            new tableEntry { version = "11", os = "MacOS x64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x64_mac_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
+            new tableEntry { version = "11", os = "MacOS aarch64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_aarch64_mac_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Linux aarch64", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_aarch64_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Linux s390x", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_s390x_linux_hotspot_11.0.26_4.tar.gz", outdir = "jdk-11.0.26+4-jre" },
             new tableEntry { version = "11", os = "Windows x86", link = "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%2B4/OpenJDK11U-jre_x86-32_windows_hotspot_11.0.26_4.zip", outdir = "jdk-11.0.26+4-jre" },
