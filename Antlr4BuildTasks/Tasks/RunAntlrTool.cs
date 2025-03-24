@@ -433,10 +433,10 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     where = archive_name;
                     result = true;
                 }
-                catch
+                catch (Exception ex)
                 {
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        "Problem downloading or saving probed file."));
+                        $"Problem downloading or saving probed file. {ex}"));
                 }
             }
             else if (path.StartsWith("https://") || path.StartsWith("http://"))
@@ -463,10 +463,10 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     where = archive_name;
                     result = true;
                 }
-                catch
+                catch (Exception ex)
                 {
                     MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        "Problem downloading or saving probed file."));
+                        $"Problem downloading or saving probed file. {ex}"));
                 }
             }
             else
