@@ -8,11 +8,10 @@
   <ItemGroup>
    <Antlr4 Include="Arithmetic.g4">
 <Package></Package>
-<!-- AntlrRuntime>C:/Users/Kenne/.m2/antlr4-4.11.1-complete.jar</AntlrRuntime -->
 </Antlr4>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Antlr4BuildTasks" Version="12.9" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.10" />
   </ItemGroup>
   <PropertyGroup>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
