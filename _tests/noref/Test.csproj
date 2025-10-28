@@ -11,7 +11,7 @@
 </Antlr4>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Antlr4BuildTasks" Version="12.10" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.11" />
   </ItemGroup>
   <PropertyGroup>
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
