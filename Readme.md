@@ -127,6 +127,23 @@ to search PATH for an executable, or DOWNLOAD to download and use the `<JavaDown
 * `<Log>` -- Adds'-Xlog' to Antlr4 Tool call, which turns on logging.
 * `<LongMessages>` -- Add '-long-messages' to Antlr4 Tool call, which turns on long messages.
 
+### Customizing the Antlr4 tool JAR download location
+
+By default, Antlr4BuildTasks downloads the ANTLR tool JAR from `https://www.antlr.org/download/`, falling back
+to Maven Central if the ANTLR website is unavailable. You can customize this behavior using the `AntlrProbePath` property.
+
+The `AntlrProbePath` property is a semicolon-separated list of URIs to search for the ANTLR tool JAR.
+
+You can use `file://` URIs to point to a local directory containing the JAR:
+
+````xml
+<PropertyGroup>
+    <AntlrProbePath>file:///$(MSBuildProjectDirectory)/external/</AntlrProbePath>
+</PropertyGroup>
+````
+
+The JAR file should be named `antlr4-{version}-complete.jar` (e.g., `antlr4-4.13.1-complete.jar`).
+
 The Antlr4 tool generates files that produce a lot of compiler warnings for code
 set with `CLSCompliant=false`. This package adds in code to ignore these warnings
 so you don't need to modify your .csproj file.

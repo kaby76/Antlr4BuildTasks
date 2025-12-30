@@ -302,7 +302,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
 
             List<string> paths = new List<string>();
             if (AntlrProbePath != null)
-                    paths = AntlrProbePath.Select(p => p.ItemSpec).ToList();
+                paths = AntlrProbePath.Select(p => p.ItemSpec).ToList();
 
             var path = "";
             // Set up probe path for Antlr tool jar if there isn't one.
@@ -316,10 +316,10 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             {
                 path = AntlrToolJarDownloadDir.Replace("\\", "/");
             }
-            
+
             if (!path.EndsWith("/")) path = path + "/";
-            
-            
+
+
             string tool_path = path + ".nuget/packages/antlr4buildtasks/" + _toolVersion + "/";
 
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
@@ -331,6 +331,9 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                 paths.Add(package_area);
                 var full_path = "file:///" + Path.GetFullPath(IntermediateOutputPath);
                 paths.Add(full_path);
+                // antlr.org is preferred over Maven Central due to rate limiting issues
+                // with Maven Central in CI environments (see issue #99)
+                paths.Add("https://www.antlr.org/download/");
                 paths.Add("https://repo1.maven.org/maven2/org/antlr/antlr4/");
             }
 
@@ -382,17 +385,44 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             return result;
         }
 
+        private bool TryDownloadJar(string url, string archive_name, string place_path)
+        {
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + url));
+            try
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
+                System.IO.Directory.CreateDirectory(place_path);
+                if (!File.Exists(archive_name))
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + url));
+                    DownloadFileAsync(url, archive_name).GetAwaiter().GetResult();
+                }
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found " + archive_name));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                    $"Problem downloading or saving probed file. {ex}"));
+                return false;
+            }
+        }
+
         private bool TryProbeAntlrJar(string path, string version, string place_path, out string where)
         {
-            bool result = false;
             where = null;
             path = path.Trim();
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("path is " + path));
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
             if (!(path.EndsWith("/") || path.EndsWith("\\"))) path = path + "/";
+
+            // Standard jar filename used for local storage
+            var standard_jar_name = @"antlr4-" + version + @"-complete.jar";
+
             if (path.StartsWith("file://"))
             {
-                var f = path + @"antlr4-" + version + @"-complete.jar";
+                var f = path + standard_jar_name;
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + f));
                 try
                 {
@@ -403,7 +433,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                     {
                         MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found."));
                         where = local_file;
-                        result = true;
+                        return true;
                     }
                 }
                 catch
@@ -412,61 +442,34 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             }
             else if (path == "https://repo1.maven.org/maven2/org/antlr/antlr4/")
             {
-                var j = path + version + @"/antlr4-" + version + @"-complete.jar";
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
-                try
+                // Maven Central uses a versioned subdirectory
+                var url = path + version + @"/" + standard_jar_name;
+                var archive_name = place_path + standard_jar_name;
+                if (TryDownloadJar(url, archive_name, place_path))
                 {
-                    var archive_name = place_path + System.IO.Path.GetFileName(j);
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
-                    var jar_dir = place_path;
-                    System.IO.Directory.CreateDirectory(jar_dir);
-                    if (!File.Exists(archive_name))
-                    {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
-                        DownloadFileAsync(j, archive_name).GetAwaiter().GetResult();
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
-                    }
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found "
-                        + archive_name));
                     where = archive_name;
-                    result = true;
+                    return true;
                 }
-                catch (Exception ex)
+            }
+            else if (path == "https://www.antlr.org/download/")
+            {
+                // antlr.org uses "antlr-" prefix instead of "antlr4-"
+                var url = path + @"antlr-" + version + @"-complete.jar";
+                var archive_name = place_path + standard_jar_name;
+                if (TryDownloadJar(url, archive_name, place_path))
                 {
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        $"Problem downloading or saving probed file. {ex}"));
+                    where = archive_name;
+                    return true;
                 }
             }
             else if (path.StartsWith("https://") || path.StartsWith("http://"))
             {
-                var j = path + @"antlr4-" + version + @"-complete.jar";
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Probing " + j));
-                try
+                var url = path + standard_jar_name;
+                var archive_name = place_path + standard_jar_name;
+                if (TryDownloadJar(url, archive_name, place_path))
                 {
-                    var archive_name = place_path
-                        + System.IO.Path.GetFileName(j);
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
-                    var jar_dir = place_path;
-                    System.IO.Directory.CreateDirectory(jar_dir);
-                    if (!File.Exists(archive_name))
-                    {
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Downloading " + j));
-                        DownloadFileAsync(j, archive_name).GetAwaiter().GetResult();
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("archive_name is " + archive_name));
-                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage("place_path is " + place_path));
-                    }
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Found. Saving to "
-                        + archive_name));
                     where = archive_name;
-                    result = true;
-                }
-                catch (Exception ex)
-                {
-                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                        $"Problem downloading or saving probed file. {ex}"));
+                    return true;
                 }
             }
             else
@@ -477,7 +480,7 @@ PackageVersion = '" + PackageVersion.ToString() + @"
                         + "', which doesn't start with 'file://' or 'https://'. "
                         + @"Edit your .csproj file to make sure the path follows that syntax."));
             }
-            return result;
+            return false;
         }
 
         public string SetupJava()
