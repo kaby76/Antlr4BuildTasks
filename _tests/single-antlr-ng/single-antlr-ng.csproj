@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>AntlrTemplate</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Antlr4 Include="Arithmetic.g4">
+      <Package>simple</Package>
+      <ToolType>antlr-ng</ToolType>
+      <NodeExec>PATH</NodeExec>
+    </Antlr4>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.11" />
+  </ItemGroup>
+
+</Project>
