@@ -118,6 +118,10 @@
             <Log>false</Log>
             <LongMessages>false</LongMessages>
             <Package></Package>
+            <ToolType>java</ToolType>
+            <NodeExec>PATH</NodeExec>
+            <NodeDownloadDirectory>USERPROFILE/.node/</NodeDownloadDirectory>
+            <AntlrNgPath></AntlrNgPath>
             <Visitor>true</Visitor>
         </Antlr4>
     </ItemDefinitionGroup>
@@ -160,6 +164,10 @@
                         TargetFrameworkVersion="$(TargetFrameworkVersion)"
                         TargetFrameworks="@(TargetFrameworks)"
                         TokensFiles="@(Antlr4Tokens)"
+                        ToolType="%(Antlr4.ToolType)"
+                        NodeExec="%(Antlr4.NodeExec)"
+                        NodeDownloadDirectory="%(Antlr4.NodeDownloadDirectory)"
+                        AntlrNgPath="%(Antlr4.AntlrNgPath)"
                         Visitor="%(Antlr4.Visitor)"
           >
             <Output ItemName="ToCompileFiles" TaskParameter="GeneratedCodeFiles" />

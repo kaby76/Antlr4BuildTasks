@@ -111,6 +111,30 @@
             Default="false"
             DisplayName="long messages (-long-messages)"
             Description="Turn on long messages for Antlr tool." />
+        <StringProperty
+            Category="ANTLR"
+            Name="ToolType"
+            Default="java"
+            DisplayName="ANTLR Tool Type"
+            Description="Specifies which ANTLR tool to use: 'java' for the standard Java-based ANTLR4 tool, or 'antlr-ng' for the Node.js-based antlr-ng tool. Default is 'java'." />
+        <StringProperty
+            Category="ANTLR"
+            Name="NodeExec"
+            Default="PATH"
+            DisplayName="Full path of Node.js executable"
+            Description="This is a search path or full path of Node.js installed on your system. Only used when ToolType is 'antlr-ng'. The default is 'PATH', which searches the system PATH." />
+        <StringProperty
+            Category="ANTLR"
+            Name="NodeDownloadDirectory"
+            Default="USERPROFILE/.node/"
+            DisplayName="Full path of folder to store Node.js downloads"
+            Description="This is the full path of the location to store downloaded Node.js if needed. Only used when ToolType is 'antlr-ng'. The default is USERPROFILE/.node, which gets expanded to a path in the user's home directory for the OS." />
+        <StringProperty
+            Category="ANTLR"
+            Name="AntlrNgPath"
+            Default=""
+            DisplayName="Full path of antlr-ng CLI script"
+            Description="This is the full path of the antlr-ng CLI script (cli.js). Only used when ToolType is 'antlr-ng'. If blank, the tool will search in common npm installation locations (local node_modules, global npm, etc.)." />
 
         <!--
             The rest of these properties are not ANTLR-specific, but CPS provides no way to inherit properties, so if we fail to

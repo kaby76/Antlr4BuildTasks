@@ -126,6 +126,39 @@ to search PATH for an executable, or DOWNLOAD to download and use the `<JavaDown
 * `<AntlrToolJarDownloadDir>` -- Full path of the directory for download and use Antlr4 tool jar. If not set the default value is `$USERPROFILE/.m2/` and `$HOME/.m2/` to Windows and Linux respectively.
 * `<Log>` -- Adds'-Xlog' to Antlr4 Tool call, which turns on logging.
 * `<LongMessages>` -- Add '-long-messages' to Antlr4 Tool call, which turns on long messages.
+* `<ToolType>` -- Specifies which ANTLR tool to use: `java` (default) for the standard Java-based ANTLR4 tool, or `antlr-ng` for the Node.js-based antlr-ng tool.
+* `<NodeExec>` -- Path to Node.js executable (only used when `ToolType` is `antlr-ng`). Default is `PATH` to search system PATH.
+* `<AntlrNgPath>` -- Full path to antlr-ng CLI script (only used when `ToolType` is `antlr-ng`). If blank, searches common npm installation locations.
+
+### Using antlr-ng (Node.js-based ANTLR tool)
+
+As an alternative to the Java-based ANTLR tool, you can use [antlr-ng](https://github.com/antlr-ng/antlr-ng),
+a Node.js-based reimplementation of ANTLR that doesn't require Java.
+
+**Prerequisites:**
+- Node.js 20.x or later must be installed
+- antlr-ng must be installed globally (`npm install -g antlr-ng`) or locally in your project (`npm install --save-dev antlr-ng`)
+
+**To use antlr-ng, set the `ToolType` property:**
+
+````xml
+<ItemGroup>
+    <Antlr4 Include="MyGrammar.g4">
+        <ToolType>antlr-ng</ToolType>
+        <Visitor>true</Visitor>
+        <Package>MyNamespace</Package>
+    </Antlr4>
+</ItemGroup>
+````
+
+**Benefits of using antlr-ng:**
+- No Java runtime required
+- Faster startup time (no JVM initialization)
+- Native Node.js integration
+- Smaller footprint
+
+**Note:** antlr-ng automatically generates C# code when used with Antlr4BuildTasks. Most ANTLR options are supported,
+though some advanced Java-specific options (like `-Xlog`, `-Werror`) may not have antlr-ng equivalents.
 
 ### Customizing the Antlr4 tool JAR download location
 
