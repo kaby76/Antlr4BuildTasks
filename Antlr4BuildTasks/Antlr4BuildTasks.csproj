@@ -5,9 +5,9 @@
 		<EnableDefaultNoneItems>False</EnableDefaultNoneItems>
 		<RootNamespace>Antlr4.Build.Tasks</RootNamespace>
 		<AssemblyName>Antlr4BuildTasks</AssemblyName>
-		<AssemblyVersion>12.9</AssemblyVersion>
-		<FileVersion>12.9</FileVersion>
-		<Version>12.9</Version>
+		<AssemblyVersion>12.12</AssemblyVersion>
+		<FileVersion>12.12</FileVersion>
+		<Version>12.12</Version>
 		<Description>Derivative of Harwell's Antrl4cs: contains "ITask" wrapper for Msbuild, schemas for setting Antlr4 file properties, and a separately installed official Antlr4 java tool at antlr.org downloads.</Description>
 		<Copyright />
 		<Company>Domemtech</Company>
@@ -23,7 +23,7 @@
 		<PackageTags>antlr antlr4 parsing</PackageTags>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<Authors>Ken Domino</Authors>
-		<PackageReleaseNotes>12.9</PackageReleaseNotes>
+		<PackageReleaseNotes>12.12</PackageReleaseNotes>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<Nullable>disable</Nullable>
 	</PropertyGroup>
@@ -45,8 +45,8 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Build.Framework" Version="17.13.9" />
-		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.13.9" />
+		<PackageReference Include="Microsoft.Build.Framework" Version="17.14.28" />
+		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.14.28" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="System.Threading" Version="4.3.0" />
 	</ItemGroup>

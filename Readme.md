@@ -59,7 +59,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 ````xml
 <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="12.9" PrivateAssets="all" IncludeAssets="build" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.10" PrivateAssets="all" IncludeAssets="build" />
 </ItemGroup>
 ````
     
@@ -127,6 +127,23 @@ to search PATH for an executable, or DOWNLOAD to download and use the `<JavaDown
 * `<Log>` -- Adds'-Xlog' to Antlr4 Tool call, which turns on logging.
 * `<LongMessages>` -- Add '-long-messages' to Antlr4 Tool call, which turns on long messages.
 
+### Customizing the Antlr4 tool JAR download location
+
+By default, Antlr4BuildTasks downloads the ANTLR tool JAR from `https://www.antlr.org/download/`, falling back
+to Maven Central if the ANTLR website is unavailable. You can customize this behavior using the `AntlrProbePath` property.
+
+The `AntlrProbePath` property is a semicolon-separated list of URIs to search for the ANTLR tool JAR.
+
+You can use `file://` URIs to point to a local directory containing the JAR:
+
+````xml
+<PropertyGroup>
+    <AntlrProbePath>file:///$(MSBuildProjectDirectory)/external/</AntlrProbePath>
+</PropertyGroup>
+````
+
+The JAR file should be named `antlr4-{version}-complete.jar` (e.g., `antlr4-4.13.1-complete.jar`).
+
 The Antlr4 tool generates files that produce a lot of compiler warnings for code
 set with `CLSCompliant=false`. This package adds in code to ignore these warnings
 so you don't need to modify your .csproj file.
@@ -167,8 +184,8 @@ to
 
 ````xml
 <ItemGroup>
-    <PackageReference Include="Antlr4BuildTasks" Version="12.9" PrivateAssets="all" />
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.2" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.10" PrivateAssets="all" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
 </ItemGroup>
 ````
 
@@ -187,7 +204,10 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release, v12.9
+### Latest release, v12.10
+
+### Released 12.10 (Mar 25)
+* Fix JRE download link for Linux x86.
 
 ### Release 12.9 (Nov '24)
 * Fix for #90.
