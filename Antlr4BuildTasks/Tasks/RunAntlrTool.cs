@@ -5,6 +5,7 @@
 // Licensed under the BSD License. See LICENSE.txt in the project root for license information.
 
 using Antlr4.Build.Tasks.Util;
+using Antlr4.Build.Tasks.Tools;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using SharpCompress.Common;
@@ -115,6 +116,10 @@ namespace Antlr4.Build.Tasks
         public string Version { get; set; }
         public string VersionOfJava { get; set; } = "11";
         public bool Visitor { get; set; }
+        public string ToolType { get; set; } = "java"; // "java" or "antlr-ng"
+        public string NodeExec { get; set; }
+        public string NodeDownloadDirectory { get; set; }
+        public string AntlrNgPath { get; set; }
 
         public async System.Threading.Tasks.Task DownloadFileAsync(string uri, string outputPath)
         {
@@ -181,18 +186,104 @@ namespace Antlr4.Build.Tasks
                 }
                 Directory.CreateDirectory(AntOutDir);
 
-                AntlrToolJar = SetupAntlrToolJar();
-                if (!File.Exists(AntlrToolJar))
-                    throw new Exception("Cannot find Antlr tool jar, currently set to " + "'" + AntlrToolJar + "'");
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("AntlrToolJar is \"" + AntlrToolJar + "\""));
+                // Create the appropriate tool based on ToolType
+                IAntlrTool tool;
+                var toolType = (ToolType ?? "java").ToLower();
 
-                JavaExec = SetupJava();
-                if (!File.Exists(JavaExec))
-                    throw new Exception("Cannot find Java executable, currently set to " + "'" + JavaExec + "'");
-                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("JavaExec is \"" + JavaExec + "\""));
+                if (toolType == "antlr-ng")
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Using antlr-ng tool"));
 
-                success = GetGeneratedFileNameList()
-                    && GenerateFiles(out success);
+                    var nodeExec = SetupNode();
+                    if (!File.Exists(nodeExec))
+                        throw new Exception("Cannot find Node.js executable, currently set to " + "'" + nodeExec + "'");
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("NodeExec is \"" + nodeExec + "\""));
+
+                    var antlrNgPath = SetupAntlrNg();
+                    if (!File.Exists(antlrNgPath))
+                        throw new Exception("Cannot find antlr-ng, currently set to " + "'" + antlrNgPath + "'");
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("AntlrNgPath is \"" + antlrNgPath + "\""));
+
+                    var ngTool = new AntlrNgTool()
+                    {
+                        NodeExecutable = nodeExec,
+                        AntlrNgPath = antlrNgPath,
+                        OutputDirectory = AntOutDir,
+                        LibPath = LibPath,
+                        GenerateATN = GAtn,
+                        EnableLogging = Log_,
+                        LongMessages = LongMessages,
+                        Encoding = Encoding,
+                        GenerateListener = Listener,
+                        GenerateVisitor = Visitor,
+                        Package = Package,
+                        DOptions = DOptions,
+                        TreatWarningsAsErrors = Error,
+                        ForceATN = ForceAtn
+                    };
+
+                    tool = ngTool;
+                }
+                else // Default to Java tool
+                {
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Using Java ANTLR4 tool"));
+
+                    AntlrToolJar = SetupAntlrToolJar();
+                    if (!File.Exists(AntlrToolJar))
+                        throw new Exception("Cannot find Antlr tool jar, currently set to " + "'" + AntlrToolJar + "'");
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("AntlrToolJar is \"" + AntlrToolJar + "\""));
+
+                    JavaExec = SetupJava();
+                    if (!File.Exists(JavaExec))
+                        throw new Exception("Cannot find Java executable, currently set to " + "'" + JavaExec + "'");
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage("JavaExec is \"" + JavaExec + "\""));
+
+                    var javaTool = new JavaAntlrTool()
+                    {
+                        JavaExecutable = JavaExec,
+                        AntlrJarPath = AntlrToolJar,
+                        OutputDirectory = AntOutDir,
+                        LibPath = LibPath,
+                        GenerateATN = GAtn,
+                        EnableLogging = Log_,
+                        LongMessages = LongMessages,
+                        Encoding = Encoding,
+                        GenerateListener = Listener,
+                        GenerateVisitor = Visitor,
+                        Package = Package,
+                        DOptions = DOptions,
+                        TreatWarningsAsErrors = Error,
+                        ForceATN = ForceAtn
+                    };
+
+                    tool = javaTool;
+                }
+
+                // Setup the tool
+                if (!tool.Setup())
+                {
+                    throw new Exception($"{tool.ToolName} tool setup failed");
+                }
+
+                // Get grammar files
+                var grammarFiles = SourceCodeFiles == null
+                    ? OtherSourceCodeFiles
+                    : SourceCodeFiles.Select(s => s.ItemSpec).ToList();
+
+                // Discover generated files
+                if (!tool.DiscoverGeneratedFiles(grammarFiles, out var generatedFiles, out var generatedCodeFiles))
+                {
+                    throw new Exception("Failed to discover generated files");
+                }
+
+                _generatedFiles = generatedFiles;
+                _generatedCodeFiles = generatedCodeFiles;
+
+                // Generate files
+                if (!tool.GenerateFiles(grammarFiles, out success))
+                {
+                    throw new Exception("Failed to generate files");
+                }
             }
             catch (Exception exception)
             {
@@ -980,6 +1071,131 @@ PackageVersion = '" + PackageVersion.ToString() + @"
             }
             MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Returning '', which is an unhandled OS."));
             return "";
+        }
+
+        private string SetupNode()
+        {
+            string result = null;
+            string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
+            if (user_profile_path.EndsWith("/")) user_profile_path = user_profile_path.Substring(1, user_profile_path.Length - 1);
+
+            // Replace USERPROFILE in various input to tool
+            var node_exec = (NodeExec ?? "PATH").Replace("USERPROFILE", user_profile_path);
+
+            // Split up probe path, which is a combination of different paths
+            List<string> paths = node_exec.Split(';').ToList();
+
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Search path for node (NodeExec): " + node_exec));
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Paths to search for the node executable, in order, are: " + String.Join(";", paths)));
+
+            foreach (var try_path in paths)
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage("probing node executable at " + try_path));
+                if (try_path.ToUpper() == "PATH")
+                {
+                    // Search for node in system PATH
+                    var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                    var nodeFileName = isWindows ? "node.exe" : "node";
+                    var found = SearchEnvPathForProgram(nodeFileName);
+                    if (found.Count > 0)
+                    {
+                        result = found.First();
+                        MessageQueue.EnqueueMessage(Message.BuildInfoMessage($"Found node at {result}"));
+                        break;
+                    }
+                }
+                else if (File.Exists(try_path))
+                {
+                    result = try_path;
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage($"Found node at {result}"));
+                    break;
+                }
+            }
+
+            if (result == null)
+            {
+                MessageQueue.EnqueueMessage(Message.BuildErrorMessage(
+                    "Could not find Node.js executable. Please install Node.js or set the NodeExec property."));
+            }
+
+            return result;
+        }
+
+        private string SetupAntlrNg()
+        {
+            string result = null;
+
+            // If AntlrNgPath is already set, use it
+            if (!string.IsNullOrEmpty(AntlrNgPath) && File.Exists(AntlrNgPath))
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage($"Using antlr-ng at {AntlrNgPath}"));
+                return AntlrNgPath;
+            }
+
+            // First, try to find antlr-ng in PATH (works for global npm installations)
+            var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            var antlrNgExecName = isWindows ? "antlr-ng.cmd" : "antlr-ng";
+            var foundInPath = SearchEnvPathForProgram(antlrNgExecName);
+
+            if (foundInPath.Count > 0)
+            {
+                result = foundInPath.First();
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage($"Found antlr-ng in PATH at {result}"));
+                return result;
+            }
+
+            // If not in PATH, try to find the JS files in common npm locations
+            string user_profile_path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).Replace("\\", "/");
+            List<string> searchPaths = new List<string>();
+
+            // Check local node_modules in project directory first
+            var projectDir = Path.GetDirectoryName(Path.GetFullPath(IntermediateOutputPath));
+            searchPaths.Add(Path.Combine(projectDir, "node_modules", "antlr-ng", "dist", "cli", "runner.js"));
+            searchPaths.Add(Path.Combine(projectDir, "node_modules", "antlr-ng", "cli.js"));
+
+            // Check global npm installation locations
+            if (isWindows)
+            {
+                searchPaths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "npm", "node_modules", "antlr-ng", "dist", "cli", "runner.js"));
+                searchPaths.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "nodejs", "node_modules", "antlr-ng", "dist", "cli", "runner.js"));
+            }
+            else
+            {
+                searchPaths.Add("/usr/local/lib/node_modules/antlr-ng/dist/cli/runner.js");
+                searchPaths.Add("/opt/homebrew/lib/node_modules/antlr-ng/dist/cli/runner.js");
+
+                // Check NVM locations
+                var nvmDir = Path.Combine(user_profile_path, ".nvm", "versions", "node");
+                if (Directory.Exists(nvmDir))
+                {
+                    var nvmVersions = Directory.GetDirectories(nvmDir);
+                    foreach (var versionDir in nvmVersions)
+                    {
+                        searchPaths.Add(Path.Combine(versionDir, "lib", "node_modules", "antlr-ng", "dist", "cli", "runner.js"));
+                    }
+                }
+            }
+
+            MessageQueue.EnqueueMessage(Message.BuildInfoMessage("Searching for antlr-ng in: " + String.Join(";", searchPaths)));
+
+            foreach (var path in searchPaths)
+            {
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage($"Probing {path}"));
+                if (File.Exists(path))
+                {
+                    result = path;
+                    MessageQueue.EnqueueMessage(Message.BuildInfoMessage($"Found antlr-ng at {result}"));
+                    break;
+                }
+            }
+
+            if (result == null)
+            {
+                MessageQueue.EnqueueMessage(Message.BuildErrorMessage(
+                    "Could not find antlr-ng. Please install it using 'npm install -g antlr-ng' or 'npm install --save-dev antlr-ng'."));
+            }
+
+            return result;
         }
 
         private bool GetGeneratedFileNameList()
