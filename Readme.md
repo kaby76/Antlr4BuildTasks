@@ -146,7 +146,7 @@ a Node-based reimplementation of ANTLR that doesn't require Java.
 
 ***NB: This option breaks the fundamental requirement for Antlr4BuildTasks, as it *requires* stuff to be in your environment. See https://github.com/kaby76/Antlr4BuildTasks/issues/111***
 
-**To use antlr-ng, set the `ToolType` property:**
+To use antlr-ng, set the `ToolType` property:
 
 ````xml
 <ItemGroup>
