@@ -10,12 +10,12 @@ The purpose of Antlr4BuildTasks is to simplify the builds for .NET Antlr4 parser
 * ***Never use the wrong version of the tool with a selected runtime version.***
 
 ### History
-Building Antlr4 programs is a laborious task. To build a program, you must:
+Building Antlr4 programs is a laborious task when done manually. The steps are sort of glossed over in the [Antlr4 documentation for CSharp](https://github.com/antlr/antlr4/blob/master/doc/csharp-target.md). To build a program, you must:
 * Install Java. You need to use Java version 11 or newer because the
 tool requires it.
 * Download the Antlr4 Tool .jar from the download area.
 * Run the tool on you grammar. Many manually run the tool, but there
-are plenty of questions how to do that because it is different over the OS
+are plenty of questions about how to do that because it is different over the OS
 you are running. If you modify the grammar, but forget to regenerate the parser
 and lexer, you end up with a version skew.
 * For C#, you need to set up a `<PackageReference>` for the runtime Antlr4.Runtime.Standard.
