@@ -2,6 +2,12 @@
 
 [![Build](https://github.com/kaby76/Antlr4BuildTasks/workflows/.NET/badge.svg)](https://github.com/kaby76/Antlr4BuildTasks/actions?query=workflow%3A.NET)
 
+### Purpose
+The purpose of Antlr4BuildTasks is to simplify the builds for Antlr4 parser applications.
+
+***The requirement for Antlr4BuildTasks is simple: require nothing, download everything.***
+
+
 ### History
 Building Antlr4 programs is a laborious task. To build a program, you must:
 * Install Java. You need to use Java version 11 or newer because the
@@ -37,8 +43,6 @@ build tool.
 **You shouldn't use Harwell's packages any more if you want to use ANTLR 4.7 and above.**
 
 ### New Approach
-The requirements for Antlr4BuildTasks is simple, but very profound: ***require nothing, download everything.***
-
 Antlr4BuildTasks is a third-party set of build rules
 [published in Nuget](https://www.nuget.org/packages/Antlr4BuildTasks/) as a package
 for builds of C# projects containing Antlr4 grammars,
