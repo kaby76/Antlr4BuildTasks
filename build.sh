@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -x
-config=Debug
+config=Release
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     machine=Linux;;
