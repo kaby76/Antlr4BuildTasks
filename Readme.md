@@ -3,7 +3,7 @@
 [![Build](https://github.com/kaby76/Antlr4BuildTasks/workflows/.NET/badge.svg)](https://github.com/kaby76/Antlr4BuildTasks/actions?query=workflow%3A.NET)
 
 ### Purpose
-The purpose of Antlr4BuildTasks is to simplify the builds for Antlr4 parser applications.
+The purpose of Antlr4BuildTasks is to simplify the builds for .NET Antlr4 parser applications.
 
 ***The requirement for Antlr4BuildTasks is simple: require nothing, download everything.***
 
