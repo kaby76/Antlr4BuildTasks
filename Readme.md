@@ -5,7 +5,9 @@
 ### Purpose
 The purpose of Antlr4BuildTasks is to simplify the builds for .NET Antlr4 parser applications.
 
-***The requirement for Antlr4BuildTasks is simple: Require nothing, download everything.***
+***The requirements for Antlr4BuildTasks are simple:***
+* ***Require nothing, download everything.***
+* ***Never use the wrong version of the tool with a selected runtime version.***
 
 ### History
 Building Antlr4 programs is a laborious task. To build a program, you must:
