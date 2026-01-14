@@ -138,11 +138,13 @@ to search PATH for an executable, or DOWNLOAD to download and use the `<JavaDown
 ### Using antlr-ng (Node.js-based ANTLR tool)
 
 As an alternative to the Java-based ANTLR tool, you can use [antlr-ng](https://github.com/antlr-ng/antlr-ng),
-a Node.js-based reimplementation of ANTLR that doesn't require Java.
+a Node-based reimplementation of ANTLR that doesn't require Java.
 
 **Prerequisites:**
 - Node.js 20.x or later must be installed
 - antlr-ng must be installed globally (`npm install -g antlr-ng`) or locally in your project (`npm install --save-dev antlr-ng`)
+
+***NB: This option breaks the fundamental requirement for Antlr4BuildTasks, as it *requires* stuff to be in your environment. See https://github.com/kaby76/Antlr4BuildTasks/issues/111***
 
 **To use antlr-ng, set the `ToolType` property:**
 
