@@ -37,6 +37,8 @@ build tool.
 **You shouldn't use Harwell's packages any more if you want to use ANTLR 4.7 and above.**
 
 ### New Approach
+The requirements for Antlr4BuildTasks is simple, but very profound: ***require nothing, download everything.***
+
 Antlr4BuildTasks is a third-party set of build rules
 [published in Nuget](https://www.nuget.org/packages/Antlr4BuildTasks/) as a package
 for builds of C# projects containing Antlr4 grammars,
