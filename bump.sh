@@ -1,6 +1,6 @@
 #
 
-next_version="12.12"
+next_version="12.13"
 
 files=`find . -name '*.csproj'`
 subset=`grep -l -e Antlr4BuildTasks $files`

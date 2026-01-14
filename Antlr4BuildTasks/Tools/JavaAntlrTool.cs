@@ -73,33 +73,36 @@ namespace Antlr4.Build.Tasks.Tools
             _start = false;
             _sb.Clear();
 
-            var arguments = BuildDependencyArguments(grammarFiles);
-
-            bool executed = ExecuteProcess(
-                JavaExecutable,
-                arguments,
-                HandleOutputDataReceivedFirstTime,
-                HandleStderrDataReceived,
-                out int exitCode);
-
-            if (!executed || exitCode != 0)
+            foreach (var grammar_file in grammarFiles)
             {
-                generatedFiles = new List<string>();
-                generatedCodeFiles = new List<string>();
-                return false;
-            }
+                var arguments = BuildDependencyArguments(grammar_file);
 
-            MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
-                $"The generated file list contains {_generatedCodeFiles.Count} items."));
+                bool executed = ExecuteProcess(
+                    JavaExecutable,
+                    arguments,
+                    HandleOutputDataReceivedFirstTime,
+                    HandleStderrDataReceived,
+                    out int exitCode);
 
-            // Add tokens files since ANTLR Tool doesn't list them in -depend output
-            var lexerFiles = _generatedCodeFiles.Where(s => s.EndsWith("Lexer.cs")).ToList();
-            foreach (var lexerFile in lexerFiles)
-            {
-                var directory = Path.GetDirectoryName(lexerFile);
-                var stem = Path.GetFileNameWithoutExtension(lexerFile);
-                var tokensFile = Path.Combine(directory, stem + ".tokens");
-                _generatedFiles.Add(tokensFile);
+                if (!executed || exitCode != 0)
+                {
+                    generatedFiles = new List<string>();
+                    generatedCodeFiles = new List<string>();
+                    return false;
+                }
+
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                    $"The generated file list contains {_generatedCodeFiles.Count} items."));
+
+                // Add tokens files since ANTLR Tool doesn't list them in -depend output
+                var lexerFiles = _generatedCodeFiles.Where(s => s.EndsWith("Lexer.cs")).ToList();
+                foreach (var lexerFile in lexerFiles)
+                {
+                    var directory = Path.GetDirectoryName(lexerFile);
+                    var stem = Path.GetFileNameWithoutExtension(lexerFile);
+                    var tokensFile = Path.Combine(directory, stem + ".tokens");
+                    _generatedFiles.Add(tokensFile);
+                }
             }
 
             generatedFiles = _generatedFiles;
@@ -109,20 +112,25 @@ namespace Antlr4.Build.Tasks.Tools
 
         public override bool GenerateFiles(IEnumerable<string> grammarFiles, out bool success)
         {
-            var arguments = BuildGenerationArguments(grammarFiles);
+            bool executed = false;
+            success = false;
+            foreach (var grammar_file in grammarFiles)
+            {
+                var arguments = BuildGenerationArguments(grammar_file);
 
-            bool executed = ExecuteProcess(
-                JavaExecutable,
-                arguments,
-                HandleStdoutDataReceived,
-                HandleStderrDataReceived,
-                out int exitCode);
+                executed = ExecuteProcess(
+                    JavaExecutable,
+                    arguments,
+                    HandleStdoutDataReceived,
+                    HandleStderrDataReceived,
+                    out int exitCode);
 
-            success = executed && exitCode == 0;
+                success = executed && exitCode == 0;
+            }
             return executed;
         }
 
-        private List<string> BuildDependencyArguments(IEnumerable<string> grammarFiles)
+        private List<string> BuildDependencyArguments(string grammarFile)
         {
             var arguments = new List<string>();
 
@@ -135,15 +143,15 @@ namespace Antlr4.Build.Tasks.Tools
             arguments.Add("-depend");
 
             // Common arguments
-            AddCommonArguments(arguments);
+            AddCommonArguments(grammarFile.EndsWith("Parser.g4"), arguments);
 
             // Grammar files
-            arguments.AddRange(grammarFiles);
+            arguments.Add(grammarFile);
 
             return arguments;
         }
 
-        private List<string> BuildGenerationArguments(IEnumerable<string> grammarFiles)
+        private List<string> BuildGenerationArguments(string grammarFile)
         {
             var arguments = new List<string>();
 
@@ -153,19 +161,19 @@ namespace Antlr4.Build.Tasks.Tools
             arguments.Add("org.antlr.v4.Tool");
 
             // Common arguments
-            AddCommonArguments(arguments);
+            AddCommonArguments(grammarFile.EndsWith("Parser.g4"), arguments);
 
             // Logging (only for generation, not dependency discovery)
             if (EnableLogging)
                 arguments.Add("-Xlog");
 
             // Grammar files
-            arguments.AddRange(grammarFiles);
+            arguments.Add(grammarFile);
 
             return arguments;
         }
 
-        private void AddCommonArguments(List<string> arguments)
+        private void AddCommonArguments(bool parser, List<string> arguments)
         {
             // Output directory
             arguments.Add("-o");
@@ -196,9 +204,15 @@ namespace Antlr4.Build.Tasks.Tools
                 arguments.Add(Encoding);
             }
 
-            // Listener/Visitor generation
-            arguments.Add(GenerateListener ? "-listener" : "-no-listener");
-            arguments.Add(GenerateVisitor ? "-visitor" : "-no-visitor");
+            if (parser)
+            {
+                // Listener/Visitor generation
+                arguments.Add(GenerateListener ? "-listener" : "-no-listener");
+                arguments.Add(GenerateVisitor ? "-visitor" : "-no-visitor");
+	    } else {
+		    arguments.Add("-no-listener");
+		    arguments.Add("-no-visitor");
+	    }
 
             // Package/namespace
             if (!string.IsNullOrEmpty(Package) && !string.IsNullOrWhiteSpace(Package))
@@ -244,6 +258,8 @@ namespace Antlr4.Build.Tasks.Tools
                     _start = true;
                     _sb.Clear();
                 }
+                if (outputFile.EndsWith(".g4"))
+                    return;
 
                 _sb.Append(outputFile);
                 _generatedFiles.Add(outputFile);

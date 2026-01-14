@@ -275,7 +275,6 @@ namespace Antlr4.Build.Tasks
                 {
                     throw new Exception("Failed to discover generated files");
                 }
-
                 _generatedFiles = generatedFiles;
                 _generatedCodeFiles = generatedCodeFiles;
 

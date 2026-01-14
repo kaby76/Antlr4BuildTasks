@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set +x
+set -x
+config=Debug
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     machine=Linux;;
@@ -20,6 +21,6 @@ echo $machine
 cd Antlr4BuildTasks
 dotnet nuget remove source nuget-antlr4buildtasks > /dev/null 2>&1
 dotnet restore Antlr4BuildTasks.csproj
-dotnet build Antlr4BuildTasks.csproj -c Release
-dotnet nuget add source "$cwd/Antlr4BuildTasks/bin/Release/" --name nuget-antlr4buildtasks > /dev/null 2>&1
+dotnet build Antlr4BuildTasks.csproj -c $config
+dotnet nuget add source "$cwd/Antlr4BuildTasks/bin/$config/" --name nuget-antlr4buildtasks > /dev/null 2>&1
 dotnet nuget list source | grep nuget-antlr4buildtasks
