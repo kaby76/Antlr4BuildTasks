@@ -14,13 +14,12 @@ Building Antlr4 programs is a laborious task when done manually. The steps are g
 * Install Java. You need to use Java version 11 or newer because the
 tool requires it.
 * Download the Antlr4 Tool .jar from the download area.
-* Run the tool on you grammar. Many manually run the tool, but there
-are plenty of questions about how to do that because it is different over the OS
-you are running. If you modify the grammar, but forget to regenerate the parser
-and lexer, you end up with a version skew.
+* Run the tool on your grammar.
 * For C#, you need to set up a `<PackageReference>` for the runtime Antlr4.Runtime.Standard.
-If you are not careful, you may generate the parser and lexer with a different
-version of the tool from the runtime.
+
+There are plenty of ways to screw this up. The Antlr Tool works differently
+across OSes. You can end up with version skews between tool and runtime,
+between lexer and parser. You may use the wrong version of Java on the Tool.
 
 Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
 was published in NuGet to simplify the build of C# Antlr programs. It was
