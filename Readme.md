@@ -17,7 +17,7 @@ version of the tool from the runtime.
 
 Harwell's excellent [Antlr4cs](https://github.com/tunnelvisionlabs/antlr4cs),
 was published in NuGet to simplify the build of C# Antlr programs. It was
-publiched as three packages:
+published as three packages:
 
 * [Antlr4](https://www.nuget.org/packages/Antlr4/) (which is a thin package
 that simply requires the two following packages)
