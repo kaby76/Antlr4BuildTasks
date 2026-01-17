@@ -244,7 +244,10 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release, v12.13
+### Latest release, v12.14
+
+### Released 12.14 (Jan 26)
+* Fixes #113.
 
 ### Released 12.13 (Jan 26)
 * Fixes #110.
