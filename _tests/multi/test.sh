@@ -70,6 +70,18 @@ then
 fi
 dotnet build multitarget.csproj -v diag
 result="$?"
+
+# Test existence of visitor and listener.
+for o in abbLexer.cs abbParser.cs abbParserBaseListener.cs abbParserBaseVisitor.cs abbParserListener.cs abbParserVisitor.cs
+do
+	foobar="`find . -name $o`"
+	if [ "$foobar" = "" ]
+	then
+		echo Missing $o
+		result="1"
+	fi
+done
+
 dotnet nuget remove source nuget-a4bt > /dev/null 2>&1
 dotnet nuget list source | grep nuget-a4bt
 if [ "$result" = "0" ]

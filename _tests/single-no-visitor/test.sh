@@ -63,8 +63,15 @@ dotnet nuget add source $location --name nuget-a4bt > /dev/null 2>&1
 rm -rf bin obj
 dotnet restore single.csproj -v normal
 result="$?"
+if [ "$result" != "0" ]
+then
+	exit $result
+fi
+dotnet build single.csproj -v normal
+result="$?"
 
-for o in ArithmeticBaseListener.cs ArithmeticBaseVisitor.cs ArithmeticLexer.cs ArithmeticListener.cs ArithmeticParser.cs ArithmeticVisitor.cs
+
+for o in ArithmeticBaseListener.cs ArithmeticLexer.cs ArithmeticListener.cs ArithmeticParser.cs
 do
 	foobar="`find . -name $o`"
 	if [ "$foobar" = "" ]
@@ -73,13 +80,16 @@ do
 		result="1"
 	fi
 done
+for o in ArithmeticBaseVisitor.cs ArithmeticVisitor.cs
+do
+	foobar="`find . -name $o`"
+	if [ "$foobar" != "" ]
+	then
+		echo $o generated, but should not have.
+		result="1"
+	fi
+done
 
-if [ "$result" != "0" ]
-then
-	exit $result
-fi
-dotnet build single.csproj -v normal
-result="$?"
 if [ "$result" != "0" ]
 then
 	echo Test failed.

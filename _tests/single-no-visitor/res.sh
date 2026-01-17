@@ -35,9 +35,9 @@ case "${unameOut}" in
 	;;
     *)          machine="UNKNOWN:${unameOut}"
 esac
-#ls -ld $USERPROFILE/.nuget/packages/antlr4buildtasks
-#ls -ld $USERPROFILE/.jre
-#ls -ld $USERPROFILE/.m2
+ls -ld $USERPROFILE/.nuget/packages/antlr4buildtasks
+ls -ld $USERPROFILE/.jre
+ls -ld $USERPROFILE/.m2
 cd "$where/../.."
 if [[ "$machine" == "MinGw" || "$machine" == "Msys" ]]
 then
@@ -61,30 +61,3 @@ fi
 echo dotnet nuget add source $location --name nuget-a4bt
 dotnet nuget add source $location --name nuget-a4bt > /dev/null 2>&1
 rm -rf bin obj
-dotnet restore single.csproj -v normal
-result="$?"
-
-for o in ArithmeticBaseListener.cs ArithmeticBaseVisitor.cs ArithmeticLexer.cs ArithmeticListener.cs ArithmeticParser.cs ArithmeticVisitor.cs
-do
-	foobar="`find . -name $o`"
-	if [ "$foobar" = "" ]
-	then
-		echo Missing $o
-		result="1"
-	fi
-done
-
-if [ "$result" != "0" ]
-then
-	exit $result
-fi
-dotnet build single.csproj -v normal
-result="$?"
-if [ "$result" != "0" ]
-then
-	echo Test failed.
-	exit 1
-else
-	echo Test passed.
-	exit 0
-fi

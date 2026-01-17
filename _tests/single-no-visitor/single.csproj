@@ -4,12 +4,13 @@
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>AntlrTemplate</RootNamespace>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <Antlr4 Include="Arithmetic.g4">
       <Package>simple</Package>
-      <ToolType>antlr-ng</ToolType>
-      <NodeExec>PATH</NodeExec>
+      <JavaExec>PATH</JavaExec>
+      <Listener>true</Listener>
+      <Visitor>false</Visitor>
     </Antlr4>
   </ItemGroup>
 

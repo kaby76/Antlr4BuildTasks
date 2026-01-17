@@ -9,12 +9,14 @@
     <Antlr4 Include="Arithmetic.g4">
       <Package>simple</Package>
       <JavaExec>PATH</JavaExec>
+      <Listener>true</Listener>
+      <Visitor>true</Visitor>
     </Antlr4>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="12.13" />
+    <PackageReference Include="Antlr4BuildTasks" Version="12.14" />
   </ItemGroup>
 
 </Project>

@@ -204,15 +204,9 @@ namespace Antlr4.Build.Tasks.Tools
                 arguments.Add(Encoding);
             }
 
-            if (parser)
-            {
-                // Listener/Visitor generation
-                arguments.Add(GenerateListener ? "-listener" : "-no-listener");
-                arguments.Add(GenerateVisitor ? "-visitor" : "-no-visitor");
-	    } else {
-		    arguments.Add("-no-listener");
-		    arguments.Add("-no-visitor");
-	    }
+            // Listener/Visitor generation
+            arguments.Add(GenerateListener ? "-listener" : "-no-listener");
+            arguments.Add(GenerateVisitor ? "-visitor" : "-no-visitor");
 
             // Package/namespace
             if (!string.IsNullOrEmpty(Package) && !string.IsNullOrWhiteSpace(Package))
@@ -259,7 +253,16 @@ namespace Antlr4.Build.Tasks.Tools
                     _sb.Clear();
                 }
                 if (outputFile.EndsWith(".g4"))
-                    return;
+		    return;
+
+		if (outputFile.IndexOf("Listener") >= 0 && outputFile.IndexOf("Lexer") >= 0)
+			return;
+		if (outputFile.IndexOf("BaseListener") >= 0 && outputFile.IndexOf("Lexer") >= 0)
+			return;
+		if (outputFile.IndexOf("Visitor") >= 0 && outputFile.IndexOf("Lexer") >= 0)
+			return;
+		if (outputFile.IndexOf("BaseVisitor") >= 0 && outputFile.IndexOf("Lexer") >= 0)
+			return;
 
                 _sb.Append(outputFile);
                 _generatedFiles.Add(outputFile);
