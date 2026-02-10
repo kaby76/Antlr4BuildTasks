@@ -50,7 +50,7 @@
 		<PackageReference Include="System.Memory" Version="4.6.3" />
 		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 		<PackageReference Include="System.Threading" Version="4.3.0" />
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.2" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.3" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="images\icon.png" Pack="true" PackagePath="" />
