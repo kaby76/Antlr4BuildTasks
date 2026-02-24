@@ -145,8 +145,8 @@ namespace Antlr4.Build.Tasks.Tools
             // Common arguments
             AddCommonArguments(grammarFile.EndsWith("Parser.g4"), arguments);
 
-            // Grammar files
-            arguments.Add(grammarFile);
+            // Grammar files - use relative path so "Generated from" comment is stable
+            arguments.Add(MakeGrammarRelativePath(grammarFile));
 
             return arguments;
         }
@@ -167,8 +167,8 @@ namespace Antlr4.Build.Tasks.Tools
             if (EnableLogging)
                 arguments.Add("-Xlog");
 
-            // Grammar files
-            arguments.Add(grammarFile);
+            // Grammar files - use relative path so "Generated from" comment is stable
+            arguments.Add(MakeGrammarRelativePath(grammarFile));
 
             return arguments;
         }

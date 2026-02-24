@@ -98,5 +98,12 @@ namespace Antlr4.Build.Tasks.Tools
         /// Gets or sets whether to force ATN for all decisions
         /// </summary>
         bool ForceATN { get; set; }
+
+        /// <summary>
+        /// Gets or sets the working directory for the tool process.
+        /// When set, grammar file paths are converted to be relative to this directory
+        /// so that the "Generated from" comment in output files uses relative paths.
+        /// </summary>
+        string WorkingDirectory { get; set; }
     }
 }

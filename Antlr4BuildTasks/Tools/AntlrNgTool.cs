@@ -189,8 +189,8 @@ namespace Antlr4.Build.Tasks.Tools
             // Add separator to prevent grammar files from being interpreted as option values
             arguments.Add("--");
 
-            // Grammar files
-            arguments.AddRange(grammarFiles.Select(NormalizePath));
+            // Grammar files - use relative path so "Generated from" comment is stable
+            arguments.AddRange(grammarFiles.Select(MakeGrammarRelativePath));
 
             return arguments;
         }

@@ -123,6 +123,7 @@
             <NodeDownloadDirectory>USERPROFILE/.node/</NodeDownloadDirectory>
             <AntlrNgPath></AntlrNgPath>
             <Visitor>true</Visitor>
+            <WorkingDirectory></WorkingDirectory>
         </Antlr4>
     </ItemDefinitionGroup>
 
@@ -169,6 +170,7 @@
                         NodeDownloadDirectory="%(Antlr4.NodeDownloadDirectory)"
                         AntlrNgPath="%(Antlr4.AntlrNgPath)"
                         Visitor="%(Antlr4.Visitor)"
+                        WorkingDirectory="%(Antlr4.WorkingDirectory)"
           >
             <Output ItemName="ToCompileFiles" TaskParameter="GeneratedCodeFiles" />
             <Output ItemName="AllFiles" TaskParameter="GeneratedFiles" />

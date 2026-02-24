@@ -120,6 +120,7 @@ namespace Antlr4.Build.Tasks
         public string NodeExec { get; set; }
         public string NodeDownloadDirectory { get; set; }
         public string AntlrNgPath { get; set; }
+        public string WorkingDirectory { get; set; }
 
         public async System.Threading.Tasks.Task DownloadFileAsync(string uri, string outputPath)
         {
@@ -219,7 +220,8 @@ namespace Antlr4.Build.Tasks
                         Package = Package,
                         DOptions = DOptions,
                         TreatWarningsAsErrors = Error,
-                        ForceATN = ForceAtn
+                        ForceATN = ForceAtn,
+                        WorkingDirectory = WorkingDirectory
                     };
 
                     tool = ngTool;
@@ -253,7 +255,8 @@ namespace Antlr4.Build.Tasks
                         Package = Package,
                         DOptions = DOptions,
                         TreatWarningsAsErrors = Error,
-                        ForceATN = ForceAtn
+                        ForceATN = ForceAtn,
+                        WorkingDirectory = WorkingDirectory
                     };
 
                     tool = javaTool;

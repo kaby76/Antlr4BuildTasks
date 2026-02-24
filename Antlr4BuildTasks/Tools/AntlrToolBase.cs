@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -31,6 +32,7 @@ namespace Antlr4.Build.Tasks.Tools
         public string DOptions { get; set; }
         public bool TreatWarningsAsErrors { get; set; }
         public bool ForceATN { get; set; }
+        public string WorkingDirectory { get; set; }
 
         public abstract bool Setup();
 
@@ -89,6 +91,11 @@ namespace Antlr4.Build.Tasks.Tools
                     RedirectStandardError = true,
                 };
 
+                if (ShouldUseWorkingDirectory(WorkingDirectory))
+                {
+                    startInfo.WorkingDirectory = WorkingDirectory;
+                }
+
                 MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
                     $"Executing command: \"{startInfo.FileName}\" {startInfo.Arguments}"));
 
@@ -134,6 +141,28 @@ namespace Antlr4.Build.Tasks.Tools
         }
 
         /// <summary>
+        /// Converts an absolute grammar file path to be relative to WorkingDirectory.
+        /// If WorkingDirectory is not set or does not exist, returns the path as-is (normalized).
+        /// </summary>
+        protected string MakeGrammarRelativePath(string grammarFile)
+        {
+            if (string.IsNullOrEmpty(grammarFile) || !ShouldUseWorkingDirectory(WorkingDirectory))
+                return NormalizePath(grammarFile);
+
+            var fullPath = Path.GetFullPath(grammarFile);
+            var workDir = Path.GetFullPath(WorkingDirectory);
+            if (!workDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                workDir += Path.DirectorySeparatorChar;
+
+            if (fullPath.StartsWith(workDir, StringComparison.OrdinalIgnoreCase))
+            {
+                return NormalizePath(fullPath.Substring(workDir.Length));
+            }
+
+            return NormalizePath(grammarFile);
+        }
+
+        /// <summary>
         /// Splits a semicolon-separated list and filters empty entries
         /// </summary>
         protected IEnumerable<string> SplitAndFilterList(string list)
@@ -144,6 +173,14 @@ namespace Antlr4.Build.Tasks.Tools
             return list.Split(';')
                 .Select(s => s.Trim())
                 .Where(s => !string.IsNullOrWhiteSpace(s));
+        }
+
+        /// <summary>
+        /// Returns true if WorkingDirectory is set and the directory exists on disk.
+        /// </summary>
+        private static bool ShouldUseWorkingDirectory(string workingDirectory)
+        {
+            return !string.IsNullOrEmpty(workingDirectory) && Directory.Exists(workingDirectory);
         }
     }
 }
