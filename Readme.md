@@ -64,7 +64,7 @@ to your project. csproj file as shown below, otherwise you can use the "NuGet Pa
 ````xml
 <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="12.13" PrivateAssets="all" IncludeAssets="build" />
+    <PackageReference Include="Antlr4BuildTasks" Version="13.0.0" PrivateAssets="all" IncludeAssets="build" />
 </ItemGroup>
 ````
     
@@ -224,7 +224,7 @@ to
 
 ````xml
 <ItemGroup>
-    <PackageReference Include="Antlr4BuildTasks" Version="12.13" PrivateAssets="all" />
+    <PackageReference Include="Antlr4BuildTasks" Version="13.0.0" PrivateAssets="all" />
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
 </ItemGroup>
 ````
@@ -244,7 +244,13 @@ the .csproj file as outlined above.
 If you are looking for a set of templates to create a console application that uses Antlr4,
 then see [Antlr4Templates](https://github.com/kaby76/Antlr4Templates).
 
-### Latest release, v12.14
+### Development version, 13.0.0
+
+Grammar generation follows `import` and `tokenVocab` dependencies, regardless
+of the order of `<Antlr4>` items in the project. The generated-file list is
+checked against the files actually produced by ANTLR before C# compilation.
+
+### Latest published release, v12.14
 
 ### Released 12.14 (Jan 26)
 * Fixes #113.

@@ -5,17 +5,18 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Antlr4 Include="abbLexer.g4" Package="multitarget">
+    <Antlr4 Include="abbParser.g4" Package="multitarget">
       <JavaExec>PATH</JavaExec>
     </Antlr4>
-    <Antlr4 Include="abbParser.g4" Package="multitarget">
+    <!-- Deliberately list the dependent parser first to test grammar sorting. -->
+    <Antlr4 Include="abbLexer.g4" Package="multitarget">
       <JavaExec>PATH</JavaExec>
     </Antlr4>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="12.14" />
+    <PackageReference Include="Antlr4BuildTasks" Version="13.0.0" />
   </ItemGroup>
 
 </Project>

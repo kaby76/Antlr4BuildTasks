@@ -269,6 +269,9 @@ namespace Antlr4.Build.Tasks
                 var grammarFiles = SourceCodeFiles == null
                     ? OtherSourceCodeFiles
                     : SourceCodeFiles.Select(s => s.ItemSpec).ToList();
+                grammarFiles = GrammarDependencySorter.Sort(grammarFiles);
+                MessageQueue.EnqueueMessage(Message.BuildInfoMessage(
+                    "Grammar generation order: " + string.Join(", ", grammarFiles.Select(Path.GetFileName))));
 
                 // Discover generated files
                 if (!tool.DiscoverGeneratedFiles(grammarFiles, out var generatedFiles, out var generatedCodeFiles))
@@ -282,6 +285,14 @@ namespace Antlr4.Build.Tasks
                 if (!tool.GenerateFiles(grammarFiles, out success))
                 {
                     throw new Exception("Failed to generate files");
+                }
+                if (success)
+                {
+                    // ANTLR -depend can list a synthetic lexer for a combined
+                    // grammar with tokenVocab but no lexer rules. Compile only
+                    // files that the generation pass actually created.
+                    _generatedCodeFiles = _generatedCodeFiles.Where(File.Exists).ToList();
+                    _generatedFiles = _generatedFiles.Where(File.Exists).ToList();
                 }
             }
             catch (Exception exception)

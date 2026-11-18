@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="12.14" />
+    <PackageReference Include="Antlr4BuildTasks" Version="13.0.0" />
   </ItemGroup>
 
 </Project>

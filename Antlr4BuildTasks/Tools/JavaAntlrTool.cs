@@ -112,22 +112,22 @@ namespace Antlr4.Build.Tasks.Tools
 
         public override bool GenerateFiles(IEnumerable<string> grammarFiles, out bool success)
         {
-            bool executed = false;
             success = false;
             foreach (var grammar_file in grammarFiles)
             {
                 var arguments = BuildGenerationArguments(grammar_file);
 
-                executed = ExecuteProcess(
+                var executed = ExecuteProcess(
                     JavaExecutable,
                     arguments,
                     HandleStdoutDataReceived,
                     HandleStderrDataReceived,
                     out int exitCode);
-
-                success = executed && exitCode == 0;
+                if (!executed || exitCode != 0)
+                    return false;
             }
-            return executed;
+            success = true;
+            return true;
         }
 
         private List<string> BuildDependencyArguments(string grammarFile)
